@@ -62,7 +62,7 @@ jobs:
 
           request=$(jq -n --arg prompt "$prompt" --arg topic "$TOPIC" '{
             contents: [{parts: [{text: ($prompt + "\n\nTOPIK: " + $topic)}]}],
-            generationConfig: {responseMimeType: "application/json", temperature: 0.4}
+            generationConfig: {responseMimeType: "application/json", temperature: 0.4, maxOutputTokens: 8192}
           }')
 
           gemini_result=$(curl --fail-with-body --silent --show-error \
@@ -71,14 +71,30 @@ jobs:
             -H "Content-Type: application/json" \
             -d "$request")
 
-          generated=$(printf '%s' "$gemini_result" | jq -r '.candidates[0].content.parts[]?.text // empty' | head -n 1)
+          echo "Memeriksa respons Gemini..."
+          if ! printf '%s' "$gemini_result" | jq -e . >/dev/null 2>&1; then
+            echo "ERROR: Respons Gemini bukan JSON yang valid atau terpotong."
+            echo "Awal respons (maksimal 1000 karakter):"
+            printf '%s' "$gemini_result" | head -c 1000
+            echo
+            exit 1
+          fi
+
+          echo "Finish reason Gemini: $(printf '%s' "$gemini_result" | jq -r '.candidates[0].finishReason // "tidak tersedia"')"
+          generated=$(printf '%s' "$gemini_result" | jq -r '[.candidates[0].content.parts[]?.text // empty] | join("\n")')
           if [ -z "$generated" ]; then
             echo "ERROR: Gemini tidak mengembalikan naskah."
             printf '%s\n' "$gemini_result" | jq '{error, promptFeedback}'
             exit 1
           fi
 
-          printf '%s' "$generated" | jq -e '.title and .research and .script and (.storyboard | type == "array")' >/dev/null
+          if ! printf '%s' "$generated" | jq -e '.title and .research and .script and (.storyboard | type == "array")' >/dev/null 2>&1; then
+            echo "ERROR: Teks Gemini bukan paket JSON naskah yang lengkap."
+            echo "Awal teks yang diterima (maksimal 1500 karakter):"
+            printf '%s' "$generated" | head -c 1500
+            echo
+            exit 1
+          fi
 
           channel_result=$(curl --fail-with-body --silent --show-error \
             "${SUPABASE_URL}/rest/v1/channels?name=eq.Sejarah%20Dunia&select=id&limit=1" \
