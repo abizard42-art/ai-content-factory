@@ -1,0 +1,37 @@
+name: Gemini API smoke test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-gemini:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Gemini API connection
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "${GEMINI_API_KEY:-}" ]; then
+            echo "ERROR: GEMINI_API_KEY secret is missing."
+            exit 1
+          fi
+
+          response=$(curl --fail-with-body --silent --show-error \
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent" \
+            -H "x-goog-api-key: ${GEMINI_API_KEY}" \
+            -H "Content-Type: application/json" \
+            -X POST \
+            -d '{
+              "contents": [{
+                "parts": [{
+                  "text": "Balas tepat dengan kalimat: Koneksi AI Content Factory berhasil."
+                }]
+              }]
+            }')
+
+          echo "$response" | jq -r '.candidates[0].content.parts[]?.text // empty'
+          echo "Gemini API request completed successfully."
