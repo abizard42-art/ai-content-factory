@@ -1,0 +1,14 @@
+name: Factory heartbeat
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '17 2 * * *'
+    - cron: '17 9 * * *'
+permissions:
+  contents: read
+jobs:
+  heartbeat:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirm scheduled workflow started
+        run: echo "AI Content Factory heartbeat OK — no generation or publishing is enabled."
