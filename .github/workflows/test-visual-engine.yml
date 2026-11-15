@@ -1,0 +1,80 @@
+name: Test visual engine
+
+on:
+  workflow_dispatch:
+    inputs:
+      prompt:
+        description: "Prompt gambar untuk tes pertama"
+        required: true
+        default: "A friendly young adult male history host named Raka, thick slightly tousled black hair, expressive dark eyes, tan-brown explorer jacket over a plain black shirt, a small compass pendant necklace, a subtle globe emblem on the jacket. He is standing in an ancient Egyptian setting near the Great Pyramid of Giza, curious and welcoming expression, polished 2D anime-inspired cartoon illustration, clean expressive linework, warm cinematic lighting, portrait-oriented composition with the character centered, historically inspired background, no text, no watermark."
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  generate-test-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate one image with Cloudflare Workers AI
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          IMAGE_PROMPT: ${{ inputs.prompt }}
+        run: |
+          set -euo pipefail
+
+          for name in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID SUPABASE_URL SUPABASE_SECRET_KEY; do
+            if [ -z "${!name:-}" ]; then
+              echo "ERROR: GitHub Secret $name belum diisi."
+              exit 1
+            fi
+          done
+
+          echo "Meminta satu gambar dari Cloudflare Workers AI..."
+          request=$(jq -n --arg prompt "$IMAGE_PROMPT" '{prompt: $prompt, steps: 4}')
+          response=$(curl --fail-with-body --silent --show-error \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/black-forest-labs/flux-1-schnell" \
+            -X POST \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d "$request")
+
+          if ! printf '%s' "$response" | jq -e . >/dev/null 2>&1; then
+            echo "ERROR: Respons Cloudflare bukan JSON yang valid."
+            printf '%s' "$response" | head -c 1200
+            echo
+            exit 1
+          fi
+
+          image_base64=$(printf '%s' "$response" | jq -r '.result.image // .image // empty')
+          if [ -z "$image_base64" ]; then
+            echo "ERROR: Cloudflare tidak mengembalikan data gambar."
+            printf '%s' "$response" | jq '{success, errors, messages, result: (.result | if type == "object" then keys else type end)}'
+            exit 1
+          fi
+
+          printf '%s' "$image_base64" | base64 --decode > raka-test.jpg
+          if [ ! -s raka-test.jpg ]; then
+            echo "ERROR: File gambar kosong."
+            exit 1
+          fi
+
+          echo "Gambar berhasil dibuat. Ukuran file:"
+          du -h raka-test.jpg
+
+          object_path="raka/test-${GITHUB_RUN_ID}.jpg"
+          echo "Mengunggah gambar ke Supabase Storage bucket visual-assets..."
+          upload_response=$(curl --fail-with-body --silent --show-error \
+            -X POST "${SUPABASE_URL}/storage/v1/object/visual-assets/${object_path}" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" \
+            -H "Content-Type: image/jpeg" \
+            -H "x-upsert: false" \
+            --data-binary @raka-test.jpg)
+
+          echo "Upload Supabase berhasil."
+          echo "Lokasi file: visual-assets/${object_path}"
+          echo "Respons upload:"
+          printf '%s' "$upload_response" | jq '{Key, Id, path}'
