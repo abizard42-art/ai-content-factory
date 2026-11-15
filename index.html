@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Content Factory</title>
+<style>
+:root{font-family:system-ui,sans-serif;color:#172033;background:#f4f6fb}body{margin:0;padding:24px}.wrap{max-width:760px;margin:auto}.card{background:white;border:1px solid #e2e7f0;border-radius:16px;padding:20px;margin:14px 0;box-shadow:0 4px 18px #18264a0a}input,button{font:inherit;padding:12px;border-radius:10px;border:1px solid #ccd4e2;width:100%;box-sizing:border-box;margin:6px 0}button{background:#172033;color:white;border:0;font-weight:650}small,.muted{color:#667085}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.stat{font-size:28px;font-weight:750}@media(max-width:520px){body{padding:12px}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body><main class="wrap">
+<h1>AI Content Factory</h1><p class="muted">Dashboard awal — fondasi proyek, belum menjalankan produksi otomatis.</p>
+<section class="card"><h2>1. Hubungkan database</h2><input id="url" placeholder="Supabase Project URL"><input id="key" placeholder="Supabase publishable / anon key"><button id="connect">Simpan koneksi sementara</button><small>Kunci disimpan hanya di sesi browser ini. Jangan masukkan service-role key.</small><p id="connection" class="muted"></p></section>
+<section class="card"><h2>2. Akun</h2><input id="email" type="email" placeholder="Email"><input id="password" type="password" placeholder="Password (min. 6 karakter)"><div class="grid"><button id="signup">Daftar</button><button id="login">Masuk</button></div><button id="logout">Keluar</button><p id="authStatus" class="muted"></p></section>
+<section class="card"><h2>3. Ringkasan</h2><div class="grid"><div><div class="stat" id="channelCount">—</div><small>Channel</small></div><div><div class="stat">2</div><small>Target video/hari (channel pertama)</small></div></div><input id="channelName" value="Sejarah Dunia" aria-label="Nama channel"><button id="addChannel">Tambahkan channel pertama</button><p id="dataStatus" class="muted"></p></section>
+</main>
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+let client=null;
+const $=id=>document.getElementById(id);const say=(id,msg)=>$(id).textContent=msg;
+$('connect').onclick=()=>{const u=$('url').value.trim(),k=$('key').value.trim();if(!u||!k)return say('connection','Isi URL dan publishable/anon key dulu.');sessionStorage.setItem('supaUrl',u);sessionStorage.setItem('supaKey',k);client=createClient(u,k);say('connection','Koneksi siap di sesi browser ini.');};
+const init=()=>{const u=sessionStorage.getItem('supaUrl'),k=sessionStorage.getItem('supaKey');if(u&&k){$('url').value=u;$('key').value=k;client=createClient(u,k);say('connection','Koneksi dipulihkan dari sesi browser.');}};init();
+$('signup').onclick=async()=>{if(!client)return say('authStatus','Hubungkan database dulu.');const {error}=await client.auth.signUp({email:$('email').value,password:$('password').value});say('authStatus',error?.message||'Pendaftaran dikirim. Cek email jika konfirmasi diaktifkan.');};
+$('login').onclick=async()=>{if(!client)return say('authStatus','Hubungkan database dulu.');const {error}=await client.auth.signInWithPassword({email:$('email').value,password:$('password').value});say('authStatus',error?.message||'Berhasil masuk.');if(!error)loadChannels();};
+$('logout').onclick=async()=>{if(client)await client.auth.signOut();say('authStatus','Keluar.');$('channelCount').textContent='—';};
+async function loadChannels(){const {data,error}=await client.from('channels').select('id');say('dataStatus',error?.message||'Data berhasil dimuat.');if(data)$('channelCount').textContent=data.length;}
+$('addChannel').onclick=async()=>{if(!client)return say('dataStatus','Hubungkan database dulu.');const {data:{user}}=await client.auth.getUser();if(!user)return say('dataStatus','Masuk dulu.');const {error}=await client.from('channels').insert({owner_id:user.id,slug:'sejarah-dunia-id',name:$('channelName').value,config:{language:'id',niche:'world_history',videos_per_day:2,auto_upload:false,approval_required:true}});say('dataStatus',error?.message||'Channel berhasil ditambahkan.');if(!error)loadChannels();};
+</script></body></html>
