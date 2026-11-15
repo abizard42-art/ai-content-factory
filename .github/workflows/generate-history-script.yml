@@ -1,0 +1,149 @@
+name: Generate first history script
+
+on:
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: "Topik sejarah yang ingin dibuat"
+        required: true
+        default: "Bagaimana Piramida Agung Giza dibangun?"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  generate-script:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate script with Gemini and save to Supabase
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          TOPIC: ${{ inputs.topic }}
+        run: |
+          set -euo pipefail
+
+          for name in GEMINI_API_KEY SUPABASE_URL SUPABASE_SECRET_KEY; do
+            if [ -z "${!name:-}" ]; then
+              echo "ERROR: GitHub Secret $name belum diisi."
+              exit 1
+            fi
+          done
+
+          prompt=$(cat <<'PROMPT'
+          Kamu adalah penulis naskah edukasi sejarah untuk YouTube Shorts berbahasa Indonesia.
+          Buat satu paket konten berdurasi sekitar 60 detik tentang topik yang diberikan.
+          Utamakan fakta sejarah yang mapan. Jangan mengarang tanggal, tokoh, kutipan, atau
+          kepastian yang tidak didukung. Jika ada perdebatan sejarah, tandai sebagai perdebatan.
+          Hasilkan JSON valid saja, tanpa markdown atau teks pembuka, dengan bentuk:
+          {
+            "title": "judul pendek menarik",
+            "research": {
+              "summary": "ringkasan konteks sejarah",
+              "key_facts": ["fakta penting 1", "fakta penting 2"],
+              "verification_notes": ["hal yang perlu diverifikasi sebelum publikasi"],
+              "suggested_sources": ["nama sumber tepercaya untuk pemeriksaan lanjutan"]
+            },
+            "script": "narasi lengkap bahasa Indonesia sekitar 120-150 kata",
+            "storyboard": [
+              {
+                "scene": 1,
+                "duration_seconds": 8,
+                "narration": "bagian narasi adegan ini",
+                "visual_prompt": "deskripsi visual kartun 2D vertikal 9:16"
+              }
+            ]
+          }
+          Buat 6 sampai 8 adegan. Total durasi sekitar 60 detik.
+          PROMPT
+          )
+
+          request=$(jq -n --arg prompt "$prompt" --arg topic "$TOPIC" '{
+            contents: [{parts: [{text: ($prompt + "\n\nTOPIK: " + $topic)}]}],
+            generationConfig: {responseMimeType: "application/json", temperature: 0.4}
+          }')
+
+          gemini_result=$(curl --fail-with-body --silent --show-error \
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent" \
+            -H "x-goog-api-key: ${GEMINI_API_KEY}" \
+            -H "Content-Type: application/json" \
+            -d "$request")
+
+          generated=$(printf '%s' "$gemini_result" | jq -r '.candidates[0].content.parts[]?.text // empty' | head -n 1)
+          if [ -z "$generated" ]; then
+            echo "ERROR: Gemini tidak mengembalikan naskah."
+            printf '%s\n' "$gemini_result" | jq '{error, promptFeedback}'
+            exit 1
+          fi
+
+          printf '%s' "$generated" | jq -e '.title and .research and .script and (.storyboard | type == "array")' >/dev/null
+
+          channel_result=$(curl --fail-with-body --silent --show-error \
+            "${SUPABASE_URL}/rest/v1/channels?name=eq.Sejarah%20Dunia&select=id&limit=1" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}")
+
+          channel_id=$(printf '%s' "$channel_result" | jq -r '.[0].id // empty')
+          if [ -z "$channel_id" ]; then
+            echo "ERROR: Channel 'Sejarah Dunia' tidak ditemukan di tabel channels."
+            exit 1
+          fi
+
+          title=$(printf '%s' "$generated" | jq -r '.title')
+          research=$(printf '%s' "$generated" | jq -c '.research')
+          script_body=$(printf '%s' "$generated" | jq -r '.script')
+          storyboard=$(printf '%s' "$generated" | jq -c '.storyboard')
+
+          topic_payload=$(jq -n --arg channel_id "$channel_id" --arg title "$title" --argjson research "$research" '{
+            channel_id: $channel_id,
+            title: $title,
+            status: "scripted",
+            research: $research
+          }')
+
+          topic_result=$(curl --fail-with-body --silent --show-error \
+            "${SUPABASE_URL}/rest/v1/topics" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+            -H "Content-Type: application/json" \
+            -H "Prefer: return=representation" \
+            -d "$topic_payload")
+
+          topic_id=$(printf '%s' "$topic_result" | jq -r '.[0].id // empty')
+          if [ -z "$topic_id" ]; then
+            echo "ERROR: Gagal menyimpan topik ke Supabase."
+            printf '%s\n' "$topic_result" | jq .
+            exit 1
+          fi
+
+          script_payload=$(jq -n --arg topic_id "$topic_id" --arg body "$script_body" --argjson storyboard "$storyboard" '{
+            topic_id: $topic_id,
+            version: 1,
+            body: $body,
+            storyboard: $storyboard,
+            status: "draft"
+          }')
+
+          script_result=$(curl --fail-with-body --silent --show-error \
+            "${SUPABASE_URL}/rest/v1/scripts" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+            -H "Content-Type: application/json" \
+            -H "Prefer: return=representation" \
+            -d "$script_payload")
+
+          script_id=$(printf '%s' "$script_result" | jq -r '.[0].id // empty')
+          if [ -z "$script_id" ]; then
+            echo "ERROR: Topik tersimpan, tetapi naskah gagal disimpan."
+            printf '%s\n' "$script_result" | jq .
+            exit 1
+          fi
+
+          echo "BERHASIL: Gemini membuat naskah dan menyimpannya ke Supabase."
+          echo "Judul: $title"
+          echo "Topic ID: $topic_id"
+          echo "Script ID: $script_id"
+          echo "Jumlah adegan: $(printf '%s' "$storyboard" | jq 'length')"
+          echo "Catatan: naskah masih draft dan wajib diperiksa sebelum publikasi."
