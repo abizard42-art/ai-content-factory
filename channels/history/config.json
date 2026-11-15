@@ -1,0 +1,19 @@
+{
+  "id": "sejarah-dunia-id",
+  "name": "Sejarah Dunia",
+  "language": "id",
+  "niche": "world_history",
+  "videos_per_day": 2,
+  "target_duration_seconds": 60,
+  "aspect_ratio": "9:16",
+  "visual_style": "cartoon_2d",
+  "main_character": {
+    "id": "host-sejarah-01",
+    "consistency_required": true,
+    "description": "Define the final character reference sheet before production begins."
+  },
+  "publishing": {
+    "auto_upload": false,
+    "approval_required": true
+  }
+}
