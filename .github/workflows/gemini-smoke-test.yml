@@ -20,7 +20,7 @@ jobs:
             exit 1
           fi
 
-          response=$(curl --fail-with-body --silent --show-error \
+          result=$(curl --silent --show-error --write-out '\n__HTTP_STATUS__:%{http_code}' \
             "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent" \
             -H "x-goog-api-key: ${GEMINI_API_KEY}" \
             -H "Content-Type: application/json" \
@@ -31,7 +31,19 @@ jobs:
                   "text": "Balas tepat dengan kalimat: Koneksi AI Content Factory berhasil."
                 }]
               }]
-            }')
+            }' || true)
 
-          echo "$response" | jq -r '.candidates[0].content.parts[]?.text // empty'
+          http_status=$(printf '%s\n' "$result" | sed -n 's/^__HTTP_STATUS__://p' | tail -n 1)
+          response=$(printf '%s\n' "$result" | sed '/^__HTTP_STATUS__:/d')
+
+          echo "HTTP status: ${http_status:-unknown}"
+          echo "Gemini response:"
+          printf '%s\n' "$response" | jq .
+
+          if [ -z "${http_status:-}" ] || [ "$http_status" -lt 200 ] || [ "$http_status" -ge 300 ]; then
+            echo "Gemini API request failed. Read the response above."
+            exit 1
+          fi
+
+          printf '%s\n' "$response" | jq -r '.candidates[0].content.parts[]?.text // empty'
           echo "Gemini API request completed successfully."
