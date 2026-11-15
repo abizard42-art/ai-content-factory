@@ -106,7 +106,6 @@ jobs:
           topic_result=$(curl --fail-with-body --silent --show-error \
             "${SUPABASE_URL}/rest/v1/topics" \
             -H "apikey: ${SUPABASE_SECRET_KEY}" \
-            -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
             -H "Content-Type: application/json" \
             -H "Prefer: return=representation" \
             -d "$topic_payload")
@@ -129,7 +128,6 @@ jobs:
           script_result=$(curl --fail-with-body --silent --show-error \
             "${SUPABASE_URL}/rest/v1/scripts" \
             -H "apikey: ${SUPABASE_SECRET_KEY}" \
-            -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
             -H "Content-Type: application/json" \
             -H "Prefer: return=representation" \
             -d "$script_payload")
