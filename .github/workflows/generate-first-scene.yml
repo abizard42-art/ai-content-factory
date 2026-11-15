@@ -1,1 +1,117 @@
+name: Generate first storyboard scene
 
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  generate-first-scene:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Read latest Sejarah Dunia storyboard and generate scene 1
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: |
+          set -euo pipefail
+
+          for name in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID SUPABASE_URL SUPABASE_SECRET_KEY; do
+            if [ -z "${!name:-}" ]; then
+              echo "ERROR: GitHub Secret $name belum diisi."
+              exit 1
+            fi
+          done
+
+          echo "Mencari channel Sejarah Dunia..."
+          channel_result=$(curl --fail-with-body --silent --show-error \
+            "${SUPABASE_URL}/rest/v1/channels?name=eq.Sejarah%20Dunia&select=id&limit=1" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}")
+          channel_id=$(printf '%s' "$channel_result" | jq -r '.[0].id // empty')
+          if [ -z "$channel_id" ]; then
+            echo "ERROR: Channel Sejarah Dunia tidak ditemukan."
+            exit 1
+          fi
+
+          echo "Mencari topik terbaru..."
+          topics_result=$(curl --fail-with-body --silent --show-error --get \
+            "${SUPABASE_URL}/rest/v1/topics" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+            --data-urlencode "channel_id=eq.$channel_id" \
+            --data-urlencode "select=id,title" \
+            --data-urlencode "order=created_at.desc" \
+            --data-urlencode "limit=1")
+          topic_id=$(printf '%s' "$topics_result" | jq -r '.[0].id // empty')
+          topic_title=$(printf '%s' "$topics_result" | jq -r '.[0].title // empty')
+          if [ -z "$topic_id" ]; then
+            echo "ERROR: Belum ada topik. Jalankan Generate first history script terlebih dahulu."
+            exit 1
+          fi
+
+          echo "Membaca storyboard untuk: $topic_title"
+          scripts_result=$(curl --fail-with-body --silent --show-error --get \
+            "${SUPABASE_URL}/rest/v1/scripts" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+            --data-urlencode "topic_id=eq.$topic_id" \
+            --data-urlencode "select=id,storyboard" \
+            --data-urlencode "order=created_at.desc" \
+            --data-urlencode "limit=1")
+          script_id=$(printf '%s' "$scripts_result" | jq -r '.[0].id // empty')
+          scene_prompt=$(printf '%s' "$scripts_result" | jq -r '.[0].storyboard[0].visual_prompt // empty')
+          if [ -z "$script_id" ] || [ -z "$scene_prompt" ]; then
+            echo "ERROR: Naskah atau visual_prompt adegan pertama tidak ditemukan."
+            exit 1
+          fi
+
+          echo "Topik: $topic_title"
+          echo "Script ID: $script_id"
+          echo "Adegan: 1"
+          full_prompt="Same recurring character Raka: young adult male history host, thick slightly tousled black hair, expressive dark eyes, tan-brown explorer jacket over a plain black shirt, small compass pendant necklace, subtle globe-shaped Sejarah Dunia emblem on the jacket. Friendly, curious expression. Keep these character features and outfit consistent. Polished 2D anime-inspired cartoon illustration, clean expressive linework, warm cinematic lighting, vertical portrait composition, no text, no watermark. Scene description: $scene_prompt"
+
+          request=$(jq -n --arg prompt "$full_prompt" '{prompt: $prompt, steps: 4}')
+          echo "Meminta satu gambar untuk adegan pertama..."
+          response=$(curl --fail-with-body --silent --show-error \
+            "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/black-forest-labs/flux-1-schnell" \
+            -X POST \
+            -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d "$request")
+
+          if ! printf '%s' "$response" | jq -e . >/dev/null 2>&1; then
+            echo "ERROR: Respons Cloudflare bukan JSON valid."
+            printf '%s' "$response" | head -c 1200
+            echo
+            exit 1
+          fi
+
+          image_base64=$(printf '%s' "$response" | jq -r '.result.image // .image // empty')
+          if [ -z "$image_base64" ]; then
+            echo "ERROR: Cloudflare tidak mengembalikan data gambar."
+            printf '%s' "$response" | jq '{success, errors, messages}'
+            exit 1
+          fi
+
+          printf '%s' "$image_base64" | base64 --decode > scene-01.jpg
+          if [ ! -s scene-01.jpg ]; then
+            echo "ERROR: File gambar kosong."
+            exit 1
+          fi
+
+          object_path="raka/scenes/${script_id}/scene-01.jpg"
+          echo "Mengunggah adegan pertama ke Supabase Storage..."
+          upload_response=$(curl --fail-with-body --silent --show-error \
+            -X POST "${SUPABASE_URL}/storage/v1/object/visual-assets/${object_path}" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" \
+            -H "Content-Type: image/jpeg" \
+            -H "x-upsert: true" \
+            --data-binary @scene-01.jpg)
+
+          echo "BERHASIL: Gambar adegan pertama dibuat dan disimpan."
+          echo "Lokasi: visual-assets/${object_path}"
+          printf '%s' "$upload_response" | jq '{Key, Id, path}'
