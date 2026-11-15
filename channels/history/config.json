@@ -6,11 +6,15 @@
   "videos_per_day": 2,
   "target_duration_seconds": 60,
   "aspect_ratio": "9:16",
-  "visual_style": "cartoon_2d",
+  "visual_style": "cartoon_2d_anime_inspired",
   "main_character": {
     "id": "host-sejarah-01",
+    "name": "Raka",
+    "role": "recurring_history_host",
+    "apparent_age": "20-25",
     "consistency_required": true,
-    "description": "Define the final character reference sheet before production begins."
+    "reference_document": "docs/CHARACTER-RAKA.md",
+    "description": "Young adult male host with thick slightly tousled black hair, expressive dark eyes, tan-brown explorer jacket over a plain black shirt, compass pendant necklace, and a small globe-shaped Sejarah Dunia emblem on the jacket. Friendly, cheerful, curious, expressive. Preserve the same face, hairstyle, outfit, proportions, and signature accessories across every episode."
   },
   "publishing": {
     "auto_upload": false,
