@@ -133,13 +133,30 @@ jobs:
 
             frames=$(awk -v d="$duration" 'BEGIN { printf "%d", d * 24 }')
             echo "Merender scene $scene_label selama ${duration} detik..."
+            scene_context=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '[.[$i].historical_setting // "", .[$i].background_action // "", .[$i].visual_prompt // "", .[$i].narration // ""] | join(" ")')
+            mkdir -p "ambient/scene-$scene_label" "ambient-audio"
+            python3 scripts/ambient_engine.py --context "$scene_context" --duration "$duration" --out "ambient/scene-$scene_label"
             ffmpeg -hide_banner -loglevel error -y \
               -loop 1 -framerate 24 -i "scenes/$image_file" \
-              -vf "scale=720:1280:force_original_aspect_ratio=increase,crop=720:1280,zoompan=z='min(zoom+0.00045,1.06)':d=1:s=720x1280:fps=24,setsar=1" \
-              -frames:v "$frames" -an -c:v libx264 -preset veryfast -crf 23 -pix_fmt yuv420p \
-              "clips/clip-${scene_label}.mp4"
+              -framerate 12 -i "ambient/scene-$scene_label/%05d.png" \
+              -filter_complex "[0:v]scale=720:1280:force_original_aspect_ratio=increase,crop=720:1280,zoompan=z='min(zoom+0.00045,1.06)':d=1:s=720x1280:fps=24,setsar=1[base];[1:v]format=rgba,fps=24[fx];[base][fx]overlay=shortest=1:format=auto,format=yuv420p[outv]" \
+              -map "[outv]" -frames:v "$frames" -an -c:v libx264 -preset veryfast -crf 23 \
+              "clips/clip-$scene_label.mp4"
 
-            printf "file '%s'\n" "clip-${scene_label}.mp4" >> clips/concat.txt
+            ambient_kind=$(python3 -c 'import sys; t=sys.argv[1].lower(); rules=[(("desert","gurun","sand","pasir","egypt","giza"),"desert"),(("arctic","antarctic","kutub","glacier","ice","es","snow","salju"),"cold"),(("rain","hujan","storm","badai"),"rain"),(("underwater","ocean","sea","laut","samudra"),"underwater"),(("volcano","lava","gunung berapi","fire","flame","api"),"fire"),(("forest","jungle","hutan","rainforest"),"forest")]; print(next((v for keys,v in rules if any(k in t for k in keys)),"none"))' "$scene_context")
+            case "$ambient_kind" in
+              desert) noise_filter="lowpass=f=850,highpass=f=90,volume=0.10" ;;
+              cold) noise_filter="highpass=f=500,lowpass=f=4200,volume=0.075" ;;
+              rain) noise_filter="highpass=f=650,lowpass=f=6500,volume=0.065" ;;
+              underwater) noise_filter="lowpass=f=480,volume=0.075" ;;
+              fire) noise_filter="lowpass=f=1400,volume=0.055" ;;
+              forest) noise_filter="highpass=f=250,lowpass=f=2600,volume=0.045" ;;
+              *) noise_filter="volume=0" ;;
+            esac
+            fade_start=$(awk -v d="$duration" 'BEGIN{v=d-0.6;if(v<0)v=0;print v}')
+            ffmpeg -hide_banner -loglevel error -y -f lavfi -i "anoisesrc=color=pink:amplitude=0.35:sample_rate=24000:duration=$duration" -af "$noise_filter,afade=t=in:d=0.6,afade=t=out:st=$fade_start:d=0.6" -ac 1 -ar 24000 "ambient-audio/ambient-$scene_label.wav"
+            printf "file '%s'\\n" "clip-$scene_label.mp4" >> clips/concat.txt
+            printf "file '%s'\\n" "ambient-audio/ambient-$scene_label.wav" >> ambient-audio/concat.txt
             total_seconds=$(awk -v a="$total_seconds" -v b="$duration" 'BEGIN { print a+b }')
           done
 
