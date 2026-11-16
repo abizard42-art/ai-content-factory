@@ -78,6 +78,27 @@ jobs:
             [ -n "$visual" ] || { echo "ERROR: visual_prompt scene $scene kosong."; exit 1; }
             printf -v scene_label "%02d" "$scene"
 
+            # Jangan buat ulang gambar yang sudah berhasil diunggah.
+            object_path="raka/news-reference-scenes/${script_id}/scene-${scene_label}.jpg"
+            existing_status=$(curl --silent --output /dev/null --write-out "%{http_code}" \
+              "${SUPABASE_URL}/storage/v1/object/visual-assets/${object_path}" \
+              -H "apikey: ${SUPABASE_SECRET_KEY}" \
+              -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" || true)
+            if [ "$existing_status" = "200" ]; then
+              echo "SKIP: scene-${scene_label}.jpg sudah ada, dipertahankan."
+              continue
+            fi
+
+            # Scene 4 memakai deskripsi netral yang menonjolkan kerja sama tim terampil.
+            if [ "$scene" = "4" ]; then
+              expression="curious, excited expression of a scientific discovery"
+              action="Raka slightly crouches and points precisely toward the damp sand"
+              background="an organized team of skilled ancient Egyptian construction workers calmly cooperating to move a large limestone block on a wooden sled; one worker carefully pours water from a clay jar onto the sand in front of the sled; the workers look healthy, coordinated and focused on their craft"
+              visual="Vertical 9:16, polished 2D anime-inspired educational history illustration. Raka is in the foreground, slightly crouching and pointing toward the sand, wearing his consistent tan-brown explorer jacket, black shirt and compass pendant. In the background, an organized team of skilled ancient Egyptian workers cooperates to pull a wooden sled carrying a limestone block. One worker pours a small amount of water from a terracotta jar onto the sand ahead of the sled. Calm teamwork, historically grounded clothing and tools, warm golden desert light, clear composition. No violence, no chains, no whips, no injuries, no distress, no text, no watermark."
+              setting="Ancient Egypt, Giza plateau, Old Kingdom"
+              continuity="remain at the Giza pyramid construction site"
+            fi
+
             full_prompt="Use image 0 as the identity reference for the SAME recurring character Raka. Preserve his recognizable face, large brown eyes, warm medium-tan skin tone, thick tousled black hair, youthful facial proportions, tan-brown explorer jacket, black shirt and compass pendant. Do not redesign him or darken his skin. Create a vertical 2D anime-inspired educational history illustration. HISTORICAL SETTING: $setting. LOCATION CONTINUITY: $continuity. Show only the correct civilization, architecture, clothing, landscape and period. No unrelated Vikings, Norse, Aztec or Roman backgrounds. Energetic history presenter. Expression: $expression. Gesture: $action. Background activity: $background. Scene: $visual. Historically accurate, expressive body language, cinematic warm lighting, clear composition. No text, captions or watermark."
 
             prompt=$(printf '%s' "$full_prompt" | cut -c1-1950)
