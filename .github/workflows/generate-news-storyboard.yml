@@ -1,0 +1,156 @@
+name: Generate news-style history storyboard
+
+on:
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: "Topik sejarah untuk eksperimen presenter Raka"
+        required: true
+        default: "Bagaimana Piramida Agung Giza dibangun?"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  generate-news-storyboard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate presenter-led script and contextual storyboard
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          TOPIC: ${{ inputs.topic }}
+        run: |
+          set -euo pipefail
+
+          for name in GEMINI_API_KEY SUPABASE_URL SUPABASE_SECRET_KEY; do
+            if [ -z "${!name:-}" ]; then
+              echo "ERROR: GitHub Secret $name belum diisi."
+              exit 1
+            fi
+          done
+
+          prompt=$(cat <<'PROMPT'
+          Kamu adalah produser berita sejarah dan sutradara storyboard untuk YouTube Shorts Indonesia.
+          Buat paket video sekitar 55-60 detik. Gaya penyampaian seperti presenter berita dokumenter:
+          jelas, hidup, ekspresif, komunikatif, bukan membaca buku.
+          Raka adalah presenter modern yang konsisten: pria muda 20-25 tahun, rambut hitam tebal agak berantakan,
+          mata ekspresif, jaket penjelajah cokelat muda di atas kaus hitam, kalung liontin kompas,
+          emblem globe kecil di jaket. Jangan mengganti wajah, pakaian, atau aksesori Raka.
+
+          Keluarkan JSON valid saja:
+          {
+            "title": "judul singkat",
+            "research": {
+              "summary": "konteks ringkas",
+              "key_facts": ["fakta 1", "fakta 2"],
+              "verification_notes": ["hal yang perlu diperiksa"],
+              "suggested_sources": ["sumber rujukan"]
+            },
+            "script": "narasi bahasa Indonesia sekitar 120-145 kata",
+            "storyboard": [
+              {
+                "scene": 1,
+                "duration_seconds": 7,
+                "narration": "kalimat yang diucapkan pada adegan ini",
+                "raka_expression": "ekspresi wajah yang spesifik",
+                "raka_action": "gestur presenter yang terlihat jelas, misalnya menunjuk, membuka telapak tangan, menoleh ke objek, atau menghitung dengan jari",
+                "background_action": "aktivitas latar yang relevan dengan kalimat, termasuk siapa melakukan apa",
+                "visual_prompt": "prompt gambar lengkap dalam bahasa Inggris untuk adegan vertikal 9:16"
+              }
+            ]
+          }
+
+          Buat 7-8 adegan dengan durasi total sekitar 55-60 detik.
+          WAJIB:
+          - Setiap latar harus menggambarkan isi kalimat yang sedang diucapkan, bukan latar sejarah generik.
+          - Jika menyebut piramida dibangun, tampilkan konstruksi piramida, batu, ramp, dan pekerja sesuai konteks sejarah.
+          - Jika menyebut pekerja, tampilkan pekerja sedang melakukan aktivitas yang disebut.
+          - Raka harus hadir sebagai presenter di foreground pada sebagian besar adegan, dengan gestur dan ekspresi berbeda sesuai narasi.
+          - Variasikan medium shot, close-up, dan wide shot; jaga Raka tetap mudah dikenali.
+          - Jelaskan aktivitas latar secara visual dan spesifik, tetapi jangan menampilkan detail sejarah yang tidak didukung.
+          - Raka tetap memakai outfit modern yang sama; jangan mengubahnya menjadi orang Mesir kuno.
+          - Visual 2D anime-inspired cartoon, clean linework, warm cinematic lighting, no text, no watermark.
+          - Hindari adegan yang hanya menggambarkan Raka berdiri diam.
+          PROMPT
+          )
+
+          request=$(jq -n --arg prompt "$prompt" --arg topic "$TOPIC" '{
+            contents: [{parts: [{text: ($prompt + "\n\nTOPIK: " + $topic)}]}],
+            generationConfig: {responseMimeType: "application/json", temperature: 0.55, maxOutputTokens: 10000}
+          }')
+
+          gemini_result=$(curl --fail-with-body --silent --show-error \
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent" \
+            -H "x-goog-api-key: ${GEMINI_API_KEY}" \
+            -H "Content-Type: application/json" \
+            -d "$request")
+
+          if ! printf '%s' "$gemini_result" | jq -e . >/dev/null 2>&1; then
+            echo "ERROR: Respons Gemini bukan JSON valid."
+            printf '%s' "$gemini_result" | head -c 1200
+            exit 1
+          fi
+
+          generated=$(printf '%s' "$gemini_result" | jq -r '[.candidates[0].content.parts[]?.text // empty] | join("\n")')
+          if ! printf '%s' "$generated" | jq -e '.title and .research and .script and (.storyboard | type == "array" and length >= 6)' >/dev/null 2>&1; then
+            echo "ERROR: Paket storyboard presenter tidak lengkap."
+            printf '%s' "$generated" | head -c 1800
+            exit 1
+          fi
+
+          channel_result=$(curl --fail-with-body --silent --show-error \
+            "${SUPABASE_URL}/rest/v1/channels?name=eq.Sejarah%20Dunia&select=id&limit=1" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}")
+          channel_id=$(printf '%s' "$channel_result" | jq -r '.[0].id // empty')
+          if [ -z "$channel_id" ]; then
+            echo "ERROR: Channel Sejarah Dunia tidak ditemukan."
+            exit 1
+          fi
+
+          title=$(printf '%s' "$generated" | jq -r '.title')
+          research=$(printf '%s' "$generated" | jq -c '.research')
+          script_body=$(printf '%s' "$generated" | jq -r '.script')
+          storyboard=$(printf '%s' "$generated" | jq -c '.storyboard')
+
+          topic_payload=$(jq -n --arg channel_id "$channel_id" --arg title "$title" --argjson research "$research" '{
+            channel_id: $channel_id, title: $title, status: "scripted", research: $research
+          }')
+          topic_result=$(curl --fail-with-body --silent --show-error \
+            "${SUPABASE_URL}/rest/v1/topics" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+            -H "Content-Type: application/json" -H "Prefer: return=representation" \
+            -d "$topic_payload")
+          topic_id=$(printf '%s' "$topic_result" | jq -r '.[0].id // empty')
+          if [ -z "$topic_id" ]; then
+            echo "ERROR: Gagal menyimpan topik."
+            printf '%s' "$topic_result" | jq .
+            exit 1
+          fi
+
+          script_payload=$(jq -n --arg topic_id "$topic_id" --arg body "$script_body" --argjson storyboard "$storyboard" '{
+            topic_id: $topic_id, version: 1, body: $body, storyboard: $storyboard, status: "draft"
+          }')
+          script_result=$(curl --fail-with-body --silent --show-error \
+            "${SUPABASE_URL}/rest/v1/scripts" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+            -H "Content-Type: application/json" -H "Prefer: return=representation" \
+            -d "$script_payload")
+          script_id=$(printf '%s' "$script_result" | jq -r '.[0].id // empty')
+          if [ -z "$script_id" ]; then
+            echo "ERROR: Topik tersimpan tetapi script gagal disimpan."
+            printf '%s' "$script_result" | jq .
+            exit 1
+          fi
+
+          echo "BERHASIL: Storyboard presenter berita tersimpan."
+          echo "Judul: $title"
+          echo "Topic ID: $topic_id"
+          echo "Script ID: $script_id"
+          echo "Jumlah adegan: $(printf '%s' "$storyboard" | jq 'length')"
+          echo "Periksa field raka_expression, raka_action, dan background_action."
