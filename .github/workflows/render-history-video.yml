@@ -283,11 +283,11 @@ jobs:
 
           # Burn-in subtitle karaoke; sorotan mengikuti timestamp ucapan asli.
           echo "Menambahkan subtitle karaoke ke video..."
-          ffmpeg -hide_banner -loglevel error -y \\
-            -i "$video_file" \\
-            -vf "ass=captions.ass" \\
-            -c:v libx264 -preset veryfast -crf 22 -pix_fmt yuv420p \\
-            -c:a copy -movflags +faststart \\
+          ffmpeg -hide_banner -loglevel error -y \
+            -i "$video_file" \
+            -vf "ass=captions.ass" \
+            -c:v libx264 -preset veryfast -crf 22 -pix_fmt yuv420p \
+            -c:a copy -movflags +faststart \
             "captioned-$video_file"
           mv "captioned-$video_file" "$video_file"
 
