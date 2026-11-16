@@ -9,12 +9,22 @@ permissions:
 jobs:
   render-video:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - name: Install FFmpeg and tools
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg jq curl bc
+
+      - name: Set up Python for Indonesian word alignment
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install forced-alignment engine
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install whisperx
 
       - name: Download scenes, render MP4, and upload to Supabase
         env:
@@ -65,9 +75,10 @@ jobs:
             --data-urlencode "order=created_at.desc" \
             --data-urlencode "limit=1")
           script_id=$(printf '%s' "$scripts_result" | jq -r '.[0].id // empty')
+          script_body=$(printf '%s' "$scripts_result" | jq -r '.[0].body // empty')
           storyboard=$(printf '%s' "$scripts_result" | jq -c '.[0].storyboard // empty')
-          if [ -z "$script_id" ] || [ "$storyboard" = "null" ] || [ -z "$storyboard" ]; then
-            echo "ERROR: Script atau storyboard tidak ditemukan."
+          if [ -z "$script_id" ] || [ -z "$script_body" ] || [ "$storyboard" = "null" ] || [ -z "$storyboard" ]; then
+            echo "ERROR: Script, isi naskah, atau storyboard tidak ditemukan."
             exit 1
           fi
 
@@ -149,55 +160,104 @@ jobs:
 
           video_file="history-${script_id}.mp4"
 
-          # Buat subtitle karaoke: maksimal 5 kata per layar, kata aktif disorot.
-          printf '%s' "$storyboard" > storyboard.json
-          python3 - <<'PY'
-          import json
+          # Pakai forced alignment bahasa Indonesia untuk timestamp asli setiap kata.
+          echo "Mencocokkan naskah dengan audio Raka (word-level forced alignment)..."
+          SCRIPT_BODY="$script_body" python3 - <<'PY'
+          import os
           import re
           import textwrap
+          import whisperx
 
-          with open("storyboard.json", encoding="utf-8") as f:
-              scenes = json.load(f)
+          transcript = re.sub(r"\\s+", " ", os.environ["SCRIPT_BODY"]).strip()
+          if not transcript:
+              raise SystemExit("ERROR: Naskah untuk alignment kosong.")
+
+          print("Memuat audio Raka...")
+          audio = whisperx.load_audio("narration.wav")
+          audio_duration = len(audio) / 16000.0
+
+          print("Memuat model alignment bahasa Indonesia...")
+          model, metadata = whisperx.load_align_model(
+              language_code="id",
+              device="cpu",
+              model_name="cahya/wav2vec2-large-xlsr-indonesian",
+          )
+
+          print("Menyelaraskan setiap kata dengan audio...")
+          aligned = whisperx.align(
+              [{"start": 0.0, "end": audio_duration, "text": transcript}],
+              model,
+              metadata,
+              audio,
+              device="cpu",
+              return_char_alignments=False,
+          )
+
+          words = aligned.get("word_segments", [])
+          expected_words = len(transcript.split())
+          if not words:
+              raise SystemExit("ERROR: Forced alignment tidak menghasilkan timestamp kata.")
+          coverage = len(words) / max(1, expected_words)
+          print(f"Kata naskah: {expected_words}; kata bertimestamp: {len(words)}; cakupan: {coverage:.0%}")
+          if coverage < 0.80:
+              raise SystemExit("ERROR: Cakupan alignment di bawah 80%; subtitle tidak dibuat agar timing tidak menyesatkan.")
 
           def ass_time(seconds):
               total = max(0, round(seconds * 100))
               hours, rem = divmod(total, 360000)
-              minutes, centis = divmod(rem, 6000)
-              secs, centis = divmod(centis, 100)
+              minutes, rem = divmod(rem, 6000)
+              secs, centis = divmod(rem, 100)
               return f"{hours}:{minutes:02}:{secs:02}.{centis:02}"
 
-          def ass_escape(word):
-              return word.replace("{", "\\{").replace("}", "\\}")
+          def ass_escape(value):
+              return str(value).replace("{", "\\{").replace("}", "\\}").replace("\\n", " ")
+
+          # Maksimal 5 kata per cue. Jeda alami lebih dari 0,65 detik memulai cue baru.
+          chunks = []
+          current = []
+          for item in words:
+              if item.get("start") is None or item.get("end") is None:
+                  continue
+              word = str(item.get("word", "")).strip()
+              if not word:
+                  continue
+              current_item = {
+                  "word": word,
+                  "start": float(item["start"]),
+                  "end": float(item["end"]),
+              }
+              if current and (
+                  len(current) >= 5
+                  or current_item["start"] - current[-1]["end"] > 0.65
+              ):
+                  chunks.append(current)
+                  current = []
+              current.append(current_item)
+          if current:
+              chunks.append(current)
 
           events = []
-          cursor = 0.0
-          for scene in scenes:
-              duration = float(scene.get("duration_seconds", scene.get("duration", 8)) or 8)
-              narration = str(scene.get("narration", "")).strip()
-              words = re.findall(r"\S+", narration)
-              if words:
-                  chunks = [words[i:i+5] for i in range(0, len(words), 5)]
-                  weights = [sum(max(1, len(w)) for w in chunk) for chunk in chunks]
-                  total_weight = sum(weights) or 1
-                  chunk_start = cursor
-                  for chunk, weight in zip(chunks, weights):
-                      chunk_duration = duration * weight / total_weight
-                      chunk_end = chunk_start + chunk_duration
-                      word_weights = [max(1, len(w)) for w in chunk]
-                      total_word_weight = sum(word_weights) or 1
-                      tags = []
-                      for word, word_weight in zip(chunk, word_weights):
-                          centis = max(1, round(chunk_duration * word_weight / total_word_weight * 100))
-                          tags.append(f"{{\\kf{centis}}}{ass_escape(word)}")
-                      text = " ".join(tags)
-                      events.append(
-                          f"Dialogue: 0,{ass_time(chunk_start)},{ass_time(chunk_end)},Karaoke,,0,0,0,,{text}"
-                      )
-                      chunk_start = chunk_end
-              cursor += duration
+          for chunk in chunks:
+              cue_start = chunk[0]["start"]
+              cue_end = chunk[-1]["end"]
+              if cue_end <= cue_start:
+                  continue
+              tags = []
+              for index, item in enumerate(chunk):
+                  if index + 1 < len(chunk):
+                      next_start = chunk[index + 1]["start"]
+                      word_duration = max(0.01, next_start - item["start"])
+                  else:
+                      word_duration = max(0.01, item["end"] - item["start"])
+                  centis = max(1, round(word_duration * 100))
+                  tags.append(f"{{\\kf{centis}}}{ass_escape(item['word'])}")
+              text = " ".join(tags)
+              events.append(
+                  f"Dialogue: 0,{ass_time(cue_start)},{ass_time(cue_end)},Karaoke,,0,0,0,,{text}"
+              )
 
           if not events:
-              raise SystemExit("ERROR: Tidak ada narration pada storyboard untuk subtitle.")
+              raise SystemExit("ERROR: Tidak ada cue subtitle yang valid.")
 
           header = textwrap.dedent("""[Script Info]
           ScriptType: v4.00+
@@ -208,24 +268,26 @@ jobs:
 
           [V4+ Styles]
           Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
-          Style: Karaoke,DejaVu Sans,28,&H0000D7FF,&H00FFFFFF,&H00101010,&H80000000,1,0,0,0,100,100,0,0,1,2,1,2,35,35,105,1
+          Style: Karaoke,DejaVu Sans,24,&H0000D7FF,&H00FFFFFF,&H00101010,&H80000000,1,0,0,0,100,100,0,0,1,2,1,2,45,45,105,1
 
           [Events]
           Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
           """)
           with open("captions.ass", "w", encoding="utf-8") as f:
               f.write(header)
-              f.write("\n".join(events) + "\n")
-          print(f"Subtitle karaoke dibuat: {len(events)} cue, maksimal 5 kata per cue.")
+              f.write("\\n".join(events) + "\\n")
+
+          print(f"Subtitle karaoke presisi dibuat: {len(events)} cue, maksimal 5 kata per cue.")
+          print("Timestamp berasal dari audio Raka, bukan perkiraan panjang kata.")
           PY
 
-          # Burn-in subtitle karaoke; kata yang sedang dibaca disorot kuning.
+          # Burn-in subtitle karaoke; sorotan mengikuti timestamp ucapan asli.
           echo "Menambahkan subtitle karaoke ke video..."
-          ffmpeg -hide_banner -loglevel error -y \
-            -i "$video_file" \
-            -vf "ass=captions.ass" \
-            -c:v libx264 -preset veryfast -crf 22 -pix_fmt yuv420p \
-            -c:a copy -movflags +faststart \
+          ffmpeg -hide_banner -loglevel error -y \\
+            -i "$video_file" \\
+            -vf "ass=captions.ass" \\
+            -c:v libx264 -preset veryfast -crf 22 -pix_fmt yuv420p \\
+            -c:a copy -movflags +faststart \\
             "captioned-$video_file"
           mv "captioned-$video_file" "$video_file"
 
