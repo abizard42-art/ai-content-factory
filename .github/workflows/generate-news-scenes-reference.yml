@@ -69,6 +69,7 @@ jobs:
           for ((i=0; i<scene_count; i++)); do
             scene=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '.[$i].scene // ($i+1)')
             visual=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '.[$i].visual_prompt // empty')
+            raka_presence=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '.[$i].raka_presence // true')
             expression=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '.[$i].raka_expression // "friendly attentive presenter expression"')
             action=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '.[$i].raka_action // "open-hand presenter gesture"')
             background=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '.[$i].background_action // "historically relevant people performing the narrated event"')
@@ -99,13 +100,24 @@ jobs:
               continuity="remain at the Giza pyramid construction site"
             fi
 
-            full_prompt="Use image 0 as the identity reference for the SAME recurring character Raka. Preserve his recognizable face, large brown eyes, warm medium-tan skin tone, thick tousled black hair, youthful facial proportions, tan-brown explorer jacket, black shirt and compass pendant. Do not redesign him or darken his skin. Create a vertical 2D anime-inspired educational history illustration. HISTORICAL SETTING: $setting. LOCATION CONTINUITY: $continuity. Show only the correct civilization, architecture, clothing, landscape and period. No unrelated Vikings, Norse, Aztec or Roman backgrounds. Energetic history presenter. Expression: $expression. Gesture: $action. Background activity: $background. Scene: $visual. Historically accurate, expressive body language, cinematic warm lighting, clear composition. No text, captions or watermark."
-
-            prompt=$(printf '%s' "$full_prompt" | cut -c1-1950)
-            echo "Scene $scene_label: prompt ${#prompt}/2048 karakter."
-            echo "Meminta scene $scene_label dengan referensi Raka..."
-
-            http_status=$(curl --silent --show-error               --output cloudflare-response.json               --write-out "%{http_code}"               "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/black-forest-labs/flux-2-klein-4b"               -X POST               -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"               -F "prompt=${prompt}"               -F "input_image_0=@raka-reference-512.jpg;type=image/jpeg" || true)
+            if [ "$raka_presence" = "true" ]; then
+              full_prompt="Use image 0 as the identity reference for the SAME recurring character Raka. Preserve his recognizable face, large brown eyes, warm medium-tan skin tone, thick tousled black hair, youthful facial proportions, tan-brown explorer jacket, black shirt and compass pendant. Do not redesign him. Create a vertical 2D anime-inspired educational history illustration. HISTORICAL SETTING: $setting. LOCATION CONTINUITY: $continuity. Show only the correct civilization, architecture, clothing, landscape and period. Raka is the modern presenter in the foreground. Expression: $expression. Gesture: $action. Background activity: $background. Scene: $visual. Historically accurate, cinematic warm lighting, clear composition. No text, captions or watermark."
+              prompt=$(printf '%s' "$full_prompt" | cut -c1-1950)
+              echo "Scene $scene_label: Raka tampil; memakai master reference."
+              http_status=$(curl --silent --show-error --output cloudflare-response.json --write-out "%{http_code}" \
+                "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/black-forest-labs/flux-2-klein-4b" \
+                -X POST -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+                -F "prompt=${prompt}" -F "input_image_0=@raka-reference-512.jpg;type=image/jpeg" || true)
+            else
+              full_prompt="Create a vertical 2D anime-inspired historical documentary illustration with NO presenter, NO modern person, and NO Raka character. Focus entirely on the historical event and its people, location, artifacts, maps, or process. HISTORICAL SETTING: $setting. LOCATION CONTINUITY: $continuity. Show only the correct civilization, architecture, clothing, landscape and period. Background activity: $background. Scene: $visual. Historically accurate, cinematic warm lighting, clear composition. No text, captions or watermark."
+              prompt=$(printf '%s' "$full_prompt" | cut -c1-1950)
+              echo "Scene $scene_label: tanpa Raka; visual sejarah penuh."
+              request=$(jq -n --arg prompt "$prompt" '{prompt:$prompt,steps:4}')
+              http_status=$(curl --silent --show-error --output cloudflare-response.json --write-out "%{http_code}" \
+                "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/black-forest-labs/flux-1-schnell" \
+                -X POST -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+                -H "Content-Type: application/json" -d "$request" || true)
+            fi
 
             if [ "$http_status" != "200" ]; then
               echo "ERROR: FLUX.2 Klein gagal pada scene $scene_label. HTTP $http_status"
