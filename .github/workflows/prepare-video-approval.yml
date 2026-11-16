@@ -1,0 +1,235 @@
+name: Prepare video metadata and approval
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prepare-package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Generate publishing metadata and create approval record
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: |
+          set -euo pipefail
+
+          for name in GEMINI_API_KEY SUPABASE_URL SUPABASE_SECRET_KEY; do
+            if [ -z "${!name:-}" ]; then
+              echo "ERROR: GitHub Secret $name belum diisi."
+              exit 1
+            fi
+          done
+
+          echo "Mencari channel Sejarah Dunia..."
+          channel_result=$(curl --fail-with-body --silent --show-error \
+            "${SUPABASE_URL}/rest/v1/channels?name=eq.Sejarah%20Dunia&select=id&limit=1" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}")
+          channel_id=$(printf '%s' "$channel_result" | jq -r '.[0].id // empty')
+          if [ -z "$channel_id" ]; then
+            echo "ERROR: Channel Sejarah Dunia tidak ditemukan."
+            exit 1
+          fi
+
+          topics_result=$(curl --fail-with-body --silent --show-error --get \
+            "${SUPABASE_URL}/rest/v1/topics" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+            --data-urlencode "channel_id=eq.$channel_id" \
+            --data-urlencode "select=id,title,research" \
+            --data-urlencode "order=created_at.desc" \
+            --data-urlencode "limit=1")
+          topic_id=$(printf '%s' "$topics_result" | jq -r '.[0].id // empty')
+          topic_title=$(printf '%s' "$topics_result" | jq -r '.[0].title // empty')
+          research=$(printf '%s' "$topics_result" | jq -c '.[0].research // {}')
+          if [ -z "$topic_id" ] || [ -z "$topic_title" ]; then
+            echo "ERROR: Topik terbaru tidak ditemukan."
+            exit 1
+          fi
+
+          scripts_result=$(curl --fail-with-body --silent --show-error --get \
+            "${SUPABASE_URL}/rest/v1/scripts" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+            --data-urlencode "topic_id=eq.$topic_id" \
+            --data-urlencode "select=id,body,storyboard" \
+            --data-urlencode "order=created_at.desc" \
+            --data-urlencode "limit=1")
+          script_id=$(printf '%s' "$scripts_result" | jq -r '.[0].id // empty')
+          script_body=$(printf '%s' "$scripts_result" | jq -r '.[0].body // empty')
+          storyboard=$(printf '%s' "$scripts_result" | jq -c '.[0].storyboard // []')
+          if [ -z "$script_id" ] || [ -z "$script_body" ]; then
+            echo "ERROR: Naskah terbaru tidak ditemukan."
+            exit 1
+          fi
+
+          video_path="raka/videos/$script_id/history-$script_id.mp4"
+          echo "Memastikan video hasil render tersedia..."
+          video_status=$(curl --silent --show-error --output /dev/null --write-out "%{http_code}" \
+            "${SUPABASE_URL}/storage/v1/object/visual-assets/$video_path" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" || true)
+          if [ "$video_status" != "200" ]; then
+            echo "ERROR: Video belum ditemukan di Storage (HTTP $video_status). Jalankan Render history video dahulu."
+            exit 1
+          fi
+
+          prompt=$(cat <<'PROMPT'
+          Kamu adalah editor metadata YouTube Shorts edukasi sejarah berbahasa Indonesia.
+          Buat paket publikasi yang akurat, jelas, menarik, dan tidak clickbait.
+          Gunakan hanya informasi dalam topik, riset, naskah, dan storyboard yang diberikan.
+          Jangan menambahkan fakta, tanggal, nama, atau klaim baru yang tidak didukung.
+          Jika ada hal yang perlu diperiksa, masukkan ke verification_notes dan jangan tulis
+          sebagai fakta pasti. Judul maksimal 90 karakter. Deskripsi 2-4 kalimat.
+          Caption singkat untuk Shorts. Buat 3-5 hashtag relevan, termasuk #Shorts.
+          Hasilkan JSON valid saja, tanpa markdown, dengan bentuk:
+          {
+            "title": "judul YouTube Shorts",
+            "description": "deskripsi video",
+            "caption": "caption singkat",
+            "hashtags": ["#Shorts", "#Sejarah"],
+            "pinned_comment": "pertanyaan singkat untuk mengundang diskusi",
+            "verification_notes": ["hal yang harus diperiksa manusia sebelum publikasi"],
+            "pre_publish_checklist": [
+              "Tonton video dari awal sampai akhir",
+              "Pastikan narasi sesuai visual",
+              "Periksa ejaan judul dan deskripsi",
+              "Pastikan hak penggunaan aset dan audio aman"
+            ]
+          }
+          PROMPT
+          )
+
+          request=$(jq -n \
+            --arg prompt "$prompt" \
+            --arg topic "$topic_title" \
+            --arg research "$research" \
+            --arg script "$script_body" \
+            --arg storyboard "$storyboard" \
+            '{
+              contents: [{parts: [{text: ($prompt + "\n\nTOPIK: " + $topic + "\nRISET: " + $research + "\nNASKAH: " + $script + "\nSTORYBOARD: " + $storyboard)}]}],
+              generationConfig: {responseMimeType: "application/json", temperature: 0.3, maxOutputTokens: 4096}
+            }')
+
+          gemini_result=$(curl --fail-with-body --silent --show-error \
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent" \
+            -H "x-goog-api-key: ${GEMINI_API_KEY}" \
+            -H "Content-Type: application/json" \
+            -d "$request")
+
+          generated=$(printf '%s' "$gemini_result" | jq -r '[.candidates[0].content.parts[]?.text // empty] | join("\n")')
+          if [ -z "$generated" ] || ! printf '%s' "$generated" | jq -e '
+            (.title | type == "string" and length > 0) and
+            (.description | type == "string") and
+            (.caption | type == "string") and
+            (.hashtags | type == "array") and
+            (.pinned_comment | type == "string") and
+            (.verification_notes | type == "array") and
+            (.pre_publish_checklist | type == "array")
+          ' >/dev/null 2>&1; then
+            echo "ERROR: Gemini tidak menghasilkan metadata JSON yang lengkap."
+            echo "Respons awal:"
+            printf '%s' "$generated" | head -c 1500
+            echo
+            exit 1
+          fi
+
+          title=$(printf '%s' "$generated" | jq -r '.title')
+          metadata_path="raka/metadata/$script_id/metadata.json"
+          printf '%s\n' "$generated" > metadata.json
+
+          echo "Menyimpan metadata ke Supabase Storage..."
+          curl --fail-with-body --silent --show-error \
+            -X POST "${SUPABASE_URL}/storage/v1/object/visual-assets/$metadata_path" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+            -H "Content-Type: application/json" \
+            -H "x-upsert: true" \
+            --data-binary @metadata.json
+
+          existing_video=$(curl --fail-with-body --silent --show-error --get \
+            "${SUPABASE_URL}/rest/v1/videos" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+            --data-urlencode "script_id=eq.$script_id" \
+            --data-urlencode "select=id" \
+            --data-urlencode "limit=1")
+          video_id=$(printf '%s' "$existing_video" | jq -r '.[0].id // empty')
+
+          video_payload=$(jq -n \
+            --arg channel_id "$channel_id" \
+            --arg script_id "$script_id" \
+            --arg title "$title" \
+            --arg asset_url "visual-assets/$video_path" \
+            '{channel_id:$channel_id,script_id:$script_id,title:$title,asset_url:$asset_url,status:"pending_approval"}')
+
+          if [ -n "$video_id" ]; then
+            echo "Memperbarui record video yang sudah ada..."
+            curl --fail-with-body --silent --show-error \
+              -X PATCH "${SUPABASE_URL}/rest/v1/videos?id=eq.$video_id" \
+              -H "apikey: ${SUPABASE_SECRET_KEY}" \
+              -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+              -H "Content-Type: application/json" \
+              -H "Prefer: return=minimal" \
+              -d "$video_payload"
+          else
+            echo "Membuat record video baru..."
+            video_result=$(curl --fail-with-body --silent --show-error \
+              -X POST "${SUPABASE_URL}/rest/v1/videos" \
+              -H "apikey: ${SUPABASE_SECRET_KEY}" \
+              -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+              -H "Content-Type: application/json" \
+              -H "Prefer: return=representation" \
+              -d "$video_payload")
+            video_id=$(printf '%s' "$video_result" | jq -r '.[0].id // empty')
+          fi
+
+          if [ -z "$video_id" ]; then
+            echo "ERROR: Record video gagal dibuat atau diperbarui."
+            exit 1
+          fi
+
+          existing_job=$(curl --fail-with-body --silent --show-error --get \
+            "${SUPABASE_URL}/rest/v1/publishing_jobs" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+            --data-urlencode "video_id=eq.$video_id" \
+            --data-urlencode "platform=eq.youtube" \
+            --data-urlencode "select=id" \
+            --data-urlencode "limit=1")
+          job_id=$(printf '%s' "$existing_job" | jq -r '.[0].id // empty')
+
+          if [ -z "$job_id" ]; then
+            job_payload=$(jq -n --arg video_id "$video_id" '{video_id:$video_id,platform:"youtube",status:"pending_approval"}')
+            job_result=$(curl --fail-with-body --silent --show-error \
+              -X POST "${SUPABASE_URL}/rest/v1/publishing_jobs" \
+              -H "apikey: ${SUPABASE_SECRET_KEY}" \
+              -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+              -H "Content-Type: application/json" \
+              -H "Prefer: return=representation" \
+              -d "$job_payload")
+            job_id=$(printf '%s' "$job_result" | jq -r '.[0].id // empty')
+          else
+            echo "Job approval YouTube sudah ada; tidak membuat duplikat."
+          fi
+
+          if [ -z "$job_id" ]; then
+            echo "ERROR: Job approval gagal dibuat."
+            exit 1
+          fi
+
+          echo "========================================"
+          echo "BERHASIL: Paket publikasi siap diperiksa."
+          echo "Judul: $title"
+          echo "Video ID: $video_id"
+          echo "Approval Job ID: $job_id"
+          echo "Metadata: visual-assets/$metadata_path"
+          echo "Status video: pending_approval"
+          echo "Status publikasi: pending_approval"
+          echo "Auto-upload tetap NONAKTIF. Tidak ada video yang dipublikasikan."
