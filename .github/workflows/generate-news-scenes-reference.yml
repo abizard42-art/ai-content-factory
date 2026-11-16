@@ -1,0 +1,115 @@
+name: Generate contextual scenes with Raka reference
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  generate-reference-scenes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Generate all scenes with the master Raka image reference
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: |
+          set -euo pipefail
+
+          for name in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID SUPABASE_URL SUPABASE_SECRET_KEY; do
+            if [ -z "${!name:-}" ]; then
+              echo "ERROR: GitHub Secret $name belum diisi."
+              exit 1
+            fi
+          done
+
+          # Master reference tetap memakai gambar Raka pilihan user.
+          MASTER_SCRIPT_ID="444b9f67-8fa6-4fe7-a021-2e380eba6345"
+          curl --fail-with-body --silent --show-error             "${SUPABASE_URL}/storage/v1/object/visual-assets/raka/news-experiment/${MASTER_SCRIPT_ID}/scene-07.jpg"             -H "apikey: ${SUPABASE_SECRET_KEY}"             -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}"             -o raka-master.jpg
+
+          [ -s raka-master.jpg ] || { echo "ERROR: Master reference Raka tidak ditemukan."; exit 1; }
+
+          python3 -m pip install --quiet Pillow
+          python3 - <<'PY'
+          from PIL import Image
+          img = Image.open("raka-master.jpg").convert("RGB")
+          img.resize((512, 512), Image.Resampling.LANCZOS).save("raka-reference-512.jpg", quality=92)
+          print("Master Raka siap digunakan sebagai referensi 512x512.")
+          PY
+
+          channel_result=$(curl --fail-with-body --silent --show-error             "${SUPABASE_URL}/rest/v1/channels?name=eq.Sejarah%20Dunia&select=id&limit=1"             -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}")
+          channel_id=$(printf '%s' "$channel_result" | jq -r '.[0].id // empty')
+          [ -n "$channel_id" ] || { echo "ERROR: Channel tidak ditemukan."; exit 1; }
+
+          topics_result=$(curl --fail-with-body --silent --show-error --get             "${SUPABASE_URL}/rest/v1/topics"             -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}"             --data-urlencode "channel_id=eq.$channel_id"             --data-urlencode "select=id,title" --data-urlencode "order=created_at.desc" --data-urlencode "limit=1")
+          topic_id=$(printf '%s' "$topics_result" | jq -r '.[0].id // empty')
+          topic_title=$(printf '%s' "$topics_result" | jq -r '.[0].title // empty')
+          [ -n "$topic_id" ] || { echo "ERROR: Topik tidak ditemukan."; exit 1; }
+
+          scripts_result=$(curl --fail-with-body --silent --show-error --get             "${SUPABASE_URL}/rest/v1/scripts"             -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}"             --data-urlencode "topic_id=eq.$topic_id"             --data-urlencode "select=id,storyboard" --data-urlencode "order=created_at.desc" --data-urlencode "limit=1")
+          script_id=$(printf '%s' "$scripts_result" | jq -r '.[0].id // empty')
+          storyboard=$(printf '%s' "$scripts_result" | jq -c '.[0].storyboard // empty')
+          [ -n "$script_id" ] && [ "$storyboard" != "null" ] && [ -n "$storyboard" ] || {
+            echo "ERROR: Script/storyboard tidak ditemukan."; exit 1;
+          }
+
+          scene_count=$(printf '%s' "$storyboard" | jq 'if type == "array" then length else 0 end')
+          [ "$scene_count" -ge 1 ] || { echo "ERROR: Storyboard kosong."; exit 1; }
+
+          mkdir -p output
+          echo "Topik: $topic_title"
+          echo "Script ID: $script_id"
+          echo "Jumlah adegan: $scene_count"
+          echo "Model: FLUX.2 Klein 4B dengan master reference Raka."
+
+          for ((i=0; i<scene_count; i++)); do
+            scene=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '.[$i].scene // ($i+1)')
+            visual=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '.[$i].visual_prompt // empty')
+            expression=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '.[$i].raka_expression // "friendly attentive presenter expression"')
+            action=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '.[$i].raka_action // "open-hand presenter gesture"')
+            background=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '.[$i].background_action // "historically relevant people performing the narrated event"')
+            setting=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '.[$i].historical_setting // "the civilization, region, and period stated by the narration"')
+            continuity=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '.[$i].location_continuity // "maintain the same historically accurate location unless narration explicitly changes it"')
+
+            [ -n "$visual" ] || { echo "ERROR: visual_prompt scene $scene kosong."; exit 1; }
+            printf -v scene_label "%02d" "$scene"
+
+            full_prompt="Use image 0 as the identity reference for the SAME recurring character Raka. Preserve his recognizable face, large brown eyes, warm medium-tan skin tone, thick tousled black hair, youthful facial proportions, tan-brown explorer jacket, black shirt and compass pendant. Do not redesign him or darken his skin. Create a vertical 2D anime-inspired educational history illustration. HISTORICAL SETTING: $setting. LOCATION CONTINUITY: $continuity. Show only the correct civilization, architecture, clothing, landscape and period. No unrelated Vikings, Norse, Aztec or Roman backgrounds. Energetic history presenter. Expression: $expression. Gesture: $action. Background activity: $background. Scene: $visual. Historically accurate, expressive body language, cinematic warm lighting, clear composition. No text, captions or watermark."
+
+            prompt=$(printf '%s' "$full_prompt" | cut -c1-1950)
+            echo "Scene $scene_label: prompt ${#prompt}/2048 karakter."
+            echo "Meminta scene $scene_label dengan referensi Raka..."
+
+            http_status=$(curl --silent --show-error               --output cloudflare-response.json               --write-out "%{http_code}"               "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/black-forest-labs/flux-2-klein-4b"               -X POST               -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"               -F "prompt=${prompt}"               -F "input_image_0=@raka-reference-512.jpg;type=image/jpeg" || true)
+
+            if [ "$http_status" != "200" ]; then
+              echo "ERROR: FLUX.2 Klein gagal pada scene $scene_label. HTTP $http_status"
+              jq . cloudflare-response.json 2>/dev/null || head -c 3000 cloudflare-response.json
+              exit 1
+            fi
+
+            response=$(cat cloudflare-response.json)
+            image_base64=$(printf '%s' "$response" | jq -r '.result.image // .image // empty')
+            [ -n "$image_base64" ] || {
+              echo "ERROR: Respons tidak berisi gambar scene $scene_label."
+              printf '%s' "$response" | jq '{success,errors,messages}'
+              exit 1
+            }
+
+            image_file="scene-${scene_label}.jpg"
+            printf '%s' "$image_base64" | base64 --decode > "output/$image_file"
+            [ -s "output/$image_file" ] || { echo "ERROR: Gambar $image_file kosong."; exit 1; }
+
+            object_path="raka/news-reference-scenes/${script_id}/$image_file"
+            curl --fail-with-body --silent --show-error -X POST               "${SUPABASE_URL}/storage/v1/object/visual-assets/$object_path"               -H "apikey: ${SUPABASE_SECRET_KEY}"               -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}"               -H "Content-Type: image/jpeg" -H "x-upsert: true"               --data-binary @"output/$image_file" >/dev/null
+
+            echo "BERHASIL: $image_file tersimpan."
+          done
+
+          echo "SELESAI: Semua gambar dengan referensi Raka selesai."
+          echo "Lokasi: visual-assets/raka/news-reference-scenes/${script_id}/"
+          ls -lh output/
