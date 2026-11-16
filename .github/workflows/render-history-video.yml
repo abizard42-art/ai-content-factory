@@ -144,7 +144,7 @@ jobs:
               -framerate 12 -i "parallax/scene-$scene_label/%05d.png" \
               -framerate 12 -i "ambient/scene-$scene_label/%05d.png" \
               -framerate 12 -i "background-motion/scene-$scene_label/%05d.png" \
-              -filter_complex "[0:v]scale=720:1280:force_original_aspect_ratio=increase,crop=720:1280,zoompan=z='min(zoom+0.00045,1.06)':d=1:s=720x1280:fps=24,setsar=1[base];[1:v]format=rgba,fps=24[fx];[base][fx]overlay=shortest=1:format=auto[ambient];[2:v]format=rgba,fps=24[light];[ambient][light]overlay=shortest=1:format=auto,format=yuv420p[outv]" \
+              -filter_complex "[0:v]fps=24,scale=720:1280:force_original_aspect_ratio=increase,crop=720:1280,zoompan=z='min(zoom+0.00045,1.06)':d=1:s=720x1280:fps=24,setsar=1[base];[1:v]format=rgba,fps=24[fx];[base][fx]overlay=shortest=1:format=auto[ambient];[2:v]format=rgba,fps=24[light];[ambient][light]overlay=shortest=1:format=auto,format=yuv420p[outv]" \
               -map "[outv]" -frames:v "$frames" -an -c:v libx264 -preset veryfast -crf 23 \
               "clips/clip-$scene_label.mp4"
 
