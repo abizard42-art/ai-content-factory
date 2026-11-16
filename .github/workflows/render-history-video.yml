@@ -176,15 +176,16 @@ jobs:
             duration=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '(.[$i].duration_seconds // .[$i].duration // 8) | if type == "number" then . else (tonumber? // 8) end')
             printf -v scene_label "%02d" "$scene_number"
             input_args+=(-i "clips/clip-$scene_label.mp4")
+            filter_graph+="[$i:v]fps=24,settb=AVTB,setpts=PTS-STARTPTS,scale=720:1280:force_original_aspect_ratio=increase,crop=720:1280,setsar=1,format=yuv420p[v$i];"
             if [ "$i" -eq 0 ]; then
-              previous_label="[0:v]"
+              previous_label="[v0]"
               accumulated=$duration
             else
               stage=$((i + 1))
-              offset=$(awk -v a="$accumulated" -v t="$transition" 'BEGIN { printf "%.3f", a-t }')
+              offset=$(awk -v a="$accumulated" -v t="$transition" 'BEGIN { v=a-t; if(v<0)v=0; printf "%.3f",v }')
               next_label="[v$stage]"
               if [ "$i" -eq $((scene_count - 1)) ]; then next_label="[vout]"; fi
-              filter_graph+="$previous_label[$i:v]xfade=transition=fade:duration=$transition:offset=$offset$next_label;"
+              filter_graph+="$previous_label[v$i]xfade=transition=fade:duration=$transition:offset=$offset$next_label;"
               previous_label="$next_label"
               accumulated=$(awk -v a="$accumulated" -v b="$duration" -v t="$transition" 'BEGIN { print a+b-t }')
             fi
@@ -210,10 +211,31 @@ jobs:
 
           video_file="history-${script_id}.mp4"
 
-          # Gabungkan ambience kontekstual secara halus di bawah narasi Raka.
-          echo "Menggabungkan ambient audio sesuai kondisi tiap scene..."
-          ffmpeg -hide_banner -loglevel error -y -f concat -safe 0 -i ambient-audio/concat.txt -c:a pcm_s16le ambient-bed.wav
-          ffmpeg -hide_banner -loglevel error -y -i "$video_file" -i ambient-bed.wav -filter_complex "[0:a]volume=1.0[voice];[1:a]volume=0.65[amb];[voice][amb]amix=inputs=2:duration=first:dropout_transition=2:normalize=0[mix]" -map 0:v:0 -map "[mix]" -c:v copy -c:a aac -b:a 160k -movflags +faststart "mixed-$video_file"
+          # Gabungkan ambience dengan crossfade yang sama seperti transisi visual.
+          echo "Menggabungkan ambient audio dengan crossfade sesuai perpindahan scene..."
+          ambient_inputs=()
+          ambient_filter=""
+          previous_audio=""
+          for ((i=0; i<scene_count; i++)); do
+            scene_number=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '.[$i].scene // ($i + 1)')
+            printf -v scene_label "%02d" "$scene_number"
+            ambient_inputs+=(-i "ambient-audio/ambient-$scene_label.wav")
+            ambient_filter+="[$i:a]aresample=24000,aformat=sample_fmts=fltp:sample_rates=24000:channel_layouts=mono[amb$i];"
+            if [ "$i" -eq 0 ]; then
+              previous_audio="[amb0]"
+            else
+              next_audio="[ambmix$i]"
+              if [ "$i" -eq $((scene_count - 1)) ]; then next_audio="[ambout]"; fi
+              ambient_filter+="$previous_audio[amb$i]acrossfade=d=$transition:c1=tri:c2=tri$next_audio;"
+              previous_audio="$next_audio"
+            fi
+          done
+          ambient_filter="${ambient_filter%;}"
+          ffmpeg -hide_banner -loglevel error -y "${ambient_inputs[@]}" \
+            -filter_complex "$ambient_filter" -map "[ambout]" -c:a pcm_s16le ambient-bed.wav
+          ffmpeg -hide_banner -loglevel error -y -i "$video_file" -i ambient-bed.wav \
+            -filter_complex "[0:a]volume=1.0[voice];[1:a]volume=0.35[amb];[voice][amb]amix=inputs=2:duration=first:dropout_transition=2:normalize=0[mix]" \
+            -map 0:v:0 -map "[mix]" -c:v copy -c:a aac -b:a 160k -movflags +faststart "mixed-$video_file"
           mv "mixed-$video_file" "$video_file"
 
           # Pakai forced alignment bahasa Indonesia untuk timestamp asli setiap kata.
