@@ -1,0 +1,159 @@
+name: Generate Raka narration
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  generate-narration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Generate Indonesian narration with Gemini TTS
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: |
+          set -euo pipefail
+
+          for name in GEMINI_API_KEY SUPABASE_URL SUPABASE_SECRET_KEY; do
+            if [ -z "${!name:-}" ]; then
+              echo "ERROR: GitHub Secret $name belum diisi."
+              exit 1
+            fi
+          done
+
+          echo "Mencari channel dan naskah terbaru..."
+          channel_result=$(curl --fail-with-body --silent --show-error \
+            "${SUPABASE_URL}/rest/v1/channels?name=eq.Sejarah%20Dunia&select=id&limit=1" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}")
+          channel_id=$(printf '%s' "$channel_result" | jq -r '.[0].id // empty')
+          if [ -z "$channel_id" ]; then
+            echo "ERROR: Channel Sejarah Dunia tidak ditemukan."
+            exit 1
+          fi
+
+          topics_result=$(curl --fail-with-body --silent --show-error --get \
+            "${SUPABASE_URL}/rest/v1/topics" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+            --data-urlencode "channel_id=eq.$channel_id" \
+            --data-urlencode "select=id,title" \
+            --data-urlencode "order=created_at.desc" \
+            --data-urlencode "limit=1")
+          topic_id=$(printf '%s' "$topics_result" | jq -r '.[0].id // empty')
+          topic_title=$(printf '%s' "$topics_result" | jq -r '.[0].title // empty')
+          if [ -z "$topic_id" ]; then
+            echo "ERROR: Topik terbaru tidak ditemukan."
+            exit 1
+          fi
+
+          scripts_result=$(curl --fail-with-body --silent --show-error --get \
+            "${SUPABASE_URL}/rest/v1/scripts" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+            --data-urlencode "topic_id=eq.$topic_id" \
+            --data-urlencode "select=id,body" \
+            --data-urlencode "order=created_at.desc" \
+            --data-urlencode "limit=1")
+          script_id=$(printf '%s' "$scripts_result" | jq -r '.[0].id // empty')
+          script_body=$(printf '%s' "$scripts_result" | jq -r '.[0].body // empty')
+          if [ -z "$script_id" ] || [ -z "$script_body" ]; then
+            echo "ERROR: Naskah kosong atau tidak ditemukan."
+            exit 1
+          fi
+
+          echo "Topik: $topic_title"
+          echo "Script ID: $script_id"
+          echo "Meminta suara narator muda yang energik dan ekspresif..."
+
+          python - <<'PY'
+          import json, os
+          prompt = """You are the voice actor for Raka, a young male Indonesian history storyteller.
+          Read the exact Indonesian narration below in Bahasa Indonesia (Indonesia).
+          Voice direction: young adult male, energetic, expressive, friendly, curious, confident,
+          clear diction, natural conversational YouTube storyteller delivery. Warm medium pitch.
+          Use lively emphasis on surprising historical facts, varied intonation, and short natural
+          pauses between sentences. Keep the delivery engaging but not shouting. Do not translate,
+          summarize, add words, or omit any part of the script. Speak only the supplied narration.
+          
+          NARRATION:
+          """ + os.environ["SCRIPT_BODY"]
+          body = {
+            "contents": [{"parts": [{"text": prompt}]}],
+            "generationConfig": {
+              "responseModalities": ["AUDIO"],
+              "speechConfig": {
+                "voiceConfig": {
+                  "prebuiltVoiceConfig": {"voiceName": "Puck"}
+                }
+              }
+            }
+          }
+          with open("tts-request.json", "w", encoding="utf-8") as f:
+            json.dump(body, f, ensure_ascii=False)
+          PY
+          SCRIPT_BODY="$script_body" python - <<'PY'
+          import json, os
+          p = "tts-request.json"
+          body = json.load(open(p, encoding="utf-8"))
+          text = body["contents"][0]["parts"][0]["text"]
+          marker = "NARRATION:\n"
+          body["contents"][0]["parts"][0]["text"] = text.replace(marker, marker + os.environ["SCRIPT_BODY"], 1)
+          json.dump(body, open(p, "w", encoding="utf-8"), ensure_ascii=False)
+          PY
+
+          http_code=$(curl --silent --show-error --output tts-response.json --write-out "%{http_code}" \
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash-tts:generateContent?key=${GEMINI_API_KEY}" \
+            -H "Content-Type: application/json" \
+            -d @tts-request.json)
+          echo "Gemini HTTP status: $http_code"
+          if [ "$http_code" != "200" ]; then
+            echo "ERROR: Gemini TTS gagal. Respons:"
+            jq '{error: .error}' tts-response.json || head -c 1200 tts-response.json
+            exit 1
+          fi
+
+          audio_base64=$(jq -r '[.candidates[0].content.parts[]? | select(.inlineData.data? != null) | .inlineData.data][0] // empty' tts-response.json)
+          mime_type=$(jq -r '[.candidates[0].content.parts[]? | select(.inlineData.data? != null) | .inlineData.mimeType][0] // empty' tts-response.json)
+          if [ -z "$audio_base64" ]; then
+            echo "ERROR: Respons Gemini tidak berisi audio."
+            jq '{candidates: [.candidates[]? | {finishReason, content}], promptFeedback}' tts-response.json
+            exit 1
+          fi
+          echo "Audio MIME: $mime_type"
+          printf '%s' "$audio_base64" | base64 --decode > audio.pcm
+          if [ ! -s audio.pcm ]; then
+            echo "ERROR: Data audio kosong."
+            exit 1
+          fi
+
+          python - <<'PY'
+          import wave
+          pcm = open("audio.pcm", "rb").read()
+          # Gemini TTS PCM output is 24 kHz, 16-bit, mono.
+          with wave.open("narration.wav", "wb") as wav:
+              wav.setnchannels(1)
+              wav.setsampwidth(2)
+              wav.setframerate(24000)
+              wav.writeframes(pcm)
+          print(f"WAV dibuat: {len(pcm)} byte PCM")
+          PY
+
+          object_path="raka/audio/${script_id}/narration.wav"
+          echo "Mengunggah narasi ke Supabase Storage..."
+          curl --fail-with-body --silent --show-error \
+            -X POST "${SUPABASE_URL}/storage/v1/object/visual-assets/${object_path}" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+            -H "Content-Type: audio/wav" \
+            -H "x-upsert: true" \
+            --data-binary @narration.wav
+
+          echo "BERHASIL: Narasi Raka tersimpan."
+          echo "Lokasi: visual-assets/${object_path}"
+          ls -lh narration.wav
