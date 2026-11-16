@@ -90,37 +90,64 @@ jobs:
               continue
             fi
 
-            # Scene 4 memakai deskripsi netral yang menonjolkan kerja sama tim terampil.
-            if [ "$scene" = "4" ]; then
-              expression="curious, excited expression of a scientific discovery"
-              action="Raka slightly crouches and points precisely toward the damp sand"
-              background="an organized team of skilled ancient Egyptian construction workers calmly cooperating to move a large limestone block on a wooden sled; one worker carefully pours water from a clay jar onto the sand in front of the sled; the workers look healthy, coordinated and focused on their craft"
-              visual="Vertical 9:16, polished 2D anime-inspired educational history illustration. Raka is in the foreground, slightly crouching and pointing toward the sand, wearing his consistent tan-brown explorer jacket, black shirt and compass pendant. In the background, an organized team of skilled ancient Egyptian workers cooperates to pull a wooden sled carrying a limestone block. One worker pours a small amount of water from a terracotta jar onto the sand ahead of the sled. Calm teamwork, historically grounded clothing and tools, warm golden desert light, clear composition. No violence, no chains, no whips, no injuries, no distress, no text, no watermark."
-              setting="Ancient Egypt, Giza plateau, Old Kingdom"
-              continuity="remain at the Giza pyramid construction site"
-            fi
-
+            # Ikuti raka_presence dari storyboard; tidak ada scene yang dipaksa menampilkan Raka.
             if [ "$raka_presence" = "true" ]; then
               full_prompt="Use image 0 as the identity reference for the SAME recurring character Raka. Preserve his recognizable face, large brown eyes, warm medium-tan skin tone, thick tousled black hair, youthful facial proportions, tan-brown explorer jacket, black shirt and compass pendant. Do not redesign him. Create a vertical 2D anime-inspired educational history illustration. HISTORICAL SETTING: $setting. LOCATION CONTINUITY: $continuity. Show only the correct civilization, architecture, clothing, landscape and period. Raka is the modern presenter in the foreground. Expression: $expression. Gesture: $action. Background activity: $background. Scene: $visual. Historically accurate, cinematic warm lighting, clear composition. No text, captions or watermark."
               prompt=$(printf '%s' "$full_prompt" | cut -c1-1950)
-              echo "Scene $scene_label: Raka tampil; memakai master reference."
+              echo "Scene $scene_label: Raka tampil; mencoba FLUX.2 Klein dengan master reference."
               http_status=$(curl --silent --show-error --output cloudflare-response.json --write-out "%{http_code}" \
                 "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/black-forest-labs/flux-2-klein-4b" \
                 -X POST -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
                 -F "prompt=${prompt}" -F "input_image_0=@raka-reference-512.jpg;type=image/jpeg" || true)
+              image_base64=$(jq -r '.result.image // .image // empty' cloudflare-response.json 2>/dev/null || true)
+
+              if [ "$http_status" != "200" ] || [ -z "$image_base64" ]; then
+                echo "RETRY: Scene $scene_label ditolak/gagal dengan reference. Mencoba FLUX.2 Klein tanpa reference."
+                fallback_prompt="Vertical 9:16 2D anime-inspired historical documentary illustration. Include the recurring modern presenter Raka: youthful Indonesian man, warm medium-tan skin, large brown eyes, thick tousled black hair, tan-brown explorer jacket, black shirt and compass pendant. Expression: $expression. Gesture: $action. Historical setting: $setting. Keep location continuity: $continuity. Background: $background. Visual scene: $visual. Historically grounded clothing, architecture and landscape. Warm cinematic light, clear composition, no text, no watermark."
+                fallback_prompt=$(printf '%s' "$fallback_prompt" | cut -c1-1800)
+                request=$(jq -n --arg prompt "$fallback_prompt" '{prompt:$prompt,steps:4}')
+                http_status=$(curl --silent --show-error --output cloudflare-response.json --write-out "%{http_code}" \
+                  "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/black-forest-labs/flux-2-klein-4b" \
+                  -X POST -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+                  -H "Content-Type: application/json" -d "$request" || true)
+                image_base64=$(jq -r '.result.image // .image // empty' cloudflare-response.json 2>/dev/null || true)
+              fi
+
+              if [ "$http_status" != "200" ] || [ -z "$image_base64" ]; then
+                echo "FALLBACK: Scene $scene_label mencoba FLUX Schnell tanpa reference, Raka tetap diminta dalam prompt."
+                request=$(jq -n --arg prompt "$fallback_prompt" '{prompt:$prompt,steps:4}')
+                http_status=$(curl --silent --show-error --output cloudflare-response.json --write-out "%{http_code}" \
+                  "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/black-forest-labs/flux-1-schnell" \
+                  -X POST -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+                  -H "Content-Type: application/json" -d "$request" || true)
+                image_base64=$(jq -r '.result.image // .image // empty' cloudflare-response.json 2>/dev/null || true)
+              fi
             else
               full_prompt="Create a vertical 2D anime-inspired historical documentary illustration with NO presenter, NO modern person, and NO Raka character. Focus entirely on the historical event and its people, location, artifacts, maps, or process. HISTORICAL SETTING: $setting. LOCATION CONTINUITY: $continuity. Show only the correct civilization, architecture, clothing, landscape and period. Background activity: $background. Scene: $visual. Historically accurate, cinematic warm lighting, clear composition. No text, captions or watermark."
               prompt=$(printf '%s' "$full_prompt" | cut -c1-1950)
-              echo "Scene $scene_label: tanpa Raka; visual sejarah penuh."
+              echo "Scene $scene_label: tanpa Raka; mencoba FLUX Schnell."
               request=$(jq -n --arg prompt "$prompt" '{prompt:$prompt,steps:4}')
               http_status=$(curl --silent --show-error --output cloudflare-response.json --write-out "%{http_code}" \
                 "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/black-forest-labs/flux-1-schnell" \
                 -X POST -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
                 -H "Content-Type: application/json" -d "$request" || true)
+              image_base64=$(jq -r '.result.image // .image // empty' cloudflare-response.json 2>/dev/null || true)
+
+              if [ "$http_status" != "200" ] || [ -z "$image_base64" ]; then
+                echo "RETRY: Scene $scene_label mencoba prompt sejarah yang disederhanakan."
+                fallback_prompt="Vertical 9:16 2D anime historical illustration. No modern people and no presenter. Show this Ancient Egyptian scene: $setting. $background. $visual. Historically appropriate clothing, tools and architecture, warm natural light, clear composition, no text, no watermark."
+                fallback_prompt=$(printf '%s' "$fallback_prompt" | cut -c1-1500)
+                request=$(jq -n --arg prompt "$fallback_prompt" '{prompt:$prompt,steps:4}')
+                http_status=$(curl --silent --show-error --output cloudflare-response.json --write-out "%{http_code}" \
+                  "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/black-forest-labs/flux-1-schnell" \
+                  -X POST -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+                  -H "Content-Type: application/json" -d "$request" || true)
+                image_base64=$(jq -r '.result.image // .image // empty' cloudflare-response.json 2>/dev/null || true)
+              fi
             fi
 
-            if [ "$http_status" != "200" ]; then
-              echo "ERROR: FLUX.2 Klein gagal pada scene $scene_label. HTTP $http_status"
+            if [ "$http_status" != "200" ] || [ -z "$image_base64" ]; then
+              echo "ERROR: Semua percobaan gambar gagal pada scene $scene_label. Respons terakhir:"
               jq . cloudflare-response.json 2>/dev/null || head -c 3000 cloudflare-response.json
               exit 1
             fi
