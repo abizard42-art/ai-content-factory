@@ -1,3 +1,4 @@
+
 name: Generate contextual presenter scenes
 
 on:
@@ -31,7 +32,7 @@ jobs:
             "${SUPABASE_URL}/rest/v1/channels?name=eq.Sejarah%20Dunia&select=id&limit=1" \
             -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}")
           channel_id=$(printf '%s' "$channel_result" | jq -r '.[0].id // empty')
-          [ -n "$channel_id" ] || { echo "ERROR: Channel Sejarah Dunia tidak ditemukan."; exit 1; }
+          [ -n "$channel_id" ] || { echo "ERROR: Channel tidak ditemukan."; exit 1; }
 
           topics_result=$(curl --fail-with-body --silent --show-error --get \
             "${SUPABASE_URL}/rest/v1/topics" \
@@ -40,7 +41,7 @@ jobs:
             --data-urlencode "select=id,title" --data-urlencode "order=created_at.desc" --data-urlencode "limit=1")
           topic_id=$(printf '%s' "$topics_result" | jq -r '.[0].id // empty')
           topic_title=$(printf '%s' "$topics_result" | jq -r '.[0].title // empty')
-          [ -n "$topic_id" ] || { echo "ERROR: Topik presenter belum ada."; exit 1; }
+          [ -n "$topic_id" ] || { echo "ERROR: Topik tidak ditemukan."; exit 1; }
 
           scripts_result=$(curl --fail-with-body --silent --show-error --get \
             "${SUPABASE_URL}/rest/v1/scripts" \
@@ -60,24 +61,30 @@ jobs:
           echo "Topik: $topic_title"
           echo "Script ID: $script_id"
           echo "Jumlah adegan: $scene_count"
-          echo "Output disimpan di folder eksperimen terpisah agar aset lama aman."
 
           for ((i=0; i<scene_count; i++)); do
             scene=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '.[$i].scene // ($i+1)')
             visual=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '.[$i].visual_prompt // empty')
             expression=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '.[$i].raka_expression // "friendly attentive presenter expression"')
-            action=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '.[$i].raka_action // "open-hand presenter gesture directed toward the scene"')
-            background=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '.[$i].background_action // "historically relevant people actively performing the event being narrated"')
-            setting=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '.[$i].historical_setting // "the exact civilization, region, and historical period stated by this scene narration"')
-            continuity=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '.[$i].location_continuity // "keep the same historically accurate location and civilization as the narration and adjacent scenes unless the narration explicitly changes location"')
+            action=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '.[$i].raka_action // "open-hand presenter gesture"')
+            background=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '.[$i].background_action // "historically relevant people performing the narrated event"')
+            setting=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '.[$i].historical_setting // "the civilization, region, and period stated by the narration"')
+            continuity=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '.[$i].location_continuity // "maintain the same historically accurate location unless narration explicitly changes it"')
 
-            [ -n "$visual" ] || { echo "ERROR: visual_prompt adegan $scene kosong."; exit 1; }
+            [ -n "$visual" ] || { echo "ERROR: visual_prompt scene $scene kosong."; exit 1; }
             printf -v scene_label "%02d" "$scene"
 
-            full_prompt="Create one polished vertical 2D anime-inspired cartoon illustration for an educational history news short. HISTORICAL SETTING LOCK: $setting. LOCATION CONTINUITY: $continuity. Depict ONLY this civilization, region, architecture, clothing, landscape, and historical era when relevant to the narration. Never insert unrelated Vikings, Viking settlements, Norse longhouses, Aztec temples, Roman buildings, or any other civilization as decorative background. Do not randomly change the location between scenes. If this story is about Ancient Egypt, the background must remain recognizably Ancient Egyptian unless the narration explicitly describes travel to another place. Main foreground presenter is Raka, the SAME recurring young adult male: thick slightly tousled black hair, expressive dark eyes, youthful face, tan-brown explorer jacket over a plain black shirt, compass pendant necklace, small globe-shaped Sejarah Dunia emblem on jacket. Preserve the same face, hairstyle, outfit, body proportions and accessories. Raka is an energetic professional history news presenter, not a passive bystander. His facial expression: $expression. His visible presenter gesture/action: $action. The background must directly and specifically depict the event being narrated: $background. Scene composition and details: $visual. Make background activity readable and historically appropriate, with people visibly doing the described work/action. Strong foreground/background separation, dynamic but clean composition, expressive body language, cinematic warm lighting, clear silhouette, no text, no captions, no watermark."
+            full_prompt="Vertical 2D anime-inspired educational history cartoon. HISTORICAL SETTING: $setting. LOCATION CONTINUITY: $continuity. Show ONLY the correct civilization, architecture, clothing, landscape and historical period. No unrelated Vikings, Norse, Aztec or Roman backgrounds. If the story is about Ancient Egypt, remain in Ancient Egypt unless narration explicitly changes location. RAKA: same recurring young adult male host, thick slightly tousled black hair, expressive dark eyes, tan-brown explorer jacket, plain black shirt, compass pendant and small globe emblem. Preserve his recognizable appearance and outfit. Energetic history news presenter, not passive. Expression: $expression. Gesture: $action. Background activity: $background. Scene: $visual. Historically accurate, expressive body language, cinematic warm lighting, clear foreground/background separation. No text, captions or watermark."
 
-            request=$(jq -n --arg prompt "$full_prompt" '{prompt:$prompt,steps:4}')
+            # FLUX Schnell menerima prompt maksimal 2048 karakter.
+            # Sisakan ruang aman untuk batas tersebut.
+            prompt=$(printf '%s' "$full_prompt" | cut -c1-1950)
+            prompt_length=${#prompt}
+            echo "Scene $scene_label: panjang prompt ${prompt_length}/2048 karakter."
+
+            request=$(jq -n --arg prompt "$prompt" '{prompt:$prompt,steps:4}')
             echo "Meminta gambar scene $scene_label ke Cloudflare..."
+
             http_status=$(curl --silent --show-error \
               --output cloudflare-response.json \
               --write-out "%{http_code}" \
@@ -86,34 +93,22 @@ jobs:
               -H "Content-Type: application/json" -d "$request" || true)
 
             if [ "$http_status" != "200" ]; then
-              echo "ERROR: Cloudflare image generation gagal. HTTP status: $http_status"
-              echo "Respons Cloudflare:"
-              if [ -f cloudflare-response.json ]; then
-                jq . cloudflare-response.json 2>/dev/null || head -c 3000 cloudflare-response.json
-              else
-                echo "Tidak ada response body yang diterima."
-              fi
+              echo "ERROR: Cloudflare gagal. HTTP $http_status"
+              jq . cloudflare-response.json 2>/dev/null || head -c 3000 cloudflare-response.json
               exit 1
             fi
 
             response=$(cat cloudflare-response.json)
-
-            if ! printf '%s' "$response" | jq -e . >/dev/null 2>&1; then
-              echo "ERROR: Respons model bukan JSON valid untuk scene $scene_label."
-              printf '%s' "$response" | head -c 1000
-              exit 1
-            fi
-
             image_base64=$(printf '%s' "$response" | jq -r '.result.image // .image // empty')
             [ -n "$image_base64" ] || {
-              echo "ERROR: Model tidak mengembalikan gambar scene $scene_label."
+              echo "ERROR: Gambar scene $scene_label tidak ditemukan dalam respons."
               printf '%s' "$response" | jq '{success,errors,messages}'
               exit 1
             }
 
             image_file="scene-${scene_label}.jpg"
             printf '%s' "$image_base64" | base64 --decode > "output/$image_file"
-            [ -s "output/$image_file" ] || { echo "ERROR: Gambar $image_file kosong."; exit 1; }
+            [ -s "output/$image_file" ] || { echo "ERROR: Gambar kosong."; exit 1; }
 
             object_path="raka/news-experiment/${script_id}/$image_file"
             curl --fail-with-body --silent --show-error -X POST \
@@ -123,9 +118,9 @@ jobs:
               -H "Content-Type: image/jpeg" -H "x-upsert: true" \
               --data-binary @"output/$image_file" >/dev/null
 
-            echo "BERHASIL: $image_file tersimpan. Ekspresi: $expression | Gestur: $action"
+            echo "BERHASIL: $image_file tersimpan."
           done
 
-          echo "SELESAI: Semua gambar eksperimen presenter selesai."
+          echo "SELESAI: Semua gambar eksperimen selesai."
           echo "Lokasi: visual-assets/raka/news-experiment/${script_id}/"
           ls -lh output/
