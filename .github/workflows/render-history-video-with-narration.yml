@@ -1,0 +1,181 @@
+name: Render history video with Raka narration
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  render-with-narration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Install FFmpeg and tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg jq curl bc
+
+      - name: Render scenes, add narration, and upload final MP4
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: |
+          set -euo pipefail
+
+          for name in SUPABASE_URL SUPABASE_SECRET_KEY; do
+            if [ -z "${!name:-}" ]; then
+              echo "ERROR: GitHub Secret $name belum diisi."
+              exit 1
+            fi
+          done
+
+          echo "Mencari channel Sejarah Dunia dan naskah terbaru..."
+          channel_result=$(curl --fail-with-body --silent --show-error \
+            "${SUPABASE_URL}/rest/v1/channels?name=eq.Sejarah%20Dunia&select=id&limit=1" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}")
+          channel_id=$(printf '%s' "$channel_result" | jq -r '.[0].id // empty')
+          if [ -z "$channel_id" ]; then
+            echo "ERROR: Channel Sejarah Dunia tidak ditemukan."
+            exit 1
+          fi
+
+          topics_result=$(curl --fail-with-body --silent --show-error --get \
+            "${SUPABASE_URL}/rest/v1/topics" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+            --data-urlencode "channel_id=eq.$channel_id" \
+            --data-urlencode "select=id,title" \
+            --data-urlencode "order=created_at.desc" \
+            --data-urlencode "limit=1")
+          topic_id=$(printf '%s' "$topics_result" | jq -r '.[0].id // empty')
+          topic_title=$(printf '%s' "$topics_result" | jq -r '.[0].title // "Sejarah Dunia"')
+          if [ -z "$topic_id" ]; then
+            echo "ERROR: Topik terbaru tidak ditemukan."
+            exit 1
+          fi
+
+          scripts_result=$(curl --fail-with-body --silent --show-error --get \
+            "${SUPABASE_URL}/rest/v1/scripts" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+            --data-urlencode "topic_id=eq.$topic_id" \
+            --data-urlencode "select=id,storyboard" \
+            --data-urlencode "order=created_at.desc" \
+            --data-urlencode "limit=1")
+          script_id=$(printf '%s' "$scripts_result" | jq -r '.[0].id // empty')
+          storyboard=$(printf '%s' "$scripts_result" | jq -c '.[0].storyboard // empty')
+          if [ -z "$script_id" ] || [ "$storyboard" = "null" ] || [ -z "$storyboard" ]; then
+            echo "ERROR: Script atau storyboard tidak ditemukan."
+            exit 1
+          fi
+
+          scene_count=$(printf '%s' "$storyboard" | jq 'if type == "array" then length else 0 end')
+          if [ "$scene_count" -lt 1 ]; then
+            echo "ERROR: Storyboard kosong."
+            exit 1
+          fi
+
+          mkdir -p scenes clips
+          echo "Topik: $topic_title"
+          echo "Script ID: $script_id"
+          echo "Jumlah scene: $scene_count"
+
+          audio_path="raka/audio/${script_id}/narration.wav"
+          echo "Mengunduh audio narasi..."
+          curl --fail-with-body --silent --show-error \
+            "${SUPABASE_URL}/storage/v1/object/visual-assets/${audio_path}" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+            -o narration.wav
+
+          if [ ! -s narration.wav ]; then
+            echo "ERROR: narration.wav tidak ditemukan atau kosong."
+            exit 1
+          fi
+
+          audio_duration=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 narration.wav)
+          if [ -z "$audio_duration" ] || ! [[ "$audio_duration" =~ ^[0-9]+([.][0-9]+)?$ ]]; then
+            echo "ERROR: Durasi audio tidak valid. Periksa format narration.wav."
+            exit 1
+          fi
+          echo "Durasi narasi: ${audio_duration} detik"
+
+          total_weight=$(printf '%s' "$storyboard" | jq '[.[] | ((.duration_seconds // .duration // 8) | if type == "number" then . else (tonumber? // 8) end)] | add')
+          if [ -z "$total_weight" ] || [ "$total_weight" = "null" ] || [ "$(echo "$total_weight <= 0" | bc -l)" -eq 1 ]; then
+            echo "ERROR: Total durasi storyboard tidak valid."
+            exit 1
+          fi
+
+          for ((i=0; i<scene_count; i++)); do
+            scene_number=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '.[$i].scene // ($i + 1)')
+            weight=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '(.[$i].duration_seconds // .[$i].duration // 8) | if type == "number" then . else (tonumber? // 8) end')
+            if ! [[ "$weight" =~ ^[0-9]+([.][0-9]+)?$ ]]; then weight=8; fi
+            scene_duration=$(awk -v a="$audio_duration" -v w="$weight" -v t="$total_weight" 'BEGIN { printf "%.4f", a*w/t }')
+            printf -v scene_label "%02d" "$scene_number"
+            image_file="scene-${scene_label}.jpg"
+            object_path="raka/scenes/${script_id}/${image_file}"
+
+            echo "Mengunduh $image_file..."
+            curl --fail-with-body --silent --show-error \
+              "${SUPABASE_URL}/storage/v1/object/visual-assets/${object_path}" \
+              -H "apikey: ${SUPABASE_SECRET_KEY}" \
+              -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+              -o "scenes/$image_file"
+
+            if [ ! -s "scenes/$image_file" ]; then
+              echo "ERROR: $image_file tidak ditemukan atau kosong."
+              exit 1
+            fi
+
+            frames=$(awk -v d="$scene_duration" 'BEGIN { n=int(d*24+0.5); if(n<1)n=1; print n }')
+            echo "Merender scene $scene_label: ${scene_duration} detik..."
+            ffmpeg -hide_banner -loglevel error -y \
+              -loop 1 -framerate 24 -i "scenes/$image_file" \
+              -vf "scale=720:1280:force_original_aspect_ratio=increase,crop=720:1280,zoompan=z='min(zoom+0.00045,1.06)':d=1:s=720x1280:fps=24,setsar=1" \
+              -frames:v "$frames" -an -c:v libx264 -preset veryfast -crf 23 -pix_fmt yuv420p \
+              "clips/clip-${scene_label}.mp4"
+
+            printf "file '%s'\\n" "clip-${scene_label}.mp4" >> clips/concat.txt
+          done
+
+          echo "Menggabungkan seluruh scene..."
+          cd clips
+          ffmpeg -hide_banner -loglevel error -y \
+            -f concat -safe 0 -i concat.txt -c:v libx264 -preset veryfast -crf 23 -pix_fmt yuv420p \
+            -r 24 -movflags +faststart ../visual-only.mp4
+          cd ..
+
+          echo "Menyatukan video dan suara Raka..."
+          ffmpeg -hide_banner -loglevel error -y \
+            -i visual-only.mp4 -i narration.wav \
+            -map 0:v:0 -map 1:a:0 \
+            -c:v copy -c:a aac -b:a 160k -ar 24000 \
+            -t "$audio_duration" -movflags +faststart \
+            "history-${script_id}-with-narration.mp4"
+
+          final_file="history-${script_id}-with-narration.mp4"
+          if [ ! -s "$final_file" ]; then
+            echo "ERROR: Video final tidak berhasil dibuat."
+            exit 1
+          fi
+
+          final_duration=$(ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "$final_file")
+          echo "Mengunggah video final ke Supabase Storage..."
+          final_path="raka/videos/${script_id}/history-${script_id}-with-narration.mp4"
+          curl --fail-with-body --silent --show-error \
+            -X POST "${SUPABASE_URL}/storage/v1/object/visual-assets/${final_path}" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+            -H "Content-Type: video/mp4" \
+            -H "x-upsert: true" \
+            --data-binary @"$final_file"
+
+          echo "========================================"
+          echo "BERHASIL: Video dengan narasi Raka selesai dibuat."
+          echo "Topik: $topic_title"
+          echo "Durasi audio: ${audio_duration} detik"
+          echo "Durasi video final: ${final_duration} detik"
+          echo "Lokasi: visual-assets/${final_path}"
+          ls -lh "$final_file"
