@@ -77,10 +77,26 @@ jobs:
             full_prompt="Create one polished vertical 2D anime-inspired cartoon illustration for an educational history news short. HISTORICAL SETTING LOCK: $setting. LOCATION CONTINUITY: $continuity. Depict ONLY this civilization, region, architecture, clothing, landscape, and historical era when relevant to the narration. Never insert unrelated Vikings, Viking settlements, Norse longhouses, Aztec temples, Roman buildings, or any other civilization as decorative background. Do not randomly change the location between scenes. If this story is about Ancient Egypt, the background must remain recognizably Ancient Egyptian unless the narration explicitly describes travel to another place. Main foreground presenter is Raka, the SAME recurring young adult male: thick slightly tousled black hair, expressive dark eyes, youthful face, tan-brown explorer jacket over a plain black shirt, compass pendant necklace, small globe-shaped Sejarah Dunia emblem on jacket. Preserve the same face, hairstyle, outfit, body proportions and accessories. Raka is an energetic professional history news presenter, not a passive bystander. His facial expression: $expression. His visible presenter gesture/action: $action. The background must directly and specifically depict the event being narrated: $background. Scene composition and details: $visual. Make background activity readable and historically appropriate, with people visibly doing the described work/action. Strong foreground/background separation, dynamic but clean composition, expressive body language, cinematic warm lighting, clear silhouette, no text, no captions, no watermark."
 
             request=$(jq -n --arg prompt "$full_prompt" '{prompt:$prompt,steps:4}')
-            response=$(curl --fail-with-body --silent --show-error \
+            echo "Meminta gambar scene $scene_label ke Cloudflare..."
+            http_status=$(curl --silent --show-error \
+              --output cloudflare-response.json \
+              --write-out "%{http_code}" \
               "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/black-forest-labs/flux-1-schnell" \
               -X POST -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-              -H "Content-Type: application/json" -d "$request")
+              -H "Content-Type: application/json" -d "$request" || true)
+
+            if [ "$http_status" != "200" ]; then
+              echo "ERROR: Cloudflare image generation gagal. HTTP status: $http_status"
+              echo "Respons Cloudflare:"
+              if [ -f cloudflare-response.json ]; then
+                jq . cloudflare-response.json 2>/dev/null || head -c 3000 cloudflare-response.json
+              else
+                echo "Tidak ada response body yang diterima."
+              fi
+              exit 1
+            fi
+
+            response=$(cat cloudflare-response.json)
 
             if ! printf '%s' "$response" | jq -e . >/dev/null 2>&1; then
               echo "ERROR: Respons model bukan JSON valid untuk scene $scene_label."
