@@ -136,10 +136,13 @@ jobs:
             scene_context=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '[.[$i].historical_setting // "", .[$i].background_action // "", .[$i].visual_prompt // "", .[$i].narration // ""] | join(" ")')
             mkdir -p "ambient/scene-$scene_label" "ambient-audio"
             python3 scripts/ambient_engine.py --context "$scene_context" --duration "$duration" --out "ambient/scene-$scene_label"
+            mkdir -p "background-motion/scene-$scene_label"
+            python3 scripts/background_motion.py --context "$scene_context" --duration "$duration" --out "background-motion/scene-$scene_label"
             ffmpeg -hide_banner -loglevel error -y \
               -loop 1 -framerate 24 -i "scenes/$image_file" \
               -framerate 12 -i "ambient/scene-$scene_label/%05d.png" \
-              -filter_complex "[0:v]scale=720:1280:force_original_aspect_ratio=increase,crop=720:1280,zoompan=z='min(zoom+0.00045,1.06)':d=1:s=720x1280:fps=24,setsar=1[base];[1:v]format=rgba,fps=24[fx];[base][fx]overlay=shortest=1:format=auto,format=yuv420p[outv]" \
+              -framerate 12 -i "background-motion/scene-$scene_label/%05d.png" \
+              -filter_complex "[0:v]scale=720:1280:force_original_aspect_ratio=increase,crop=720:1280,zoompan=z='min(zoom+0.00045,1.06)':d=1:s=720x1280:fps=24,setsar=1[base];[1:v]format=rgba,fps=24[fx];[base][fx]overlay=shortest=1:format=auto[ambient];[2:v]format=rgba,fps=24[light];[ambient][light]overlay=shortest=1:format=auto,format=yuv420p[outv]" \
               -map "[outv]" -frames:v "$frames" -an -c:v libx264 -preset veryfast -crf 23 \
               "clips/clip-$scene_label.mp4"
 
