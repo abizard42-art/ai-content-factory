@@ -1,0 +1,71 @@
+name: Test Raka image-reference consistency
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-raka-reference:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Generate one test scene using the master Raka reference
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: |
+          set -euo pipefail
+
+          SCRIPT_ID="444b9f67-8fa6-4fe7-a021-2e380eba6345"
+
+          for name in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID SUPABASE_URL SUPABASE_SECRET_KEY; do
+            if [ -z "${!name:-}" ]; then
+              echo "ERROR: GitHub Secret $name belum diisi."
+              exit 1
+            fi
+          done
+
+          echo "Mengambil master reference Raka dari eksperimen yang sudah berhasil..."
+          curl --fail-with-body --silent --show-error             "${SUPABASE_URL}/storage/v1/object/visual-assets/raka/news-experiment/${SCRIPT_ID}/scene-07.jpg"             -H "apikey: ${SUPABASE_SECRET_KEY}"             -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}"             -o raka-master.jpg
+
+          [ -s raka-master.jpg ] || { echo "ERROR: File master Raka kosong."; exit 1; }
+
+          python3 -m pip install --quiet Pillow
+          python3 - <<'PY'
+          from PIL import Image
+          img = Image.open("raka-master.jpg").convert("RGB")
+          img.resize((512, 512), Image.Resampling.LANCZOS).save("raka-reference-512.jpg", quality=92)
+          print("Master reference disiapkan: 512x512.")
+          PY
+
+          prompt="Use image 0 as the identity reference for the SAME recurring character Raka. Preserve his exact face, eye shape and brown eye color, warm medium-tan skin tone, thick tousled black hairstyle, youthful facial proportions, tan-brown explorer jacket, black shirt and compass pendant. Do not redesign or darken his skin. Create a polished vertical 2D anime-inspired educational history illustration. Show Raka as an energetic presenter beside Ancient Egyptian pyramid builders at Giza, with workers moving stone blocks using historically plausible methods, Ancient Egyptian clothing and architecture. Keep the setting Ancient Egypt, warm cinematic daylight, expressive presenter gesture, clear readable composition. No Vikings, no unrelated civilizations, no text, no captions, no watermark."
+
+          echo "Meminta satu gambar uji ke FLUX.2 Klein 4B dengan referensi wajah Raka..."
+          http_status=$(curl --silent --show-error             --output cloudflare-response.json             --write-out "%{http_code}"             "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/black-forest-labs/flux-2-klein-4b"             -X POST             -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}"             -F "prompt=${prompt}"             -F "input_image_0=@raka-reference-512.jpg;type=image/jpeg" || true)
+
+          if [ "$http_status" != "200" ]; then
+            echo "ERROR: FLUX.2 Klein 4B gagal. HTTP $http_status"
+            jq . cloudflare-response.json 2>/dev/null || head -c 3000 cloudflare-response.json
+            exit 1
+          fi
+
+          response=$(cat cloudflare-response.json)
+          image_base64=$(printf '%s' "$response" | jq -r '.result.image // .image // empty')
+          [ -n "$image_base64" ] || {
+            echo "ERROR: Respons tidak berisi gambar."
+            printf '%s' "$response" | jq '{success,errors,messages}'
+            exit 1
+          }
+
+          printf '%s' "$image_base64" | base64 --decode > raka-reference-test.jpg
+          [ -s raka-reference-test.jpg ] || { echo "ERROR: Hasil gambar kosong."; exit 1; }
+
+          output_path="raka/news-reference-test/${SCRIPT_ID}/raka-reference-test.jpg"
+          curl --fail-with-body --silent --show-error -X POST             "${SUPABASE_URL}/storage/v1/object/visual-assets/$output_path"             -H "apikey: ${SUPABASE_SECRET_KEY}"             -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}"             -H "Content-Type: image/jpeg"             -H "x-upsert: true"             --data-binary @raka-reference-test.jpg >/dev/null
+
+          echo "BERHASIL: gambar uji disimpan di visual-assets/$output_path"
+          ls -lh raka-reference-test.jpg
