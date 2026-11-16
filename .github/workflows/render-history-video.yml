@@ -173,7 +173,7 @@ jobs:
           for scene in scenes:
               duration = float(scene.get("duration_seconds", scene.get("duration", 8)) or 8)
               narration = str(scene.get("narration", "")).strip()
-              words = re.findall(r"\\S+", narration)
+              words = re.findall(r"\S+", narration)
               if words:
                   chunks = [words[i:i+5] for i in range(0, len(words), 5)]
                   weights = [sum(max(1, len(w)) for w in chunk) for chunk in chunks]
@@ -214,7 +214,7 @@ jobs:
           """
           with open("captions.ass", "w", encoding="utf-8") as f:
               f.write(header)
-              f.write("\\n".join(events) + "\\n")
+              f.write("\n".join(events) + "\n")
           print(f"Subtitle karaoke dibuat: {len(events)} cue, maksimal 5 kata per cue.")
           PY
 
