@@ -168,7 +168,7 @@ jobs:
           import textwrap
           import whisperx
 
-          transcript = re.sub(r"\\s+", " ", os.environ["SCRIPT_BODY"]).strip()
+          transcript = re.sub(r"\s+", " ", os.environ["SCRIPT_BODY"]).strip()
           if not transcript:
               raise SystemExit("ERROR: Naskah untuk alignment kosong.")
 
@@ -210,7 +210,7 @@ jobs:
               return f"{hours}:{minutes:02}:{secs:02}.{centis:02}"
 
           def ass_escape(value):
-              return str(value).replace("{", "\\{").replace("}", "\\}").replace("\\n", " ")
+              return str(value).replace("{", "\\{").replace("}", "\\}").replace("\n", " ")
 
           # Maksimal 5 kata per cue. Jeda alami lebih dari 0,65 detik memulai cue baru.
           chunks = []
@@ -275,7 +275,7 @@ jobs:
           """)
           with open("captions.ass", "w", encoding="utf-8") as f:
               f.write(header)
-              f.write("\\n".join(events) + "\\n")
+              f.write("\n".join(events) + "\n")
 
           print(f"Subtitle karaoke presisi dibuat: {len(events)} cue, maksimal 5 kata per cue.")
           print("Timestamp berasal dari audio Raka, bukan perkiraan panjang kata.")
