@@ -50,8 +50,13 @@ jobs:
             "storyboard": [
               {
                 "scene": 1,
-                "duration_seconds": 8,
+                "duration_seconds": 10,
                 "narration": "bagian narasi adegan ini",
+                "raka_presence": true,
+                "raka_expression": "ekspresi Raka jika tampil",
+                "raka_action": "gestur Raka jika tampil",
+                "historical_setting": "lokasi, peradaban, dan periode sejarah yang akurat",
+                "background_action": "aktivitas sejarah yang terlihat di latar",
                 "visual_prompt": "deskripsi visual kartun 2D vertikal 9:16"
               }
             ]
