@@ -147,6 +147,8 @@ jobs:
             -af "apad" -t "$total_seconds" -movflags +faststart \
             "history-${script_id}.mp4"
 
+          video_file="history-${script_id}.mp4"
+
           # Buat subtitle per-scene dari narasi storyboard dengan timing sesuai durasi scene.
           printf '%s' "$storyboard" > storyboard.json
           python3 - <<'PY'
