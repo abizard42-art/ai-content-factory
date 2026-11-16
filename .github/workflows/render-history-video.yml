@@ -77,6 +77,19 @@ jobs:
             exit 1
           fi
 
+          # Ambil narasi untuk script yang sama agar suara dan gambar tidak tertukar.
+          audio_path="raka/audio/${script_id}/narration.wav"
+          echo "Mengunduh narasi Raka..."
+          audio_status=$(curl --silent --show-error --output narration.wav --write-out "%{http_code}" \
+            "${SUPABASE_URL}/storage/v1/object/visual-assets/${audio_path}" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" || true)
+          if [ "$audio_status" != "200" ] || [ ! -s narration.wav ]; then
+            echo "ERROR: Narasi untuk script ini belum tersedia (HTTP $audio_status)."
+            echo "Jalankan workflow Generate Raka narration terlebih dahulu, lalu ulangi render."
+            exit 1
+          fi
+
           mkdir -p scenes clips
           echo "Topik: $topic_title"
           echo "Script ID: $script_id"
@@ -90,7 +103,7 @@ jobs:
             if (( $(echo "$duration < 2" | bc -l) )); then duration=2; fi
             printf -v scene_label "%02d" "$scene_number"
             image_file="scene-${scene_label}.jpg"
-            object_path="raka/scenes/${script_id}/${image_file}"
+            object_path="raka/news-reference-scenes/${script_id}/${image_file}"
 
             echo "Mengunduh $image_file..."
             curl --fail-with-body --silent --show-error \
@@ -122,6 +135,17 @@ jobs:
             -f concat -safe 0 -i concat.txt -c copy -movflags +faststart \
             "../history-${script_id}.mp4"
           cd ..
+
+          # Gabungkan suara narator dengan video; durasi akhir mengikuti target storyboard.
+          silent_video="silent-history-${script_id}.mp4"
+          mv "history-${script_id}.mp4" "$silent_video"
+          echo "Menggabungkan narasi Raka dengan video..."
+          ffmpeg -hide_banner -loglevel error -y \
+            -i "$silent_video" -i narration.wav \
+            -map 0:v:0 -map 1:a:0 \
+            -c:v copy -c:a aac -b:a 128k \
+            -af "apad" -t "$total_seconds" -movflags +faststart \
+            "history-${script_id}.mp4"
 
           video_file="history-${script_id}.mp4"
           if [ ! -s "$video_file" ]; then
