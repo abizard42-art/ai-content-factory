@@ -33,9 +33,9 @@ jobs:
           done
 
           prompt=$(cat <<'PROMPT'
-          Kamu adalah produser berita sejarah dan sutradara storyboard untuk YouTube Shorts Indonesia.
-          Buat paket video sekitar 55-60 detik. Gaya penyampaian seperti presenter berita dokumenter:
-          jelas, hidup, ekspresif, komunikatif, bukan membaca buku.
+          Kamu adalah produser dokumenter sejarah untuk video YouTube berbahasa Indonesia berdurasi 2 menit 30 detik sampai 3 menit.
+          Buat narasi sekitar 330-400 kata dengan alur dokumenter yang kuat: hook, konteks, kronologi,
+          penjelasan bukti atau teori, momen penting, kesimpulan. Gaya hidup, jelas, akurat, dan komunikatif.
           Raka adalah presenter modern yang konsisten: pria muda 20-25 tahun, rambut hitam tebal agak berantakan,
           mata ekspresif, jaket penjelajah cokelat muda di atas kaus hitam, kalung liontin kompas,
           emblem globe kecil di jaket. Jangan mengganti wajah, pakaian, atau aksesori Raka.
@@ -49,7 +49,7 @@ jobs:
               "verification_notes": ["hal yang perlu diperiksa"],
               "suggested_sources": ["sumber rujukan"]
             },
-            "script": "narasi bahasa Indonesia sekitar 120-145 kata",
+            "script": "narasi bahasa Indonesia sekitar 330-400 kata, cukup untuk 2:30-3:00 menit",
             "storyboard": [
               {
                 "scene": 1,
@@ -57,6 +57,7 @@ jobs:
                 "narration": "kalimat yang diucapkan pada adegan ini",
                 "historical_setting": "lokasi, peradaban, dan periode sejarah spesifik yang benar-benar dibahas pada adegan ini",
                 "location_continuity": "jelaskan apakah lokasi sama dengan adegan sebelumnya atau ada perpindahan yang disebutkan dalam narasi",
+                "raka_presence": true,
                 "raka_expression": "ekspresi wajah yang spesifik",
                 "raka_action": "gestur presenter yang terlihat jelas, misalnya menunjuk, membuka telapak tangan, menoleh ke objek, atau menghitung dengan jari",
                 "background_action": "aktivitas latar yang relevan dengan kalimat, termasuk siapa melakukan apa",
@@ -65,7 +66,11 @@ jobs:
             ]
           }
 
-          Buat 7-8 adegan dengan durasi total sekitar 55-60 detik.
+          Buat 12-16 adegan dengan total durasi 150-180 detik.
+          Raka hanya hadir pada 3-4 adegan terpilih: pembukaan (scene pertama), satu atau dua momen penting
+          di bagian tengah, dan penutupan (scene terakhir). Isi raka_presence=true hanya untuk adegan itu.
+          Pada semua adegan lain, isi raka_presence=false dan visual_prompt harus fokus penuh pada peristiwa,
+          tempat, artefak, peta, diagram, atau aktivitas sejarah tanpa Raka.
           WAJIB:
           - Setiap latar harus menggambarkan isi kalimat yang sedang diucapkan, bukan latar sejarah generik.
           - KUNCI LOKASI: tentukan peradaban, wilayah, dan periode sejarah dari topik serta narasi; jangan mencampur peradaban yang tidak sedang dibahas.
@@ -75,12 +80,15 @@ jobs:
           - Isi field historical_setting dan location_continuity untuk SETIAP adegan secara spesifik.
           - Jika menyebut piramida dibangun, tampilkan konstruksi piramida, batu, ramp, dan pekerja sesuai konteks sejarah.
           - Jika menyebut pekerja, tampilkan pekerja sedang melakukan aktivitas yang disebut.
-          - Raka harus hadir sebagai presenter di foreground pada sebagian besar adegan, dengan gestur dan ekspresi berbeda sesuai narasi.
+          - Raka TIDAK boleh hadir di sebagian besar adegan. Batasi 3-4 kemunculan yang sudah ditentukan oleh raka_presence.
+          - Saat raka_presence=true, Raka harus terlihat jelas di foreground dengan gestur dan ekspresi sesuai narasi.
+          - Saat raka_presence=false, jangan tampilkan Raka, presenter modern, atau karakter host apa pun.
           - Variasikan medium shot, close-up, dan wide shot; jaga Raka tetap mudah dikenali.
           - Jelaskan aktivitas latar secara visual dan spesifik, tetapi jangan menampilkan detail sejarah yang tidak didukung.
           - Raka tetap memakai outfit modern yang sama; jangan mengubahnya menjadi orang Mesir kuno.
           - Visual 2D anime-inspired cartoon, clean linework, warm cinematic lighting, no text, no watermark.
           - Hindari adegan yang hanya menggambarkan Raka berdiri diam.
+          - Pastikan total durasi seluruh adegan 150-180 detik dan pembagian narasi mencakup seluruh naskah.
           PROMPT
           )
 
