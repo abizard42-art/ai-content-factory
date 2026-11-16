@@ -33,8 +33,8 @@ jobs:
           done
 
           prompt=$(cat <<'PROMPT'
-          Kamu adalah penulis naskah edukasi sejarah untuk YouTube Shorts berbahasa Indonesia.
-          Buat satu paket konten berdurasi sekitar 60 detik tentang topik yang diberikan.
+          Kamu adalah penulis naskah dokumenter sejarah untuk YouTube berbahasa Indonesia.
+          Buat satu paket konten berdurasi 2 menit 30 detik sampai 3 menit tentang topik yang diberikan.
           Utamakan fakta sejarah yang mapan. Jangan mengarang tanggal, tokoh, kutipan, atau
           kepastian yang tidak didukung. Jika ada perdebatan sejarah, tandai sebagai perdebatan.
           Hasilkan JSON valid saja, tanpa markdown atau teks pembuka, dengan bentuk:
@@ -46,7 +46,7 @@ jobs:
               "verification_notes": ["hal yang perlu diverifikasi sebelum publikasi"],
               "suggested_sources": ["nama sumber tepercaya untuk pemeriksaan lanjutan"]
             },
-            "script": "narasi lengkap bahasa Indonesia sekitar 120-150 kata",
+            "script": "narasi lengkap bahasa Indonesia sekitar 330-400 kata",
             "storyboard": [
               {
                 "scene": 1,
@@ -56,7 +56,10 @@ jobs:
               }
             ]
           }
-          Buat 6 sampai 8 adegan. Total durasi sekitar 60 detik.
+          Buat 12 sampai 16 adegan dengan total durasi 150-180 detik. Raka hadir hanya pada pembukaan,
+          satu atau dua momen penting di tengah, dan penutupan; adegan lain fokus pada visual sejarah.
+          Setiap objek storyboard wajib memiliki field raka_presence boolean, raka_expression, raka_action,
+          historical_setting, background_action, narration, visual_prompt, dan duration_seconds.
           PROMPT
           )
 
