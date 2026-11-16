@@ -154,6 +154,7 @@ jobs:
           python3 - <<'PY'
           import json
           import re
+          import textwrap
 
           with open("storyboard.json", encoding="utf-8") as f:
               scenes = json.load(f)
@@ -198,7 +199,7 @@ jobs:
           if not events:
               raise SystemExit("ERROR: Tidak ada narration pada storyboard untuk subtitle.")
 
-          header = """[Script Info]
+          header = textwrap.dedent("""[Script Info]
           ScriptType: v4.00+
           PlayResX: 720
           PlayResY: 1280
@@ -211,7 +212,7 @@ jobs:
 
           [Events]
           Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
-          """
+          """)
           with open("captions.ass", "w", encoding="utf-8") as f:
               f.write(header)
               f.write("\n".join(events) + "\n")
