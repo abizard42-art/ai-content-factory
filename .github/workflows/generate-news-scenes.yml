@@ -1,0 +1,113 @@
+name: Generate contextual presenter scenes
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  generate-news-scenes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Generate contextual scene images from latest presenter storyboard
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: |
+          set -euo pipefail
+
+          for name in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID SUPABASE_URL SUPABASE_SECRET_KEY; do
+            if [ -z "${!name:-}" ]; then
+              echo "ERROR: GitHub Secret $name belum diisi."
+              exit 1
+            fi
+          done
+
+          channel_result=$(curl --fail-with-body --silent --show-error \
+            "${SUPABASE_URL}/rest/v1/channels?name=eq.Sejarah%20Dunia&select=id&limit=1" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}")
+          channel_id=$(printf '%s' "$channel_result" | jq -r '.[0].id // empty')
+          [ -n "$channel_id" ] || { echo "ERROR: Channel Sejarah Dunia tidak ditemukan."; exit 1; }
+
+          topics_result=$(curl --fail-with-body --silent --show-error --get \
+            "${SUPABASE_URL}/rest/v1/topics" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+            --data-urlencode "channel_id=eq.$channel_id" \
+            --data-urlencode "select=id,title" --data-urlencode "order=created_at.desc" --data-urlencode "limit=1")
+          topic_id=$(printf '%s' "$topics_result" | jq -r '.[0].id // empty')
+          topic_title=$(printf '%s' "$topics_result" | jq -r '.[0].title // empty')
+          [ -n "$topic_id" ] || { echo "ERROR: Topik presenter belum ada."; exit 1; }
+
+          scripts_result=$(curl --fail-with-body --silent --show-error --get \
+            "${SUPABASE_URL}/rest/v1/scripts" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+            --data-urlencode "topic_id=eq.$topic_id" \
+            --data-urlencode "select=id,storyboard" --data-urlencode "order=created_at.desc" --data-urlencode "limit=1")
+          script_id=$(printf '%s' "$scripts_result" | jq -r '.[0].id // empty')
+          storyboard=$(printf '%s' "$scripts_result" | jq -c '.[0].storyboard // empty')
+          [ -n "$script_id" ] && [ "$storyboard" != "null" ] && [ -n "$storyboard" ] || {
+            echo "ERROR: Script/storyboard tidak ditemukan."; exit 1;
+          }
+
+          scene_count=$(printf '%s' "$storyboard" | jq 'if type == "array" then length else 0 end')
+          [ "$scene_count" -ge 1 ] || { echo "ERROR: Storyboard kosong."; exit 1; }
+
+          mkdir -p output
+          echo "Topik: $topic_title"
+          echo "Script ID: $script_id"
+          echo "Jumlah adegan: $scene_count"
+          echo "Output disimpan di folder eksperimen terpisah agar aset lama aman."
+
+          for ((i=0; i<scene_count; i++)); do
+            scene=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '.[$i].scene // ($i+1)')
+            visual=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '.[$i].visual_prompt // empty')
+            expression=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '.[$i].raka_expression // "friendly attentive presenter expression"')
+            action=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '.[$i].raka_action // "open-hand presenter gesture directed toward the scene"')
+            background=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '.[$i].background_action // "historically relevant people actively performing the event being narrated"')
+
+            [ -n "$visual" ] || { echo "ERROR: visual_prompt adegan $scene kosong."; exit 1; }
+            printf -v scene_label "%02d" "$scene"
+
+            full_prompt="Create one polished vertical 2D anime-inspired cartoon illustration for an educational history news short. Main foreground presenter is Raka, the SAME recurring young adult male: thick slightly tousled black hair, expressive dark eyes, youthful face, tan-brown explorer jacket over a plain black shirt, compass pendant necklace, small globe-shaped Sejarah Dunia emblem on jacket. Preserve the same face, hairstyle, outfit, body proportions and accessories. Raka is an energetic professional history news presenter, not a passive bystander. His facial expression: $expression. His visible presenter gesture/action: $action. The background must directly and specifically depict the event being narrated: $background. Scene composition and details: $visual. Make background activity readable and historically appropriate, with people visibly doing the described work/action. Strong foreground/background separation, dynamic but clean composition, expressive body language, cinematic warm lighting, clear silhouette, no text, no captions, no watermark."
+
+            request=$(jq -n --arg prompt "$full_prompt" '{prompt:$prompt,steps:4}')
+            response=$(curl --fail-with-body --silent --show-error \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/black-forest-labs/flux-1-schnell" \
+              -X POST -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              -H "Content-Type: application/json" -d "$request")
+
+            if ! printf '%s' "$response" | jq -e . >/dev/null 2>&1; then
+              echo "ERROR: Respons model bukan JSON valid untuk scene $scene_label."
+              printf '%s' "$response" | head -c 1000
+              exit 1
+            fi
+
+            image_base64=$(printf '%s' "$response" | jq -r '.result.image // .image // empty')
+            [ -n "$image_base64" ] || {
+              echo "ERROR: Model tidak mengembalikan gambar scene $scene_label."
+              printf '%s' "$response" | jq '{success,errors,messages}'
+              exit 1
+            }
+
+            image_file="scene-${scene_label}.jpg"
+            printf '%s' "$image_base64" | base64 --decode > "output/$image_file"
+            [ -s "output/$image_file" ] || { echo "ERROR: Gambar $image_file kosong."; exit 1; }
+
+            object_path="raka/news-experiment/${script_id}/$image_file"
+            curl --fail-with-body --silent --show-error -X POST \
+              "${SUPABASE_URL}/storage/v1/object/visual-assets/$object_path" \
+              -H "apikey: ${SUPABASE_SECRET_KEY}" \
+              -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+              -H "Content-Type: image/jpeg" -H "x-upsert: true" \
+              --data-binary @"output/$image_file" >/dev/null
+
+            echo "BERHASIL: $image_file tersimpan. Ekspresi: $expression | Gestur: $action"
+          done
+
+          echo "SELESAI: Semua gambar eksperimen presenter selesai."
+          echo "Lokasi: visual-assets/raka/news-experiment/${script_id}/"
+          ls -lh output/
