@@ -55,6 +55,8 @@ jobs:
                 "scene": 1,
                 "duration_seconds": 7,
                 "narration": "kalimat yang diucapkan pada adegan ini",
+                "historical_setting": "lokasi, peradaban, dan periode sejarah spesifik yang benar-benar dibahas pada adegan ini",
+                "location_continuity": "jelaskan apakah lokasi sama dengan adegan sebelumnya atau ada perpindahan yang disebutkan dalam narasi",
                 "raka_expression": "ekspresi wajah yang spesifik",
                 "raka_action": "gestur presenter yang terlihat jelas, misalnya menunjuk, membuka telapak tangan, menoleh ke objek, atau menghitung dengan jari",
                 "background_action": "aktivitas latar yang relevan dengan kalimat, termasuk siapa melakukan apa",
@@ -66,6 +68,11 @@ jobs:
           Buat 7-8 adegan dengan durasi total sekitar 55-60 detik.
           WAJIB:
           - Setiap latar harus menggambarkan isi kalimat yang sedang diucapkan, bukan latar sejarah generik.
+          - KUNCI LOKASI: tentukan peradaban, wilayah, dan periode sejarah dari topik serta narasi; jangan mencampur peradaban yang tidak sedang dibahas.
+          - DILARANG memunculkan pemukiman Viking, kapal Viking, Aztec, Romawi, Tiongkok, atau budaya lain jika tidak disebut atau relevan secara langsung dalam narasi adegan.
+          - Jika topik membahas Mesir Kuno, seluruh adegan tetap berada di Mesir Kuno (misalnya Giza, area tambang, tepi Nil, lokasi konstruksi) kecuali narasi secara jelas berpindah ke tempat lain.
+          - Adegan yang berurutan harus mempertahankan lokasi, arsitektur, pakaian masyarakat, lanskap, dan periode yang konsisten; perpindahan lokasi harus punya alasan yang tertulis dalam narasi.
+          - Isi field historical_setting dan location_continuity untuk SETIAP adegan secara spesifik.
           - Jika menyebut piramida dibangun, tampilkan konstruksi piramida, batu, ramp, dan pekerja sesuai konteks sejarah.
           - Jika menyebut pekerja, tampilkan pekerja sedang melakukan aktivitas yang disebut.
           - Raka harus hadir sebagai presenter di foreground pada sebagian besar adegan, dengan gestur dan ekspresi berbeda sesuai narasi.
