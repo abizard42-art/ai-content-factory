@@ -165,12 +165,37 @@ jobs:
             total_seconds=$(awk -v a="$total_seconds" -v b="$duration" 'BEGIN { print a+b }')
           done
 
-          echo "Menggabungkan semua scene..."
-          cd clips
-          ffmpeg -hide_banner -loglevel error -y \
-            -f concat -safe 0 -i concat.txt -c copy -movflags +faststart \
-            "../history-${script_id}.mp4"
-          cd ..
+          echo "Menggabungkan semua scene dengan transisi crossfade..."
+          transition=0.55
+          input_args=()
+          filter_graph=""
+          accumulated=0
+          previous_label=""
+          for ((i=0; i<scene_count; i++)); do
+            scene_number=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '.[$i].scene // ($i + 1)')
+            duration=$(printf '%s' "$storyboard" | jq -r --argjson i "$i" '(.[$i].duration_seconds // .[$i].duration // 8) | if type == "number" then . else (tonumber? // 8) end')
+            printf -v scene_label "%02d" "$scene_number"
+            input_args+=(-i "clips/clip-$scene_label.mp4")
+            if [ "$i" -eq 0 ]; then
+              previous_label="[0:v]"
+              accumulated=$duration
+            else
+              stage=$((i + 1))
+              offset=$(awk -v a="$accumulated" -v t="$transition" 'BEGIN { printf "%.3f", a-t }')
+              next_label="[v$stage]"
+              if [ "$i" -eq $((scene_count - 1)) ]; then next_label="[vout]"; fi
+              filter_graph+="$previous_label[$i:v]xfade=transition=fade:duration=$transition:offset=$offset$next_label;"
+              previous_label="$next_label"
+              accumulated=$(awk -v a="$accumulated" -v b="$duration" -v t="$transition" 'BEGIN { print a+b-t }')
+            fi
+          done
+          filter_graph="${filter_graph%;}"
+          final_duration=$(awk -v a="$total_seconds" -v n="$scene_count" -v t="$transition" 'BEGIN { d=a-(n-1)*t; if(d<1)d=1; printf "%.3f",d }')
+          ffmpeg -hide_banner -loglevel error -y "${input_args[@]}" \
+            -filter_complex "$filter_graph" -map "[vout]" -t "$final_duration" \
+            -r 24 -c:v libx264 -preset veryfast -crf 22 -pix_fmt yuv420p -movflags +faststart \
+            "history-${script_id}.mp4"
+          total_seconds="$final_duration"
 
           # Gabungkan suara narator dengan video; durasi akhir mengikuti target storyboard.
           silent_video="silent-history-${script_id}.mp4"
