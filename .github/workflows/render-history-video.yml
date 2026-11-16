@@ -16,15 +16,18 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ffmpeg jq curl bc
 
-      - name: Set up Python for Indonesian word alignment
+      - name: Set up Python for alignment and ambient effects
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: Install forced-alignment engine
+      - name: Install forced-alignment and ambient engines
         run: |
           python -m pip install --upgrade pip
-          python -m pip install whisperx
+          python -m pip install whisperx pillow
+
+      - name: Check out ambient renderer
+        uses: actions/checkout@v4
 
       - name: Download scenes, render MP4, and upload to Supabase
         env:
@@ -159,6 +162,12 @@ jobs:
             "history-${script_id}.mp4"
 
           video_file="history-${script_id}.mp4"
+
+          # Gabungkan ambience kontekstual secara halus di bawah narasi Raka.
+          echo "Menggabungkan ambient audio sesuai kondisi tiap scene..."
+          ffmpeg -hide_banner -loglevel error -y -f concat -safe 0 -i ambient-audio/concat.txt -c:a pcm_s16le ambient-bed.wav
+          ffmpeg -hide_banner -loglevel error -y -i "$video_file" -i ambient-bed.wav -filter_complex "[0:a]volume=1.0[voice];[1:a]volume=0.65[amb];[voice][amb]amix=inputs=2:duration=first:dropout_transition=2:normalize=0[mix]" -map 0:v:0 -map "[mix]" -c:v copy -c:a aac -b:a 160k -movflags +faststart "mixed-$video_file"
+          mv "mixed-$video_file" "$video_file"
 
           # Pakai forced alignment bahasa Indonesia untuk timestamp asli setiap kata.
           echo "Mencocokkan naskah dengan audio Raka (word-level forced alignment)..."
