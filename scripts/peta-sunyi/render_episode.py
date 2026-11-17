@@ -290,10 +290,13 @@ def main():
         clips.append(clip)
         print(f"SCENE_OK={i}; shot={shot}; duration={duration:.2f}s; subtitle={vtt.name}")
     concat=OUT/"concat.txt"
-    concat.write_text("".join(f"file '{p.resolve()}'\\n" for p in clips))
+    concat.write_text("".join(f"file '{p.resolve()}'\n" for p in clips))
     final=OUT/f"{episode_id}-review.mp4"
     run(["ffmpeg","-y","-f","concat","-safe","0","-i",str(concat),"-c","copy","-movflags","+faststart",str(final)])
     print(f"RENDER_OK={final}; duration={probe_duration(final):.2f}s")
     print("REVIEW_ONLY=true; NO PUBLISHING")
 
 
+
+if __name__ == "__main__":
+    main()
