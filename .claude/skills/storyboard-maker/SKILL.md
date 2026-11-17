@@ -24,7 +24,14 @@ Use a hybrid 2D explainer approach. Raka is a consistent guide, not a permanent 
 - Match architecture, clothing, tools, and environment to the correct historical period and region.
 
 ## Peta Sunyi visual direction
-Use a hybrid documentary mystery treatment:
+Use a hybrid documentary mystery treatment with a plain minimalist stickman as the recurring character identity. The stickman is a quiet visual guide, not the star of every shot.
+- Stickman design: simple round head, thin clean line-art body and limbs, monochrome, no hair, clothes, shoes, jewellery, or accessories. Keep head/body proportions and line thickness consistent.
+- Prefer a blank face; use only tiny simple marks if a facial emotion is essential. Communicate most emotion through posture, silhouette, framing, and movement.
+- Never use Raka's anime style, facial details, explorer jacket, compass pendant, or other Sejarah Dunia character traits in Peta Sunyi.
+- Use the stickman sparingly for scale, point-of-view, transitions, or symbolic reenactment. Do not force it into every scene.
+- The story's locations, architecture, objects, maps, documents, and atmosphere should dominate the frame.
+- Avoid a childish/chibi mascot look. Keep the stickman restrained, cinematic, and visually unobtrusive.
+- Do not use the stickman to imply a real witness or to present an unverified event as fact.
 - Real location/archive images only when a traceable source and reuse status are recorded.
 - Maps, historical documents, street/building details, atmospheric establishing shots, and clearly labelled AI reconstructions may be mixed.
 - Mark generated reconstructions with "REKA ADEGAN / ILUSTRASI AI".
