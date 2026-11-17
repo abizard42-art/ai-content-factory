@@ -1,6 +1,8 @@
 {
-  "slug": "misteri-nusantara",
-  "name": "Misteri Nusantara",
+  "slug": "peta-sunyi",
+  "name": "Peta Sunyi",
+  "handle": "@PetaSunyiCerita",
+  "tagline": "Ada cerita di balik setiap tempat..",
   "language": "id-ID",
   "format": "youtube_shorts",
   "target_videos_per_day": 2,
