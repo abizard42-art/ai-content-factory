@@ -90,9 +90,10 @@ jobs:
           - Jangan menyebut rumor sebagai fakta. Gunakan frasa "menurut cerita yang beredar"
             jika memang hanya legenda.
           - Hindari mengarahkan penonton mendatangi lokasi privat/berbahaya atau mengganggu warga.
-          - Sertakan URL sumber yang benar-benar ditemukan melalui Google Search grounding.
-            Utamakan sumber primer, media kredibel, arsip, lembaga budaya/sejarah, atau pemerintah.
-            Jangan mengarang URL. Jika sumber tidak ditemukan, tulis [] dan jelaskan keterbatasan.
+          - Tahap ini tidak memiliki akses Google Search grounding. Jangan mengaku telah melakukan
+            pencarian web. Sertakan URL sumber hanya jika URL tersebut benar-benar diketahui dan dapat
+            dipastikan; jangan mengarang URL atau detail sumber. Jika sumber tidak tersedia, tulis []
+            dan jelaskan bahwa verifikasi sumber eksternal masih diperlukan sebelum naskah disetujui.
 
           STRUKTUR CERITA:
           1. Hook 0–3 detik: pertanyaan atau detail paling bikin penasaran.
@@ -163,11 +164,10 @@ jobs:
 
           body = {
               "contents": [{"parts": [{"text": prompt}]}],
-              "tools": [{"google_search": {}}],
               "generationConfig": {"temperature": 0.35, "maxOutputTokens": 8192}
           }
           req = urllib.request.Request(
-              "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+              "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
               data=json.dumps(body, ensure_ascii=False).encode("utf-8"),
               headers={"x-goog-api-key": os.environ["GEMINI_API_KEY"], "Content-Type": "application/json"},
               method="POST"
