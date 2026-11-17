@@ -1,4 +1,4 @@
-name: Generate Misteri Nusantara script
+name: Generate Peta Sunyi script
 
 on:
   workflow_dispatch:
@@ -35,8 +35,8 @@ jobs:
 
           cat > mystery-channel-config.json <<'CONFIG'
           {
-            "slug": "misteri-nusantara",
-            "name": "Misteri Nusantara",
+            "slug": "peta-sunyi",
+            "name": "Peta Sunyi",
             "language": "id-ID",
             "format": "youtube_shorts",
             "target_videos_per_day": 2,
@@ -197,7 +197,7 @@ jobs:
           print("Jumlah scene:", len(package["storyboard"]))
           print("Sumber:", len(package.get("research", {}).get("source_urls", [])))
 
-          # Resolve channel id; create Misteri Nusantara once by reusing the existing owner's ID.
+          # Resolve channel id; create Peta Sunyi once by reusing the existing owner's ID.
           base = os.environ["SUPABASE_URL"].rstrip("/")
           headers = {
               "apikey": os.environ["SUPABASE_SECRET_KEY"],
@@ -214,7 +214,7 @@ jobs:
                   body = r.read().decode()
                   return json.loads(body) if body else []
 
-          existing = api("channels?slug=eq.misteri-nusantara&select=id&limit=1")
+          existing = api("channels?slug=eq.peta-sunyi&select=id&limit=1")
           if existing:
               channel_id = existing[0]["id"]
           else:
@@ -229,7 +229,7 @@ jobs:
               }
               created = api("channels", "POST", payload, "return=representation")
               if not created:
-                  raise SystemExit("Gagal membuat record channel Misteri Nusantara di Supabase.")
+                  raise SystemExit("Gagal membuat record channel Peta Sunyi di Supabase.")
               channel_id = created[0]["id"]
 
           topic_payload = {
@@ -262,7 +262,7 @@ jobs:
       - name: Upload mystery package for review
         uses: actions/upload-artifact@v4
         with:
-          name: misteri-nusantara-script
+          name: peta-sunyi-script
           path: |
             mystery-package.json
             gemini-response-raw.json
