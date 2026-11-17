@@ -202,7 +202,9 @@ def convert_vtt_to_srt(vtt_path):
         words = [html.unescape(re.sub(r"<[^>]+>","",x)).strip() for x in cue[1:]]
         words = [x for x in words if x]
         if words:
-            output.extend([str(idx),cue[0],"\n".join(words),""])
+            phrase = " ".join(words)
+            wrapped = textwrap.wrap(phrase, width=34, max_lines=2, placeholder="…")
+            output.extend([str(idx),cue[0],"\n".join(wrapped),""])
     target = pathlib.Path(vtt_path).with_suffix(".srt")
     target.write_text("\n".join(output),encoding="utf-8")
     if not target.exists() or target.stat().st_size == 0:
