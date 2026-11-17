@@ -193,7 +193,7 @@ def convert_vtt_to_ass(vtt_path):
                 cues.append(current)
             parts = line.split()
             current = [parts[0], parts[2]]
-        elif current and not re.fullmatch(r"\\d+", line):
+        elif current and not re.fullmatch(r"\d+", line):
             current.append(line)
     if current:
         cues.append(current)
@@ -231,7 +231,7 @@ def convert_vtt_to_ass(vtt_path):
         if len(cue) < 3:
             continue
         phrase = " ".join(html.unescape(re.sub(r"<[^>]+>", "", x)).strip() for x in cue[2:])
-        phrase = re.sub(r"\\s+", " ", phrase).strip()
+        phrase = re.sub(r"\s+", " ", phrase).strip()
         if not phrase:
             continue
         wrapped = textwrap.wrap(phrase, width=34, max_lines=2, placeholder="…")
