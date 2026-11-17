@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       shot_ids:
-        description: "ID shot yang dibuat, pisahkan koma. Contoh: 01A atau 01A,03A,03B"
+        description: "ID shot yang dibuat, pisahkan koma. Tes arsitektur: 01B. Contoh: 01B atau 01B,03A"
         required: true
-        default: "01A"
+        default: "01B"
         type: string
 
 permissions:
