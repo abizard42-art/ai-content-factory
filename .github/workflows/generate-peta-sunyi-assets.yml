@@ -1,0 +1,119 @@
+name: Generate Peta Sunyi storyboard assets
+
+on:
+  workflow_dispatch:
+    inputs:
+      shot_ids:
+        description: "ID shot yang dibuat, pisahkan koma. Contoh: 01A atau 01A,03A,03B"
+        required: true
+        default: "01A"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  generate-peta-sunyi-assets:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate selected Peta Sunyi images
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          SHOT_IDS: ${{ inputs.shot_ids }}
+        run: |
+          set -euo pipefail
+
+          for name in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID SUPABASE_URL SUPABASE_SECRET_KEY; do
+            if [ -z "${!name:-}" ]; then
+              echo "ERROR: GitHub Secret $name belum diisi."
+              exit 1
+            fi
+          done
+
+          manifest="assets/peta-sunyi/rumah-kentang-bandung/asset-manifest.json"
+          [ -s "$manifest" ] || { echo "ERROR: Manifest aset tidak ditemukan."; exit 1; }
+
+          mkdir -p output/peta-sunyi
+          IFS=',' read -ra requested_ids <<< "$SHOT_IDS"
+          generated=0
+
+          for raw_id in "${requested_ids[@]}"; do
+            shot_id="$(printf '%s' "$raw_id" | tr -d '[:space:]')"
+            [ -n "$shot_id" ] || continue
+
+            asset="$(jq -c --arg id "$shot_id" '.assets[] | select(.id == $id)' "$manifest")"
+            if [ -z "$asset" ]; then
+              echo "ERROR: Shot ID '$shot_id' tidak ada di manifest."
+              exit 1
+            fi
+
+            prompt="$(printf '%s' "$asset" | jq -r '.prompt')"
+            label_required="$(printf '%s' "$asset" | jq -r '.label_required')"
+            echo "========================================"
+            echo "Membuat aset Peta Sunyi: $shot_id"
+            echo "Label rekonstruksi wajib: $label_required"
+
+            request="$(jq -n --arg prompt "$prompt" '{prompt: $prompt, steps: 4}')"
+            http_status="$(curl --silent --show-error \
+              --output "output/peta-sunyi/response-$shot_id.json" \
+              --write-out "%{http_code}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/black-forest-labs/flux-1-schnell" \
+              -X POST \
+              -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+              -H "Content-Type: application/json" \
+              -d "$request" || true)"
+
+            if [ "$http_status" != "200" ]; then
+              echo "ERROR: Cloudflare HTTP $http_status untuk shot $shot_id."
+              jq . "output/peta-sunyi/response-$shot_id.json" 2>/dev/null || head -c 2000 "output/peta-sunyi/response-$shot_id.json"
+              exit 1
+            fi
+
+            image_base64="$(jq -r '.result.image // .image // empty' "output/peta-sunyi/response-$shot_id.json")"
+            [ -n "$image_base64" ] || {
+              echo "ERROR: Respons tidak berisi gambar untuk $shot_id."
+              jq '{success, errors, messages}' "output/peta-sunyi/response-$shot_id.json"
+              exit 1
+            }
+
+            image_file="peta-sunyi-$shot_id.jpg"
+            printf '%s' "$image_base64" | base64 --decode > "output/peta-sunyi/$image_file"
+            [ -s "output/peta-sunyi/$image_file" ] || { echo "ERROR: File gambar kosong."; exit 1; }
+
+            object_path="peta-sunyi/rumah-kentang-bandung/$image_file"
+            echo "Mengunggah ke Supabase Storage: visual-assets/$object_path"
+            curl --fail-with-body --silent --show-error -X POST \
+              "${SUPABASE_URL}/storage/v1/object/visual-assets/$object_path" \
+              -H "apikey: ${SUPABASE_SECRET_KEY}" \
+              -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+              -H "Content-Type: image/jpeg" \
+              -H "x-upsert: true" \
+              --data-binary @"output/peta-sunyi/$image_file" >/dev/null
+
+            jq --arg shot "$shot_id" --arg file "$image_file" --arg path "$object_path" \
+              '. as $root | $root.assets[] | select(.id == $shot)' "$manifest" \
+              > "output/peta-sunyi/$shot_id-metadata.json"
+
+            echo "BERHASIL: $image_file"
+            generated=$((generated + 1))
+          done
+
+          [ "$generated" -gt 0 ] || { echo "ERROR: Tidak ada shot yang diproses."; exit 1; }
+          echo "SELESAI: $generated aset dibuat."
+          echo "Folder Supabase: visual-assets/peta-sunyi/rumah-kentang-bandung/"
+          echo "Catatan: aset hanya disimpan; tidak ada render video atau publikasi otomatis."
+
+      - name: Upload generated images as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: peta-sunyi-rumah-kentang-assets
+          path: output/peta-sunyi/
+          if-no-files-found: error
+          retention-days: 7
