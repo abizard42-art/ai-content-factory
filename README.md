@@ -1,6 +1,6 @@
 # AI Content Factory
 
-A cloud-first, multi-channel content production system. The first channel is Indonesian-language general world history, using a consistent 2D cartoon host character.
+A cloud-first, multi-channel content production system. The factory currently supports two planned Indonesian-language channels: Sejarah Dunia (2D cartoon explainer) and Misteri Nusantara (hybrid documentary mystery).
 
 ## Initial operating settings
 
