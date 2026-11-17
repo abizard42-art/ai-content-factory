@@ -136,31 +136,56 @@ jobs:
           kembalikan candidates kosong dan jelaskan alasannya di limitations.
           """
 
-          body = {
-              "model": "gemini-3.8-flash",
-              "input": [
-                  {"type": "video", "uri": os.environ["VIDEO_URL"]},
-                  {"type": "text", "text": prompt}
-              ]
-          }
-          req = urllib.request.Request(
-              "https://generativelanguage.googleapis.com/v1beta/interactions",
-              data=json.dumps(body).encode("utf-8"),
-              headers={
-                  "x-goog-api-key": os.environ["GEMINI_API_KEY"],
-                  "Content-Type": "application/json"
-              },
-              method="POST"
-          )
-          try:
-              with urllib.request.urlopen(req, timeout=2400) as response:
-                  raw = response.read().decode("utf-8")
-          except urllib.error.HTTPError as e:
-              detail = e.read().decode("utf-8", errors="replace")
-              print(f"Gemini API HTTP {e.code}: {detail}", file=sys.stderr)
-              raise SystemExit(1)
-          except Exception as e:
-              print(f"Gemini API request gagal: {e}", file=sys.stderr)
+          # Coba model utama, lalu model cadangan yang mendukung video pada Interactions API.
+          # Retry hanya untuk 503; 429 langsung pindah model agar tidak membuang waktu.
+          models = ["gemini-3.8-flash", "gemini-3.7-flash", "gemini-3.6-flash", "gemini-3.5-flash-lite"]
+          raw = None
+          last_error = None
+          for model in models:
+              for attempt, wait_seconds in enumerate((0, 12, 30), start=1):
+                  if wait_seconds:
+                      print(f"HTTP 503 sementara. Menunggu {wait_seconds} detik sebelum percobaan {attempt}/3 pada {model}...")
+                      import time
+                      time.sleep(wait_seconds)
+                  body = {
+                      "model": model,
+                      "input": [
+                          {"type": "video", "uri": os.environ["VIDEO_URL"]},
+                          {"type": "text", "text": prompt}
+                      ]
+                  }
+                  req = urllib.request.Request(
+                      "https://generativelanguage.googleapis.com/v1beta/interactions",
+                      data=json.dumps(body).encode("utf-8"),
+                      headers={
+                          "x-goog-api-key": os.environ["GEMINI_API_KEY"],
+                          "Content-Type": "application/json"
+                      },
+                      method="POST"
+                  )
+                  try:
+                      with urllib.request.urlopen(req, timeout=2400) as response:
+                          raw = response.read().decode("utf-8")
+                      print(f"Gemini berhasil merespons menggunakan {model}.")
+                      break
+                  except urllib.error.HTTPError as e:
+                      detail = e.read().decode("utf-8", errors="replace")
+                      last_error = f"HTTP {e.code}: {detail}"
+                      if e.code == 503:
+                          print(f"{model} sedang overload (503), percobaan {attempt}/3.")
+                          continue
+                      if e.code == 429:
+                          print(f"{model} terkena rate/quota limit (429); pindah ke model cadangan.")
+                          break
+                      print(f"Gemini API gagal pada {model}: {last_error}", file=sys.stderr)
+                      raise SystemExit(1)
+                  except Exception as e:
+                      print(f"Gemini API request gagal pada {model}: {e}", file=sys.stderr)
+                      raise SystemExit(1)
+              if raw is not None:
+                  break
+          if raw is None:
+              print("Semua model Gemini gagal. Error terakhir: " + str(last_error), file=sys.stderr)
               raise SystemExit(1)
 
           with open("gemini-response-raw.json", "w", encoding="utf-8") as f:
