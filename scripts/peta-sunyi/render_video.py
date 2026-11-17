@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Review-only Peta Sunyi renderer v2: scene-aligned narration, subtitles and legible editorial graphics."""
-import pathlib, subprocess, textwrap, os, math, time
+import pathlib, subprocess, textwrap, os, math, time, json, urllib.parse, urllib.request, re, html
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
 ROOT = pathlib.Path("work")
@@ -67,25 +67,86 @@ def centered(draw, text, y, fnt, fill, anchor="mm"):
     draw.text((W//2,y), text, font=fnt, fill=fill, anchor=anchor)
 
 def make_map(path):
-    im=gradient((17,36,48),(36,65,68)).convert("RGBA")
-    d=ImageDraw.Draw(im,"RGBA")
-    # Decorative schematic street network, explicitly not a navigational map.
-    for i in range(18):
-        x=70+i*58
-        d.line((x,300,x+((i%4)-2)*90,1550),fill=(177,198,174,55),width=5)
-    for j in range(14):
-        y=380+j*88
-        d.line((80,y,1000,y+((j%3)-1)*45),fill=(177,198,174,45),width=4)
-    d.rounded_rectangle((95,180,985,1640),radius=38,outline=(230,218,185,110),width=4)
-    centered(d,"BANDUNG",410,font(76,True),(246,239,219,255))
-    centered(d,"KAWASAN KOTA",495,font(30),(195,211,197,255))
-    d.rounded_rectangle((180,760,900,1110),radius=28,fill=(236,226,199,245))
-    centered(d,"JALAN BANDA",865,font(52,True),(27,48,55,255))
-    centered(d,"NO. 18",950,font(76,True),(27,48,55,255))
-    centered(d,"Lokasi yang disebut dalam sumber",1210,font(29),(242,234,211,255))
-    centered(d,"PETA SKEMATIK • BUKAN PETA NAVIGASI",1510,font(25),(226,210,170,255))
-    centered(d,"Ilustrasi lokasi, bukan titik koordinat presisi",1560,font(21),(197,208,195,255))
-    im.convert("RGB").save(path,quality=94)
+    """Render a real street map from OpenStreetMap road geometry."""
+    query = urllib.parse.urlencode({"q": "Roemah Kentang 1908, Jalan Banda 18, Bandung, Indonesia", "format": "jsonv2", "limit": "1"})
+    req = urllib.request.Request("https://nominatim.openstreetmap.org/search?" + query,
+        headers={"User-Agent": "PetaSunyiReviewRenderer/1.0 (documentary video map)"})
+    with urllib.request.urlopen(req, timeout=25) as response:
+        places = json.loads(response.read().decode("utf-8"))
+    if not places:
+        raise RuntimeError("Nominatim could not locate Jalan Banda No. 18, Bandung")
+    lat, lon = float(places[0]["lat"]), float(places[0]["lon"])
+    overpass_query = '[out:json][timeout:40];(way["highway"](around:1100,' + str(lat) + ',' + str(lon) + '););out geom;'
+    body = urllib.parse.urlencode({"data": overpass_query}).encode("utf-8")
+    req = urllib.request.Request("https://overpass-api.de/api/interpreter", data=body,
+        headers={"User-Agent": "PetaSunyiReviewRenderer/1.0 (documentary video map)",
+                 "Content-Type": "application/x-www-form-urlencoded"})
+    osm = None
+    for attempt in range(3):
+        try:
+            with urllib.request.urlopen(req, timeout=55) as response:
+                osm = json.loads(response.read().decode("utf-8"))
+            break
+        except Exception as exc:
+            if attempt == 2:
+                raise RuntimeError(f"Could not retrieve OpenStreetMap road data: {exc}") from exc
+            time.sleep(3 * (attempt + 1))
+    im = Image.new("RGB", (W,H), (239,237,228))
+    d = ImageDraw.Draw(im, "RGBA")
+    d.rectangle((0,0,W,210), fill=(24,43,48,255))
+    d.text((72,55), "BANDUNG", font=font(66,True), fill=(250,246,232,255))
+    d.text((76,137), "KAWASAN JALAN BANDA", font=font(29,True), fill=(207,218,204,255))
+    left,top,right,bottom = 55,235,1025,1705
+    d.rounded_rectangle((left,top,right,bottom), radius=24, fill=(247,246,239,255),
+                        outline=(202,199,184,255), width=3)
+    cos_lat = math.cos(math.radians(lat))
+    meters_per_px = max(1100/(right-left-50), 1650/(bottom-top-50))
+    def project(p):
+        xm = (float(p["lon"])-lon)*111320*cos_lat
+        ym = (lat-float(p["lat"]))*111320
+        return (int((left+right)/2+xm/meters_per_px), int((top+bottom)/2+ym/meters_per_px))
+    roads = []
+    for el in osm.get("elements", []):
+        if el.get("type") != "way" or len(el.get("geometry",[])) < 2:
+            continue
+        tags = el.get("tags", {})
+        pts = [project(p) for p in el["geometry"]]
+        if any(left <= x <= right and top <= y <= bottom for x,y in pts):
+            roads.append((tags.get("highway","residential"), tags.get("name",""), pts))
+    if not roads:
+        raise RuntimeError("OpenStreetMap returned no roads around Jalan Banda")
+    widths = {"motorway":9,"trunk":8,"primary":7,"secondary":6,"tertiary":5,
+              "residential":3,"unclassified":3,"service":2,"living_street":3}
+    for highway,name,pts in roads:
+        color = (255,255,255,255) if highway in ("primary","secondary","tertiary","trunk") else (210,207,194,255)
+        d.line(pts, fill=color, width=widths.get(highway,2), joint="curve")
+    labelled = set()
+    for highway,name,pts in roads:
+        if not name or name in labelled or len(labelled) >= 15:
+            continue
+        if highway not in ("primary","secondary","tertiary","residential"):
+            continue
+        x,y = pts[len(pts)//2]
+        if left+65 < x < right-65 and top+65 < y < bottom-65:
+            ft = font(19 if highway in ("primary","secondary") else 16, highway in ("primary","secondary"))
+            bb = d.textbbox((0,0),name,font=ft); tw,th=bb[2]-bb[0],bb[3]-bb[1]
+            d.rounded_rectangle((x-tw//2-8,y-th//2-5,x+tw//2+8,y+th//2+5),
+                                radius=7,fill=(247,246,239,220))
+            d.text((x-tw//2,y-th//2-2),name,font=ft,fill=(79,91,88,255))
+            labelled.add(name)
+    px,py = project({"lat":lat,"lon":lon})
+    d.ellipse((px-27,py-27,px+27,py+27),fill=(176,52,43,255),outline=(255,255,255,255),width=7)
+    d.ellipse((px-8,py-8,px+8,py+8),fill=(255,255,255,255))
+    label = "RUMAH KENTANG • JL. BANDA 18"
+    pf=font(25,True); bb=d.textbbox((0,0),label,font=pf); tw,th=bb[2]-bb[0],bb[3]-bb[1]
+    tx=max(left+18,min(right-tw-38,px+38)); ty=max(top+18,min(bottom-th-28,py-68))
+    d.rounded_rectangle((tx-12,ty-8,tx+tw+12,ty+th+8),radius=10,fill=(31,57,58,240))
+    d.text((tx,ty-2),label,font=pf,fill=(255,250,235,255))
+    d.rectangle((0,1730,W,H),fill=(24,43,48,255))
+    d.text((62,1760),"PETA JALAN • KAWASAN BANDUNG WETAN",font=font(25,True),fill=(248,244,229,255))
+    d.text((62,1810),"Data peta: © OpenStreetMap contributors",font=font(21),fill=(214,220,204,255))
+    d.text((62,1855),"Penanda lokasi bersifat indikatif",font=font(18),fill=(185,199,188,255))
+    im.save(path,quality=95)
 
 def make_fact(path):
     im=gradient((25,43,48),(51,68,65)).convert("RGBA")
@@ -115,6 +176,41 @@ def make_end(path):
     centered(d,"Tulis pendapatmu di komentar",1320,font(27),(184,202,193,255))
     im.convert("RGB").save(path,quality=95)
 
+def convert_vtt_to_srt(vtt_path):
+    """Remove WebVTT positioning directives and keep subtitles in the lower safe area."""
+    lines = pathlib.Path(vtt_path).read_text(encoding="utf-8-sig").splitlines()
+    cues, current = [], []
+    for raw in lines:
+        line = raw.strip()
+        if not line:
+            if current:
+                cues.append(current); current = []
+            continue
+        if line == "WEBVTT" or line.startswith("NOTE") or line.startswith("STYLE"):
+            continue
+        if "-->" in line:
+            if current:
+                cues.append(current)
+            parts = line.split()
+            current = [parts[0] + " --> " + parts[2]]
+        elif current and not re.fullmatch(r"\d+", line):
+            current.append(line)
+    if current:
+        cues.append(current)
+    output = []
+    for idx,cue in enumerate(cues,1):
+        words = [html.unescape(re.sub(r"<[^>]+>","",x)).strip() for x in cue[1:]]
+        words = [x for x in words if x]
+        if words:
+            phrase = " ".join(words)
+            wrapped = textwrap.wrap(phrase, width=34, max_lines=2, placeholder="…")
+            output.extend([str(idx),cue[0],"\n".join(wrapped),""])
+    target = pathlib.Path(vtt_path).with_suffix(".srt")
+    target.write_text("\n".join(output),encoding="utf-8")
+    if not target.exists() or target.stat().st_size == 0:
+        raise RuntimeError("Subtitle normalization produced an empty SRT")
+    return target
+
 def probe_duration(path):
     value=subprocess.check_output(["ffprobe","-v","error","-show_entries","format=duration","-of","default=noprint_wrappers=1:nokey=1",str(path)],text=True)
     return float(value.strip())
@@ -142,9 +238,15 @@ def main():
         if kind=="ai":
             vf += ",drawbox=x=0:y=122:w=iw:h=62:color=black@0.62:t=fill"
             vf += ",drawtext=text='REKA ADEGAN  •  ILUSTRASI AI':fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:fontcolor=white:fontsize=25:x=(w-text_w)/2:y=139"
-        # Burn the word/phrase timing produced by Edge TTS; subtitle remains inside mobile safe area.
-        subtitle_filter=f"subtitles={vtt}:force_style='FontName=DejaVu Sans,FontSize=22,PrimaryColour=&H00FFFFFF,OutlineColour=&H00101010,BorderStyle=1,Outline=3,Shadow=1,Alignment=2,MarginV=210,MarginL=90,MarginR=90'"
-        vf += ","+subtitle_filter
+        # Normalize VTT cue positions; render compact subtitles at the lower safe area.
+        srt = convert_vtt_to_srt(vtt)
+        subtitle_filter = (
+            f"subtitles={srt}:original_size={W}x{H}:"
+            "force_style='FontName=DejaVu Sans,FontSize=32,PrimaryColour=&H00FFFFFF,"
+            "OutlineColour=&H00101010,BorderStyle=1,Outline=2,Shadow=0,"
+            "Alignment=2,MarginV=245,MarginL=110,MarginR=110,PlayResX=1080,PlayResY=1920'"
+        )
+        vf += "," + subtitle_filter
         run(["ffmpeg","-y","-loop","1","-i",str(src),"-i",str(audio),"-t",f"{duration:.3f}",
              "-vf",vf,"-r",str(FPS),"-c:v","libx264","-preset","veryfast","-crf","20",
              "-pix_fmt","yuv420p","-c:a","aac","-b:a","160k","-shortest",str(clip)])
