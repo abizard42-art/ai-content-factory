@@ -1,0 +1,32 @@
+{
+  "slug": "misteri-nusantara",
+  "name": "Misteri Nusantara",
+  "language": "id-ID",
+  "format": "youtube_shorts",
+  "target_videos_per_day": 2,
+  "target_duration_seconds": { "min": 60, "max": 90 },
+  "initial_region": "Bandung, Jawa Barat, Indonesia",
+  "expansion_region": "Indonesia",
+  "visual_style": "hybrid",
+  "visual_mix": [
+    "real_location_photo",
+    "ai_folklore_reconstruction",
+    "map_or_historical_document"
+  ],
+  "editorial_rules": {
+    "separate_fact_legend_and_unverified_claims": true,
+    "never_present_supernatural_claims_as_proven_facts": true,
+    "require_source_urls_for_historical_and_location_claims": true,
+    "respect_image_licenses_and_attribution": true,
+    "human_review_before_publish": true
+  },
+  "narration": {
+    "language": "Indonesian",
+    "tone": "calm, suspenseful, documentary, not sensationalist",
+    "voice_identity": "consistent_mystery_narrator"
+  },
+  "publishing": {
+    "auto_upload_enabled": false,
+    "approval_required": true
+  }
+}
