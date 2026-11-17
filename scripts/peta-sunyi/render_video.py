@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Review-only Peta Sunyi renderer v2: scene-aligned narration, subtitles and legible editorial graphics."""
-import pathlib, subprocess, textwrap, os, math
+import pathlib, subprocess, textwrap, os, math, time
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
 ROOT = pathlib.Path("work")
@@ -25,6 +25,30 @@ SCENES = [
 
 def run(args):
     subprocess.run(args, check=True)
+
+def generate_tts(text, audio, subtitles):
+    """Retry transient Edge Read Aloud websocket failures without leaving partial files."""
+    command = ["edge-tts", "--voice", VOICE, "--text", text,
+               "--write-media", str(audio), "--write-subtitles", str(subtitles)]
+    delays = [2, 4, 8, 15, 25]
+    for attempt in range(len(delays) + 1):
+        try:
+            subprocess.run(command, check=True, timeout=120)
+            if not audio.exists() or audio.stat().st_size == 0:
+                raise RuntimeError("Edge TTS returned without an audio file")
+            if not subtitles.exists() or subtitles.stat().st_size == 0:
+                raise RuntimeError("Edge TTS returned without a subtitle file")
+            return
+        except (subprocess.CalledProcessError, subprocess.TimeoutExpired, RuntimeError) as exc:
+            audio.unlink(missing_ok=True)
+            subtitles.unlink(missing_ok=True)
+            if attempt >= len(delays):
+                raise RuntimeError(
+                    f"Edge TTS failed after {attempt + 1} attempts for this scene: {exc}"
+                ) from exc
+            delay = delays[attempt]
+            print(f"TTS_RETRY={attempt + 1}; waiting {delay}s; reason={exc}", flush=True)
+            time.sleep(delay)
 
 def font(size, bold=False):
     path = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf" if bold else "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
@@ -102,7 +126,7 @@ def main():
     for i,(shot,text,title,kind) in enumerate(SCENES,1):
         audio=OUT/f"scene-{i:02d}.mp3"
         vtt=OUT/f"scene-{i:02d}.vtt"
-        run(["edge-tts","--voice",VOICE,"--text",text,"--write-media",str(audio),"--write-subtitles",str(vtt)])
+        generate_tts(text, audio, vtt)
         duration=probe_duration(audio)+0.35
         src=generated[shot] if shot in generated else ASSETS/f"peta-sunyi-{shot}.jpg"
         if not src.exists(): raise FileNotFoundError(f"Missing visual asset: {src}")
