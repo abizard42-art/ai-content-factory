@@ -1,0 +1,270 @@
+name: Generate Misteri Nusantara script
+
+on:
+  workflow_dispatch:
+    inputs:
+      topic:
+        description: "Kisah atau tempat misteri yang ingin diteliti"
+        required: true
+        default: "Misteri Rumah Kentang Bandung: asal-usul legenda dan fakta yang bisa diverifikasi"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  generate-mystery-script:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Generate researched mystery package and save to Supabase
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          TOPIC: ${{ inputs.topic }}
+        run: |
+          set -euo pipefail
+
+          for name in GEMINI_API_KEY SUPABASE_URL SUPABASE_SECRET_KEY; do
+            if [ -z "${!name:-}" ]; then
+              echo "ERROR: GitHub Secret $name belum diisi."
+              exit 1
+            fi
+          done
+
+          cat > mystery-channel-config.json <<'CONFIG'
+          {
+            "slug": "misteri-nusantara",
+            "name": "Misteri Nusantara",
+            "language": "id-ID",
+            "format": "youtube_shorts",
+            "target_videos_per_day": 2,
+            "target_duration_seconds": { "min": 60, "max": 90 },
+            "initial_region": "Bandung, Jawa Barat, Indonesia",
+            "expansion_region": "Indonesia",
+            "visual_style": "hybrid",
+            "visual_mix": [
+              "real_location_photo",
+              "ai_folklore_reconstruction",
+              "map_or_historical_document"
+            ],
+            "editorial_rules": {
+              "separate_fact_legend_and_unverified_claims": true,
+              "never_present_supernatural_claims_as_proven_facts": true,
+              "require_source_urls_for_historical_and_location_claims": true,
+              "respect_image_licenses_and_attribution": true,
+              "human_review_before_publish": true
+            },
+            "narration": {
+              "language": "Indonesian",
+              "tone": "calm, suspenseful, documentary, not sensationalist",
+              "voice_identity": "consistent_mystery_narrator"
+            },
+            "publishing": {
+              "auto_upload_enabled": false,
+              "approval_required": true
+            }
+          }
+          CONFIG
+
+          python - <<'PY'
+          import json, os, re, sys, urllib.request, urllib.error
+
+          config = json.load(open("mystery-channel-config.json", encoding="utf-8"))
+          topic = os.environ["TOPIC"].strip()
+          if not topic:
+              raise SystemExit("Topik tidak boleh kosong.")
+
+          prompt = f"""
+          Kamu adalah peneliti dan penulis dokumenter misteri Indonesia untuk channel
+          "{config['name']}". Buat SATU paket YouTube Shorts berdurasi 60–90 detik
+          tentang topik berikut: {topic}
+
+          GAYA EDITORIAL:
+          - Bahasa Indonesia alami, atmosfer mencekam tetapi tenang dan tidak lebay.
+          - Ini dokumenter misteri, bukan klaim bahwa hantu atau kejadian gaib terbukti.
+          - Pisahkan dengan tegas: FAKTA TERVERIFIKASI, LEGENDA/CERITA MASYARAKAT,
+            dan HAL YANG BELUM DAPAT DIVERIFIKASI.
+          - Jangan menciptakan saksi, kutipan, tanggal, peristiwa, alamat, atau sumber.
+          - Jangan menyebut rumor sebagai fakta. Gunakan frasa "menurut cerita yang beredar"
+            jika memang hanya legenda.
+          - Hindari mengarahkan penonton mendatangi lokasi privat/berbahaya atau mengganggu warga.
+          - Sertakan URL sumber yang benar-benar ditemukan melalui Google Search grounding.
+            Utamakan sumber primer, media kredibel, arsip, lembaga budaya/sejarah, atau pemerintah.
+            Jangan mengarang URL. Jika sumber tidak ditemukan, tulis [] dan jelaskan keterbatasan.
+
+          STRUKTUR CERITA:
+          1. Hook 0–3 detik: pertanyaan atau detail paling bikin penasaran.
+          2. Kenalkan tempat dan reputasi misterinya.
+          3. Ceritakan versi legenda dengan atribusi yang jelas.
+          4. Bandingkan dengan fakta sejarah/lokasi yang dapat diperiksa.
+          5. Tutup dengan pertanyaan terbuka yang tidak mengklaim hal gaib sebagai bukti.
+
+          VISUAL HYBRID:
+          Buat 8–10 scene vertikal 9:16. Pilih visual_type dari:
+          "real_location_photo", "ai_folklore_reconstruction", "map_or_archive".
+          Foto lokasi nyata hanya boleh disarankan jika tersedia sumber foto dengan URL dan
+          lisensi/izin yang jelas. Jangan mengarang URL foto. Untuk rekonstruksi AI, jangan
+          menampilkan tokoh nyata yang tidak diketahui wajahnya sebagai potret faktual.
+          Setiap scene harus punya narration, duration_seconds, visual_type, visual_prompt,
+          on_screen_text, source_urls (array), and visual_sourcing_note.
+
+          KELUARAN: JSON valid saja, tanpa markdown, dengan skema:
+          {{
+            "title": "judul",
+            "description": "deskripsi singkat",
+            "duration_target_seconds": 75,
+            "research": {{
+              "verified_facts": ["..."],
+              "legend_claims": ["..."],
+              "unverified_or_disputed": ["..."],
+              "source_urls": ["https://..."],
+              "research_notes": ["..."]
+            }},
+            "script": "narasi lengkap 130-190 kata",
+            "storyboard": [
+              {{
+                "scene": 1,
+                "duration_seconds": 8,
+                "narration": "...",
+                "visual_type": "real_location_photo",
+                "visual_prompt": "...",
+                "on_screen_text": "...",
+                "source_urls": ["https://..."],
+                "visual_sourcing_note": "..."
+              }}
+            ],
+            "fact_check_status": "ready_for_human_review|insufficient_sources",
+            "editorial_warnings": ["..."]
+          }}
+          Pastikan jumlah kata narasi cocok untuk 60–90 detik dan total durasi scene mendekati
+          durasi narasi. Jangan menulis "kisah nyata" kecuali ada bukti kuat.
+          """
+
+          body = {
+              "contents": [{"parts": [{"text": prompt}]}],
+              "tools": [{"google_search": {}}],
+              "generationConfig": {"temperature": 0.35, "maxOutputTokens": 8192}
+          }
+          req = urllib.request.Request(
+              "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
+              data=json.dumps(body, ensure_ascii=False).encode("utf-8"),
+              headers={"x-goog-api-key": os.environ["GEMINI_API_KEY"], "Content-Type": "application/json"},
+              method="POST"
+          )
+          try:
+              with urllib.request.urlopen(req, timeout=900) as response:
+                  raw = response.read().decode("utf-8")
+          except urllib.error.HTTPError as e:
+              detail = e.read().decode("utf-8", errors="replace")
+              print(f"Gemini API HTTP {e.code}: {detail}", file=sys.stderr)
+              raise SystemExit(1)
+
+          open("gemini-response-raw.json", "w", encoding="utf-8").write(raw)
+          response = json.loads(raw)
+          parts = response.get("candidates", [{}])[0].get("content", {}).get("parts", [])
+          generated = "\n".join(p.get("text", "") for p in parts if isinstance(p, dict) and p.get("text"))
+          if not generated.strip():
+              raise SystemExit("Gemini tidak mengembalikan teks paket cerita.")
+
+          text = generated.strip()
+          text = re.sub(r"^\s*```(?:json)?\s*", "", text, flags=re.I)
+          text = re.sub(r"\s*```\s*$", "", text)
+          try:
+              package = json.loads(text)
+          except json.JSONDecodeError:
+              start, end = text.find("{"), text.rfind("}")
+              if start < 0 or end <= start:
+                  raise SystemExit("Respons Gemini bukan JSON valid.")
+              package = json.loads(text[start:end+1])
+
+          required = ["title", "research", "script", "storyboard", "fact_check_status"]
+          missing = [k for k in required if k not in package]
+          if missing or not isinstance(package.get("storyboard"), list) or not package["storyboard"]:
+              raise SystemExit(f"Paket cerita tidak lengkap: {missing}")
+
+          package["channel"] = config["slug"]
+          package["topic_input"] = topic
+          package["approval_required"] = True
+          package["publishing_enabled"] = False
+          with open("mystery-package.json", "w", encoding="utf-8") as f:
+              json.dump(package, f, ensure_ascii=False, indent=2)
+
+          print("Paket cerita berhasil dibuat.")
+          print("Judul:", package["title"])
+          print("Fact-check:", package["fact_check_status"])
+          print("Jumlah scene:", len(package["storyboard"]))
+          print("Sumber:", len(package.get("research", {}).get("source_urls", [])))
+
+          # Resolve channel id; create Misteri Nusantara once by reusing the existing owner's ID.
+          base = os.environ["SUPABASE_URL"].rstrip("/")
+          headers = {
+              "apikey": os.environ["SUPABASE_SECRET_KEY"],
+              "Authorization": "Bearer " + os.environ["SUPABASE_SECRET_KEY"],
+              "Content-Type": "application/json"
+          }
+          def api(path, method="GET", payload=None, prefer=None):
+              h = dict(headers)
+              if prefer:
+                  h["Prefer"] = prefer
+              data = json.dumps(payload, ensure_ascii=False).encode() if payload is not None else None
+              request = urllib.request.Request(base + "/rest/v1/" + path, data=data, headers=h, method=method)
+              with urllib.request.urlopen(request, timeout=60) as r:
+                  body = r.read().decode()
+                  return json.loads(body) if body else []
+
+          existing = api("channels?slug=eq.misteri-nusantara&select=id&limit=1")
+          if existing:
+              channel_id = existing[0]["id"]
+          else:
+              owners = api("channels?name=eq.Sejarah%20Dunia&select=owner_id&limit=1")
+              if not owners:
+                  raise SystemExit("Channel Sejarah Dunia tidak ditemukan; tidak bisa menentukan owner_id untuk channel baru.")
+              payload = {
+                  "owner_id": owners[0]["owner_id"],
+                  "slug": config["slug"],
+                  "name": config["name"],
+                  "config": config
+              }
+              created = api("channels", "POST", payload, "return=representation")
+              if not created:
+                  raise SystemExit("Gagal membuat record channel Misteri Nusantara di Supabase.")
+              channel_id = created[0]["id"]
+
+          topic_payload = {
+              "channel_id": channel_id,
+              "title": package["title"],
+              "status": "needs_review",
+              "research": package.get("research", {})
+          }
+          topics = api("topics", "POST", topic_payload, "return=representation")
+          if not topics:
+              raise SystemExit("Paket dibuat tetapi gagal menyimpan topik ke Supabase.")
+          topic_id = topics[0]["id"]
+
+          script_payload = {
+              "topic_id": topic_id,
+              "version": 1,
+              "body": package["script"],
+              "storyboard": package["storyboard"],
+              "status": "draft"
+          }
+          scripts = api("scripts", "POST", script_payload, "return=representation")
+          if not scripts:
+              raise SystemExit("Topik tersimpan tetapi gagal menyimpan naskah.")
+          print("Channel ID:", channel_id)
+          print("Topic ID:", topic_id)
+          print("Script ID:", scripts[0]["id"])
+          print("Status: draft — wajib diperiksa manusia sebelum produksi/publikasi.")
+          PY
+
+      - name: Upload mystery package for review
+        uses: actions/upload-artifact@v4
+        with:
+          name: misteri-nusantara-script
+          path: |
+            mystery-package.json
+            gemini-response-raw.json
+          if-no-files-found: error
+          retention-days: 7
