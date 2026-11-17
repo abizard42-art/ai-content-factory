@@ -1,0 +1,218 @@
+name: Clipping Factory - AI Transcript & Moment Finder
+
+on:
+  workflow_dispatch:
+    inputs:
+      video_url:
+        description: "URL video YouTube publik yang diizinkan kreator untuk clipping"
+        required: true
+        type: string
+        default: "https://youtu.be/LjvgKiZdTyw"
+      permission_confirmed:
+        description: "Saya memiliki izin dari kreator untuk menganalisis dan membuat klip dari video ini"
+        required: true
+        type: boolean
+        default: false
+      min_clip_seconds:
+        description: "Durasi minimum kandidat klip (detik)"
+        required: true
+        type: number
+        default: 90
+      max_clip_seconds:
+        description: "Durasi maksimum kandidat klip (detik)"
+        required: true
+        type: number
+        default: 150
+
+permissions:
+  contents: read
+
+jobs:
+  analyze-video:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Validate inputs
+        id: validate
+        env:
+          VIDEO_URL: ${{ inputs.video_url }}
+          PERMISSION_CONFIRMED: ${{ inputs.permission_confirmed }}
+          MIN_SECONDS: ${{ inputs.min_clip_seconds }}
+          MAX_SECONDS: ${{ inputs.max_clip_seconds }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os, re
+          from urllib.parse import urlparse, parse_qs
+
+          raw = os.environ["VIDEO_URL"].strip()
+          p = urlparse(raw)
+          host = (p.hostname or "").lower()
+          video_id = None
+          if host in ("youtu.be", "www.youtu.be"):
+              video_id = p.path.strip("/").split("/")[0]
+          elif host in ("youtube.com", "www.youtube.com", "m.youtube.com", "music.youtube.com"):
+              if p.path == "/watch":
+                  video_id = parse_qs(p.query).get("v", [None])[0]
+              elif p.path.startswith(("/shorts/", "/live/", "/embed/")):
+                  video_id = p.path.strip("/").split("/")[1]
+          if not video_id or not re.fullmatch(r"[A-Za-z0-9_-]{11}", video_id):
+              raise SystemExit("URL YouTube tidak valid atau formatnya tidak didukung.")
+          if os.environ["PERMISSION_CONFIRMED"].lower() != "true":
+              raise SystemExit("Konfirmasi izin kreator wajib dicentang.")
+          min_s, max_s = int(float(os.environ["MIN_SECONDS"])), int(float(os.environ["MAX_SECONDS"]))
+          if min_s < 30 or max_s > 300 or min_s >= max_s:
+              raise SystemExit("Rentang durasi harus 30–300 detik dan minimum harus lebih kecil dari maksimum.")
+          canonical = f"https://www.youtube.com/watch?v={video_id}"
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+              f.write(f"video_id={video_id}\n")
+              f.write(f"canonical_url={canonical}\n")
+          print("URL dan izin berhasil divalidasi.")
+          print(f"Video ID: {video_id}")
+          print(f"Rentang kandidat: {min_s}–{max_s} detik")
+          PY
+
+      - name: Analyze public YouTube video with Gemini
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          VIDEO_URL: ${{ steps.validate.outputs.canonical_url }}
+          VIDEO_ID: ${{ steps.validate.outputs.video_id }}
+          MIN_SECONDS: ${{ inputs.min_clip_seconds }}
+          MAX_SECONDS: ${{ inputs.max_clip_seconds }}
+        run: |
+          set -euo pipefail
+          if [ -z "${GEMINI_API_KEY:-}" ]; then
+            echo "ERROR: GEMINI_API_KEY secret belum tersedia."
+            exit 1
+          fi
+
+          python - <<'PY'
+          import json, os, sys, urllib.request, urllib.error, re
+
+          prompt = f"""
+          Kamu adalah AI senior podcast clip producer. Analisis seluruh video publik ini dari audio dan visualnya:
+          {os.environ['VIDEO_URL']}
+
+          Cari momen yang paling layak dijadikan klip pendek untuk Shorts/TikTok.
+          Target durasi setiap kandidat {os.environ['MIN_SECONDS']} sampai {os.environ['MAX_SECONDS']} detik.
+          Prioritaskan momen yang punya konteks utuh: pembuka yang menarik, setup yang cukup,
+          perkembangan percakapan, lalu payoff/reaksi/kesimpulan. Jangan memotong kalimat atau
+          menghilangkan konteks penting. Cari momen lucu, kontroversial, mengejutkan, emosional,
+          informatif, atau memancing diskusi. Jangan memaksakan jumlah kandidat; lebih baik sedikit
+          tetapi kuat. Hindari bagian sponsor, jeda, pengulangan, dan percakapan yang tidak jelas.
+
+          Kembalikan HANYA JSON valid dengan struktur:
+          {{
+            "video_id": "{os.environ['VIDEO_ID']}",
+            "source_url": "{os.environ['VIDEO_URL']}",
+            "language": "id",
+            "video_summary": "ringkasan isi video",
+            "candidates": [
+              {{
+                "rank": 1,
+                "start_seconds": 0,
+                "end_seconds": 120,
+                "duration_seconds": 120,
+                "hook": "alasan 1-2 kalimat mengapa momen ini menarik",
+                "context": "konteks percakapan agar penonton paham",
+                "payoff": "puncak atau hasil percakapan",
+                "category": "funny|controversial|surprising|emotional|informative|debate",
+                "scores": {{
+                  "hook": 1,
+                  "context_clarity": 1,
+                  "payoff": 1,
+                  "emotion": 1,
+                  "shareability": 1
+                }},
+                "total_score": 5,
+                "editing_notes": "saran titik masuk/keluar dan subtitle"
+              }}
+            ],
+            "limitations": ["catatan jika ada bagian video yang tidak dapat dianalisis"]
+          }}
+
+          Gunakan timestamp detik yang akurat. Nilai tiap skor 1–10 dan total_score adalah jumlah
+          kelima skor. Jangan mengarang isi atau timestamp. Jika video tidak dapat diakses,
+          kembalikan candidates kosong dan jelaskan alasannya di limitations.
+          """
+
+          body = {
+              "model": "gemini-3.8-flash",
+              "input": [
+                  {"type": "video", "uri": os.environ["VIDEO_URL"]},
+                  {"type": "text", "text": prompt}
+              ]
+          }
+          req = urllib.request.Request(
+              "https://generativelanguage.googleapis.com/v1beta/interactions",
+              data=json.dumps(body).encode("utf-8"),
+              headers={
+                  "x-goog-api-key": os.environ["GEMINI_API_KEY"],
+                  "Content-Type": "application/json"
+              },
+              method="POST"
+          )
+          try:
+              with urllib.request.urlopen(req, timeout=2400) as response:
+                  raw = response.read().decode("utf-8")
+          except urllib.error.HTTPError as e:
+              detail = e.read().decode("utf-8", errors="replace")
+              print(f"Gemini API HTTP {e.code}: {detail}", file=sys.stderr)
+              raise SystemExit(1)
+          except Exception as e:
+              print(f"Gemini API request gagal: {e}", file=sys.stderr)
+              raise SystemExit(1)
+
+          with open("gemini-response-raw.json", "w", encoding="utf-8") as f:
+              f.write(raw)
+
+          data = json.loads(raw)
+          output_text = data.get("output_text")
+          if not output_text:
+              # Fallback for response variants that expose text in output blocks.
+              chunks = []
+              for item in data.get("output", []):
+                  if isinstance(item, dict):
+                      if isinstance(item.get("text"), str):
+                          chunks.append(item["text"])
+                      for part in item.get("content", []) if isinstance(item.get("content"), list) else []:
+                          if isinstance(part, dict) and isinstance(part.get("text"), str):
+                              chunks.append(part["text"])
+              output_text = "\n".join(chunks)
+
+          if not output_text:
+              print("Respons Gemini tidak berisi output teks yang dikenali.", file=sys.stderr)
+              print(raw[:12000], file=sys.stderr)
+              raise SystemExit(1)
+
+          text = output_text.strip()
+          text = re.sub(r"^\s*```(?:json)?\s*", "", text, flags=re.I)
+          text = re.sub(r"\s*```\s*$", "", text)
+          try:
+              result = json.loads(text)
+          except json.JSONDecodeError:
+              start, end = text.find("{"), text.rfind("}")
+              if start < 0 or end <= start:
+                  raise SystemExit("Gemini tidak mengembalikan JSON yang valid.")
+              result = json.loads(text[start:end+1])
+
+          if not isinstance(result, dict) or not isinstance(result.get("candidates"), list):
+              raise SystemExit("Format hasil AI tidak sesuai skema kandidat klip.")
+          with open("clip-candidates.json", "w", encoding="utf-8") as f:
+              json.dump(result, f, ensure_ascii=False, indent=2)
+
+          print("Analisis Gemini selesai.")
+          print(f"Jumlah kandidat: {len(result['candidates'])}")
+          for c in result["candidates"]:
+              print(f"#{c.get('rank')} | {c.get('start_seconds')}–{c.get('end_seconds')} detik | skor {c.get('total_score')} | {c.get('category')}")
+          PY
+
+      - name: Upload analysis results
+        uses: actions/upload-artifact@v4
+        with:
+          name: clipping-ai-analysis
+          path: |
+            clip-candidates.json
+            gemini-response-raw.json
+          if-no-files-found: error
+          retention-days: 7
