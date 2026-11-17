@@ -3,8 +3,12 @@
 **Channel:** Peta Sunyi  
 **Format:** YouTube Shorts / TikTok, dokumenter misteri  
 **Target durasi:** 60–90 detik  
-**Status:** DRAFT — menunggu persetujuan editorial dan storyboard  
+**Status:** DRAFT — naskah disetujui user; menunggu storyboard dan pemeriksaan produksi  
 **Angle:** Legenda anak dalam kuali versus jejak sejarah bangunan heritage.
+
+## Identitas visual karakter
+
+Karakter utama Peta Sunyi adalah **stickman polos minimalis**, bukan Raka. Bentuknya kepala bulat sederhana, badan dan anggota tubuh berupa garis tipis bersih, monokrom, tanpa rambut, pakaian, sepatu, perhiasan, atau aksesori. Wajah sebaiknya kosong; emosi disampaikan lewat pose dan gerak. Gunakan karakter secukupnya sebagai pemandu visual atau penunjuk skala. Lokasi, bangunan, benda, dokumen, dan atmosfer tetap menjadi fokus utama. Hindari gaya chibi atau maskot lucu.
 
 ## 1. Judul
 
@@ -70,14 +74,14 @@ Melainkan sejarah panjang bangunan yang masih belum seluruhnya kita ketahui.
 
 ## 6. Arahan visual untuk storyboard
 
-1. **Hook:** Establishing shot suasana Jalan Banda pada sore menjelang malam. Kamera bergerak perlahan menuju siluet bangunan. Hindari menampilkan nomor rumah yang belum diverifikasi secara visual.
-2. **Legenda:** Ilustrasi AI berupa uap dari panci/kuali kentang dan siluet rumah tempo dulu. Tampilkan label kecil: “ILUSTRASI LEGENDA”. Jangan menggambarkan anak mengalami kecelakaan secara eksplisit.
+1. **Hook:** Establishing shot suasana Jalan Banda pada sore menjelang malam. Kamera bergerak perlahan menuju siluet bangunan. Stickman boleh muncul kecil di foreground sebagai pembanding skala, tetapi tidak wajib.
+2. **Legenda:** Ilustrasi AI berupa uap dari panci/kuali kentang dan siluet rumah tempo dulu. Tampilkan label kecil: “ILUSTRASI LEGENDA”. Jangan menggambarkan anak mengalami kecelakaan secara eksplisit. Jika stickman muncul, gunakan hanya sebagai siluet simbolis, bukan anak yang diklaim mengalami peristiwa.
 3. **Pertanyaan:** Potongan detail jendela, pagar, dan tekstur bangunan; beri jeda visual saat narator bertanya apakah tragedi itu benar terjadi.
 4. **Bantahan:** Grafis kutipan tidak langsung: “Penjaga lama membantah kisah kuali” dan “Warga mengaku tak pernah mencium aroma kentang”. Jangan membuat foto atau rekaman saksi palsu.
 5. **Fakta heritage:** Animasi dokumen/grafis tipografi: “Perda Kota Bandung No. 7 Tahun 2018” lalu sorot “Rumah Kentang — Jl. Banda No. 18”.
 6. **Penutup:** Wide shot bangunan atau rekonstruksi arsitektur yang diberi label ilustrasi, lalu judul seri dan pertanyaan kepada penonton.
 
-**Gaya:** dokumenter misteri, tenang, atmosferik, warna malam yang tidak terlalu gelap, gerak kamera lambat, subtitle jelas. Jangan memakai jumpscare berlebihan.
+**Gaya:** dokumenter misteri, tenang, atmosferik, warna malam yang tidak terlalu gelap, gerak kamera lambat, subtitle jelas. Jangan memakai jumpscare berlebihan. Stickman harus minimalis, monokrom, konsisten, dan tidak mendominasi adegan.
 
 ## 7. Catatan produksi dan verifikasi
 
@@ -97,6 +101,7 @@ Melainkan sejarah panjang bangunan yang masih belum seluruhnya kita ketahui.
 - [x] Kesaksian diatribusikan kepada media dan narasumber.
 - [x] Status cagar budaya didukung dokumen pemerintah.
 - [x] Tidak menambahkan saksi, tanggal kejadian, kutipan, atau fakta yang tidak ada di brief.
+- [x] Identitas visual Peta Sunyi dipisahkan dari Raka dan ditetapkan sebagai stickman polos minimalis.
 - [ ] Status tempat dan izin visual dicek ulang sebelum produksi.
 - [ ] Naskah disetujui sebelum masuk tahap storyboard.
 
