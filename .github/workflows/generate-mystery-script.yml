@@ -101,14 +101,32 @@ jobs:
           4. Bandingkan dengan fakta sejarah/lokasi yang dapat diperiksa.
           5. Tutup dengan pertanyaan terbuka yang tidak mengklaim hal gaib sebagai bukti.
 
-          VISUAL HYBRID:
-          Buat 8–10 scene vertikal 9:16. Pilih visual_type dari:
-          "real_location_photo", "ai_folklore_reconstruction", "map_or_archive".
-          Foto lokasi nyata hanya boleh disarankan jika tersedia sumber foto dengan URL dan
-          lisensi/izin yang jelas. Jangan mengarang URL foto. Untuk rekonstruksi AI, jangan
-          menampilkan tokoh nyata yang tidak diketahui wajahnya sebagai potret faktual.
+          VISUAL HYBRID — WAJIB IKUTI:
+          Buat 8–10 scene vertikal 9:16 dengan kombinasi:
+          - Foto dokumentasi asli bangunan/lokasi dari media atau arsip yang ditemukan.
+            Cantumkan URL halaman sumber, nama penerbit/fotografer bila tersedia, dan status
+            izin/lisensi. Jangan menganggap foto media bebas dipakai ulang; tandai
+            "reference_only_permission_required" bila izin reuse tidak jelas.
+          - Peta Bandung yang menandai lokasi Rumah Kentang secara jelas. Gunakan titik lokasi
+            yang konsisten dengan sumber: kawasan Jalan Banda No. 18, dekat/perempatan Jalan
+            Banda dan Jalan Aceh, Bandung. Jangan menaruh pin hanya di Jalan Aceh secara umum.
+            Tampilkan label lokasi dan catatan bahwa titik perlu dicek ulang di peta sebelum render.
+            Jangan mengarang koordinat.
+          - Rekonstruksi AI untuk menggambarkan suasana cerita: warga/pengendara pada masa lalu
+            melintas, berhenti sejenak, saling bertanya, atau mencium aroma yang mereka anggap
+            seperti kentang pada sore/malam hari. Adegan ini harus diberi label visual
+            "REKA ADEGAN / ILUSTRASI AI", bukan dokumentasi atau bukti bahwa peristiwa tertentu
+            benar-benar terjadi. Jangan mengarang orang bernama, dialog kutipan, atau saksi.
+          Pilih visual_type dari "real_location_photo", "ai_folklore_reconstruction",
+          "map_or_archive". Variasikan visual agar foto asli, peta, dan reka adegan bergantian.
+          Untuk setiap foto, catat source URL dan reuse_permission_status.
           Setiap scene harus punya narration, duration_seconds, visual_type, visual_prompt,
           on_screen_text, source_urls (array), and visual_sourcing_note.
+          Tambahkan pada keluaran research: location_name, location_description,
+          map_label, map_verification_note, documentary_photo_references (array of objects
+          with source_url, publisher_or_photographer, reuse_permission_status).
+          Tambahkan pada setiap scene field visual_disclaimer, gunakan "REKA ADEGAN / ILUSTRASI AI"
+          untuk semua rekonstruksi AI dan null untuk foto dokumentasi/peta.
 
           KELUARAN: JSON valid saja, tanpa markdown, dengan skema:
           {{
@@ -132,7 +150,8 @@ jobs:
                 "visual_prompt": "...",
                 "on_screen_text": "...",
                 "source_urls": ["https://..."],
-                "visual_sourcing_note": "..."
+                "visual_sourcing_note": "...",
+                "visual_disclaimer": "REKA ADEGAN / ILUSTRASI AI"
               }}
             ],
             "fact_check_status": "ready_for_human_review|insufficient_sources",
