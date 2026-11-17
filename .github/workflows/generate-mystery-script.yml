@@ -167,7 +167,7 @@ jobs:
               "generationConfig": {"temperature": 0.35, "maxOutputTokens": 8192}
           }
           req = urllib.request.Request(
-              "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent",
+              "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
               data=json.dumps(body, ensure_ascii=False).encode("utf-8"),
               headers={"x-goog-api-key": os.environ["GEMINI_API_KEY"], "Content-Type": "application/json"},
               method="POST"
