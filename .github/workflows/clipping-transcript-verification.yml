@@ -137,14 +137,14 @@ jobs:
                       for part in step.get("content", []) if isinstance(step.get("content"), list) else []:
                           if isinstance(part, dict) and part.get("type") == "text" and isinstance(part.get("text"), str):
                               chunks.append(part["text"])
-              output_text = "\\n".join(chunks)
+              output_text = "\n".join(chunks)
 
           if not output_text.strip():
               raise SystemExit("Gemini selesai tetapi tidak mengembalikan teks hasil verifikasi.")
 
           text = output_text.strip()
-          text = re.sub(r"^\\s*```(?:json)?\\s*", "", text, flags=re.I)
-          text = re.sub(r"\\s*```\\s*$", "", text)
+          text = re.sub(r"^\s*```(?:json)?\s*", "", text, flags=re.I)
+          text = re.sub(r"\s*```\s*$", "", text)
           try:
               result = json.loads(text)
           except json.JSONDecodeError:
