@@ -1,0 +1,175 @@
+name: Clipping Factory - Transcript & Timestamp Verification
+
+on:
+  workflow_dispatch:
+    inputs:
+      previous_interaction_id:
+        description: "ID interaksi Gemini dari hasil analisis sebelumnya"
+        required: true
+        type: string
+      candidate_windows:
+        description: "JSON berisi kandidat dan rentang waktu yang perlu diverifikasi"
+        required: true
+        type: string
+        default: |
+          [
+            {"rank":1,"start_seconds":3058,"end_seconds":3180},
+            {"rank":2,"start_seconds":2305,"end_seconds":2435},
+            {"rank":3,"start_seconds":1335,"end_seconds":1475},
+            {"rank":4,"start_seconds":507,"end_seconds":638}
+          ]
+
+permissions:
+  contents: read
+
+jobs:
+  verify-transcript:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Continue previous Gemini interaction
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          PREVIOUS_ID: ${{ inputs.previous_interaction_id }}
+          WINDOWS_JSON: ${{ inputs.candidate_windows }}
+        run: |
+          set -euo pipefail
+          if [ -z "${GEMINI_API_KEY:-}" ]; then
+            echo "ERROR: GEMINI_API_KEY secret belum tersedia."
+            exit 1
+          fi
+          python - <<'PY'
+          import json, os, sys, urllib.request, urllib.error, re
+
+          try:
+              windows = json.loads(os.environ["WINDOWS_JSON"])
+              if not isinstance(windows, list) or not windows:
+                  raise ValueError("candidate_windows harus berupa array JSON yang tidak kosong.")
+              for w in windows:
+                  if not isinstance(w, dict) or not isinstance(w.get("start_seconds"), int) or not isinstance(w.get("end_seconds"), int):
+                      raise ValueError("Setiap kandidat wajib memiliki start_seconds dan end_seconds berupa integer.")
+                  if w["start_seconds"] < 0 or w["end_seconds"] <= w["start_seconds"]:
+                      raise ValueError("Rentang waktu kandidat tidak valid.")
+          except Exception as e:
+              raise SystemExit(f"Input kandidat tidak valid: {e}")
+
+          previous_id = os.environ["PREVIOUS_ID"].strip()
+          if not previous_id:
+              raise SystemExit("previous_interaction_id wajib diisi.")
+
+          prompt = f"""
+          Lanjutkan pekerjaan analisis video yang sudah ada dalam riwayat interaksi ini.
+          Jangan meminta atau menganalisis ulang video dari awal. Fokus hanya pada verifikasi
+          transkrip dan ketepatan batas waktu kandidat berikut (detik):
+          {json.dumps(windows, ensure_ascii=False)}
+
+          Untuk SETIAP kandidat:
+          1. Tulis transkrip ucapan yang benar-benar terdengar di rentang tersebut, dalam bahasa asli.
+          2. Sertakan label pembicara jika dapat dikenali; gunakan "Tidak diketahui" bila ragu.
+          3. Pecah menjadi beberapa segmen dengan start_seconds dan end_seconds perkiraan yang
+             lebih presisi, serta teks ucapan tiap segmen.
+          4. Periksa apakah klip dimulai di tengah kalimat atau berakhir sebelum payoff selesai.
+          5. Jika batas perlu digeser, berikan suggested_start_seconds dan suggested_end_seconds,
+             tetap jaga durasi sedekat mungkin dengan rentang awal.
+          6. Tandai bagian yang tidak dapat diverifikasi sebagai uncertain. Jangan mengarang
+             transkrip, nama pembicara, atau timestamp. Jika riwayat interaksi tidak memuat
+             informasi media yang cukup untuk memverifikasi, katakan demikian secara eksplisit.
+
+          Kembalikan HANYA JSON valid dengan struktur:
+          {{
+            "verification_status": "verified|partially_verified|unable_to_verify",
+            "candidates": [
+              {{
+                "rank": 1,
+                "original_start_seconds": 0,
+                "original_end_seconds": 0,
+                "transcript_segments": [
+                  {{"start_seconds": 0, "end_seconds": 0, "speaker": "Nama atau Tidak diketahui", "text": "ucapan"}}
+                ],
+                "starts_mid_sentence": false,
+                "ends_before_payoff": false,
+                "suggested_start_seconds": 0,
+                "suggested_end_seconds": 0,
+                "notes": "catatan verifikasi",
+                "uncertain": false
+              }}
+            ],
+            "limitations": []
+          }}
+          """
+
+          body = {
+              "model": "gemini-3.6-flash",
+              "previous_interaction_id": previous_id,
+              "input": prompt
+          }
+          req = urllib.request.Request(
+              "https://generativelanguage.googleapis.com/v1beta/interactions",
+              data=json.dumps(body).encode("utf-8"),
+              headers={
+                  "x-goog-api-key": os.environ["GEMINI_API_KEY"],
+                  "Content-Type": "application/json"
+              },
+              method="POST"
+          )
+          try:
+              with urllib.request.urlopen(req, timeout=1100) as response:
+                  raw = response.read().decode("utf-8")
+          except urllib.error.HTTPError as e:
+              detail = e.read().decode("utf-8", errors="replace")
+              print(f"Gemini API HTTP {e.code}: {detail}", file=sys.stderr)
+              if e.code == 400:
+                  print("Periksa apakah ID interaksi benar dan belum kedaluwarsa.", file=sys.stderr)
+              raise SystemExit(1)
+
+          with open("transcript-verification-raw.json", "w", encoding="utf-8") as f:
+              f.write(raw)
+
+          data = json.loads(raw)
+          if data.get("status") != "completed":
+              raise SystemExit(f"Interaksi verifikasi belum selesai: status={data.get('status')}")
+
+          output_text = data.get("output_text") or ""
+          if not output_text:
+              chunks = []
+              for step in data.get("steps", []):
+                  if isinstance(step, dict) and step.get("type") in (None, "model_output"):
+                      for part in step.get("content", []) if isinstance(step.get("content"), list) else []:
+                          if isinstance(part, dict) and part.get("type") == "text" and isinstance(part.get("text"), str):
+                              chunks.append(part["text"])
+              output_text = "\\n".join(chunks)
+
+          if not output_text.strip():
+              raise SystemExit("Gemini selesai tetapi tidak mengembalikan teks hasil verifikasi.")
+
+          text = output_text.strip()
+          text = re.sub(r"^\\s*```(?:json)?\\s*", "", text, flags=re.I)
+          text = re.sub(r"\\s*```\\s*$", "", text)
+          try:
+              result = json.loads(text)
+          except json.JSONDecodeError:
+              start, end = text.find("{"), text.rfind("}")
+              if start < 0 or end <= start:
+                  raise SystemExit("Hasil verifikasi bukan JSON valid.")
+              result = json.loads(text[start:end+1])
+
+          if not isinstance(result, dict) or not isinstance(result.get("candidates"), list):
+              raise SystemExit("Skema hasil verifikasi tidak sesuai.")
+          with open("transcript-verification.json", "w", encoding="utf-8") as f:
+              json.dump(result, f, ensure_ascii=False, indent=2)
+
+          print("Verifikasi transkrip selesai.")
+          print("Status:", result.get("verification_status"))
+          for c in result["candidates"]:
+              print(f"#{c.get('rank')} | {c.get('suggested_start_seconds')}–{c.get('suggested_end_seconds')} detik | uncertain={c.get('uncertain')}")
+          PY
+
+      - name: Upload transcript verification
+        uses: actions/upload-artifact@v4
+        with:
+          name: clipping-transcript-verification
+          path: |
+            transcript-verification.json
+            transcript-verification-raw.json
+          if-no-files-found: error
+          retention-days: 7
