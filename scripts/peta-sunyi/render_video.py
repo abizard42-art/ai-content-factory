@@ -176,8 +176,8 @@ def make_end(path):
     centered(d,"Tulis pendapatmu di komentar",1320,font(27),(184,202,193,255))
     im.convert("RGB").save(path,quality=95)
 
-def convert_vtt_to_srt(vtt_path):
-    """Remove WebVTT positioning directives and keep subtitles in the lower safe area."""
+def convert_vtt_to_ass(vtt_path):
+    """Convert WebVTT to ASS with an explicit 1080x1920 canvas and bottom-safe subtitle style."""
     lines = pathlib.Path(vtt_path).read_text(encoding="utf-8-sig").splitlines()
     cues, current = [], []
     for raw in lines:
@@ -192,24 +192,57 @@ def convert_vtt_to_srt(vtt_path):
             if current:
                 cues.append(current)
             parts = line.split()
-            current = [parts[0] + " --> " + parts[2]]
-        elif current and not re.fullmatch(r"\d+", line):
+            current = [parts[0], parts[2]]
+        elif current and not re.fullmatch(r"\\d+", line):
             current.append(line)
     if current:
         cues.append(current)
-    output = []
-    for idx,cue in enumerate(cues,1):
-        words = [html.unescape(re.sub(r"<[^>]+>","",x)).strip() for x in cue[1:]]
-        words = [x for x in words if x]
-        if words:
-            phrase = " ".join(words)
-            wrapped = textwrap.wrap(phrase, width=34, max_lines=2, placeholder="…")
-            output.extend([str(idx),cue[0],"\n".join(wrapped),""])
-    target = pathlib.Path(vtt_path).with_suffix(".srt")
-    target.write_text("\n".join(output),encoding="utf-8")
-    if not target.exists() or target.stat().st_size == 0:
-        raise RuntimeError("Subtitle normalization produced an empty SRT")
+
+    def ass_time(value):
+        bits = value.replace(",", ".").split(":")
+        if len(bits) == 2:
+            hours, minutes, seconds = 0, int(bits[0]), float(bits[1])
+        else:
+            hours, minutes, seconds = int(bits[0]), int(bits[1]), float(bits[2])
+        whole = int(seconds)
+        centis = int(round((seconds - whole) * 100))
+        if centis >= 100:
+            whole += 1; centis = 0
+        return f"{hours}:{minutes:02d}:{whole:02d}.{centis:02d}"
+
+    header = [
+        "[Script Info]",
+        "Title: Peta Sunyi subtitles",
+        "ScriptType: v4.00+",
+        "WrapStyle: 2",
+        "ScaledBorderAndShadow: yes",
+        "PlayResX: 1080",
+        "PlayResY: 1920",
+        "",
+        "[V4+ Styles]",
+        "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding",
+        "Style: Default,DejaVu Sans,34,&H00FFFFFF,&H00FFFFFF,&H00101010,&H80000000,0,0,0,0,100,100,0,0,1,2,0,2,110,110,245,1",
+        "",
+        "[Events]",
+        "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
+    ]
+    events = []
+    for cue in cues:
+        if len(cue) < 3:
+            continue
+        phrase = " ".join(html.unescape(re.sub(r"<[^>]+>", "", x)).strip() for x in cue[2:])
+        phrase = re.sub(r"\\s+", " ", phrase).strip()
+        if not phrase:
+            continue
+        wrapped = textwrap.wrap(phrase, width=34, max_lines=2, placeholder="…")
+        safe_text = r"\\N".join(wrapped).replace("{", "(").replace("}", ")")
+        events.append(f"Dialogue: 0,{ass_time(cue[0])},{ass_time(cue[1])},Default,,0,0,0,,{safe_text}")
+    target = pathlib.Path(vtt_path).with_suffix(".ass")
+    target.write_text("\\n".join(header + events) + "\\n", encoding="utf-8")
+    if not events or target.stat().st_size == 0:
+        raise RuntimeError(f"Subtitle conversion produced no ASS cues for {vtt_path}")
     return target
+
 
 def probe_duration(path):
     value=subprocess.check_output(["ffprobe","-v","error","-show_entries","format=duration","-of","default=noprint_wrappers=1:nokey=1",str(path)],text=True)
@@ -238,15 +271,9 @@ def main():
         if kind=="ai":
             vf += ",drawbox=x=0:y=122:w=iw:h=62:color=black@0.62:t=fill"
             vf += ",drawtext=text='REKA ADEGAN  •  ILUSTRASI AI':fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:fontcolor=white:fontsize=25:x=(w-text_w)/2:y=139"
-        # Normalize VTT cue positions; render compact subtitles at the lower safe area.
-        srt = convert_vtt_to_srt(vtt)
-        subtitle_filter = (
-            f"subtitles={srt}:original_size={W}x{H}:"
-            "force_style='FontName=DejaVu Sans,FontSize=32,PrimaryColour=&H00FFFFFF,"
-            "OutlineColour=&H00101010,BorderStyle=1,Outline=2,Shadow=0,"
-            "Alignment=2,MarginV=245,MarginL=110,MarginR=110,PlayResX=1080,PlayResY=1920'"
-        )
-        vf += "," + subtitle_filter
+        # Render normalized subtitles on an explicit 1080x1920 ASS canvas.
+        ass = convert_vtt_to_ass(vtt)
+        vf += f",ass={ass}"
         run(["ffmpeg","-y","-loop","1","-i",str(src),"-i",str(audio),"-t",f"{duration:.3f}",
              "-vf",vf,"-r",str(FPS),"-c:v","libx264","-preset","veryfast","-crf","20",
              "-pix_fmt","yuv420p","-c:a","aac","-b:a","160k","-shortest",str(clip)])
