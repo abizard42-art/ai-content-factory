@@ -235,10 +235,10 @@ def convert_vtt_to_ass(vtt_path):
         if not phrase:
             continue
         wrapped = textwrap.wrap(phrase, width=34, max_lines=2, placeholder="…")
-        safe_text = r"\\N".join(wrapped).replace("{", "(").replace("}", ")")
+        safe_text = r"\N".join(wrapped).replace("{", "(").replace("}", ")")
         events.append(f"Dialogue: 0,{ass_time(cue[0])},{ass_time(cue[1])},Default,,0,0,0,,{safe_text}")
     target = pathlib.Path(vtt_path).with_suffix(".ass")
-    target.write_text("\\n".join(header + events) + "\\n", encoding="utf-8")
+    target.write_text("\n".join(header + events) + "\n", encoding="utf-8")
     if not events or target.stat().st_size == 0:
         raise RuntimeError(f"Subtitle conversion produced no ASS cues for {vtt_path}")
     return target
