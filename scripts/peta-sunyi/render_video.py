@@ -68,13 +68,41 @@ def centered(draw, text, y, fnt, fill, anchor="mm"):
 
 def make_map(path):
     """Render a real street map from OpenStreetMap road geometry."""
-    query = urllib.parse.urlencode({"q": "Roemah Kentang 1908, Jalan Banda 18, Bandung, Indonesia", "format": "jsonv2", "limit": "1"})
-    req = urllib.request.Request("https://nominatim.openstreetmap.org/search?" + query,
-        headers={"User-Agent": "PetaSunyiReviewRenderer/1.0 (documentary video map)"})
-    with urllib.request.urlopen(req, timeout=25) as response:
-        places = json.loads(response.read().decode("utf-8"))
+    # The exact house/business name is not consistently indexed by Nominatim.
+    # Resolve the street instead, and only accept results explicitly matching Jalan Banda.
+    search_variants = [
+        {"q": "Jalan Banda, Bandung, Jawa Barat, Indonesia", "format": "jsonv2", "limit": "5"},
+        {"q": "Jl. Banda, Bandung, West Java, Indonesia", "format": "jsonv2", "limit": "5"},
+        {"street": "Jalan Banda", "city": "Bandung", "state": "Jawa Barat",
+         "country": "Indonesia", "format": "jsonv2", "limit": "5"},
+    ]
+    headers = {"User-Agent": "PetaSunyiReviewRenderer/1.1 (documentary video map)"}
+    places = []
+    lookup_errors = []
+    for index, params in enumerate(search_variants):
+        query = urllib.parse.urlencode(params)
+        req = urllib.request.Request("https://nominatim.openstreetmap.org/search?" + query,
+                                     headers=headers)
+        try:
+            with urllib.request.urlopen(req, timeout=25) as response:
+                candidates = json.loads(response.read().decode("utf-8"))
+            places = [p for p in candidates
+                      if "banda" in p.get("display_name", "").lower()]
+            if places:
+                print("MAP_GEOCODE_OK=" + places[0].get("display_name", "Jalan Banda"))
+                break
+            lookup_errors.append(f"variant {index + 1}: no Jalan Banda result")
+        except Exception as exc:
+            lookup_errors.append(f"variant {index + 1}: {exc}")
+        if index < len(search_variants) - 1:
+            time.sleep(1.2)  # Respect Nominatim's public service usage policy.
     if not places:
-        raise RuntimeError("Nominatim could not locate Jalan Banda No. 18, Bandung")
+        details = "; ".join(lookup_errors)
+        raise RuntimeError(
+            "Nominatim could not resolve Jalan Banda, Bandung after street-level "
+            f"fallback searches. Details: {details}"
+        )
+    # Use the street-level result as an indicative map center, not a surveyed house entrance.
     lat, lon = float(places[0]["lat"]), float(places[0]["lon"])
     overpass_query = '[out:json][timeout:40];(way["highway"](around:1100,' + str(lat) + ',' + str(lon) + '););out geom;'
     body = urllib.parse.urlencode({"data": overpass_query}).encode("utf-8")
