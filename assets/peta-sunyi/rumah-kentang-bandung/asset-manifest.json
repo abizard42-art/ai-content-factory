@@ -1,0 +1,66 @@
+{
+  "channel": "Peta Sunyi",
+  "episode_id": "rumah-kentang-bandung",
+  "format": "9:16",
+  "provider": "Cloudflare Workers AI",
+  "model": "@cf/black-forest-labs/flux-1-schnell",
+  "policy": "AI visuals are illustrative only. Never present generated images as documentary evidence or as exact photographs of Rumah Kentang. Add visible REKA ADEGAN / ILUSTRASI AI labels in the final edit where specified.",
+  "assets": [
+    {
+      "id": "01A",
+      "scene": 1,
+      "kind": "generic_architecture_detail",
+      "label_required": true,
+      "prompt": "Vertical 9:16 cinematic documentary still, close-up of an old iron fence and weathered window details of a generic early twentieth-century heritage house in Bandung, Indonesia, damp pavement after light rain, soft street reflections, quiet dusk atmosphere, realistic architectural photography aesthetic, no people, no ghosts, no readable signs, no text, no watermark. This is a generic illustrative building detail, NOT an identifiable photograph of a real address."
+    },
+    {
+      "id": "01B",
+      "scene": 1,
+      "kind": "generic_establishing_house",
+      "label_required": true,
+      "prompt": "Vertical 9:16 cinematic wide establishing shot of a generic two-storey early twentieth-century colonial-era house in Bandung, Indonesia, viewed from across a quiet street at dusk, mature trees framing the facade, restrained mysterious documentary atmosphere, plausible Indonesian urban surroundings, no supernatural figures, no people recognizable, no text, no signs, no watermark. Do not reproduce a specific real building; this is an illustrative generic house."
+    },
+    {
+      "id": "03A",
+      "scene": 3,
+      "kind": "folklore_reenactment_still_life",
+      "label_required": true,
+      "prompt": "Vertical 9:16 atmospheric historical still-life illustration of a generic old-fashioned kitchen, a large cooking pot filled with potatoes gently steaming on a stove, warm low lamplight, quiet cinematic documentary mood, no people, no child, no accident, no injury, no blood, no text, no watermark. Clearly an imagined folklore reenactment, not a historical photograph."
+    },
+    {
+      "id": "03B",
+      "scene": 3,
+      "kind": "steam_metaphor",
+      "label_required": true,
+      "prompt": "Vertical 9:16 cinematic atmospheric illustration, a thin ribbon of steam drifting through a dim old kitchen and visually dissolving toward the silhouette of a vintage window, poetic metaphor for a rumor, subtle warm and cool lighting, no ghost, no human figure, no text, no watermark. Clearly illustrative, not evidence of a paranormal event."
+    },
+    {
+      "id": "04A",
+      "scene": 4,
+      "kind": "dramatic_window_detail",
+      "label_required": true,
+      "prompt": "Vertical 9:16 cinematic close-up of a closed window in a generic old heritage house at nightfall, faint moving streetlight reflections on the glass, still quiet atmosphere, realistic documentary visual style, no silhouettes, no ghosts, no people, no text, no watermark. Generic illustrative architecture, not a photograph of a specific location."
+    },
+    {
+      "id": "05B",
+      "scene": 5,
+      "kind": "garden_plant_insert",
+      "label_required": true,
+      "prompt": "Vertical 9:16 realistic cinematic close-up of unidentified ornamental garden plants with raindrops in the courtyard of a generic old Indonesian heritage house, soft focus facade and iron fence in background, natural dusk light, do not depict or imply a specific botanical species, no people, no text, no watermark. Illustrative insert only."
+    },
+    {
+      "id": "06A",
+      "scene": 6,
+      "kind": "generic_neighborhood",
+      "label_required": true,
+      "prompt": "Vertical 9:16 quiet Bandung-like residential street in Indonesia, mature shade trees, modest historic and modern houses mixed naturally, soft overcast late afternoon, documentary establishing shot, no identifiable residents, no visible house numbers, no private address details, no text, no watermark. Generic illustrative neighborhood, not documentary footage of the actual street."
+    },
+    {
+      "id": "08A",
+      "scene": 8,
+      "kind": "generic_heritage_wide",
+      "label_required": true,
+      "prompt": "Vertical 9:16 contemplative wide shot of a generic early twentieth-century heritage house in Bandung at blue hour, viewed from across the street, restrained cinematic documentary atmosphere, architectural details subtly visible, realistic Indonesian urban context, no supernatural effects, no recognizable people, no text, no watermark. Do not depict an exact real property; illustrative reconstruction only."
+    }
+  ]
+}
