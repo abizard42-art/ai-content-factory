@@ -1,0 +1,100 @@
+name: Render Peta Sunyi episode review
+
+on:
+  workflow_dispatch:
+    inputs:
+      episode_id:
+        description: "Episode yang akan dirender"
+        required: true
+        type: choice
+        options:
+          - rs-dustira-cimahi
+          - kerkhof-leuwigajah-cimahi
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install rendering dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-dejavu-core
+          python -m pip install --upgrade pip
+          python -m pip install pillow edge-tts
+      - name: Download episode assets from Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          EPISODE_ID: ${{ inputs.episode_id }}
+        run: |
+          set -euo pipefail
+          config="episodes/peta-sunyi/$EPISODE_ID.json"
+          [ -s "$config" ] || { echo "ERROR: Config episode tidak ditemukan."; exit 1; }
+          mkdir -p work/assets output
+          mapfile -t shot_ids < <(jq -r '.scenes[] | select(.kind == "ai") | .shot' "$config" | sort -u)
+          for id in "${shot_ids[@]}"; do
+            file="peta-sunyi-$id.jpg"
+            object_path="peta-sunyi/$EPISODE_ID/$file"
+            status="$(curl --silent --show-error --output "work/assets/$file" --write-out "%{http_code}" \
+              "${SUPABASE_URL}/storage/v1/object/visual-assets/$object_path" \
+              -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" || true)"
+            if [ "$status" != "200" ]; then
+              echo "ERROR: Gagal mengambil $object_path (HTTP $status). Jalankan workflow Generate Peta Sunyi episode assets dahulu."
+              exit 1
+            fi
+            test -s "work/assets/$file"
+            echo "ASSET_OK=$object_path"
+          done
+      - name: Render review-only video
+        env:
+          EPISODE_CONFIG: episodes/peta-sunyi/${{ inputs.episode_id }}.json
+        run: python scripts/peta-sunyi/render_episode.py
+      - name: Upload review MP4 to private Supabase bucket
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          EPISODE_ID: ${{ inputs.episode_id }}
+        run: |
+          set -euo pipefail
+          bucket_status="$(curl --silent --show-error --output /tmp/bucket.json --write-out "%{http_code}" \
+            "${SUPABASE_URL}/storage/v1/bucket/rendered-videos" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}")"
+          if [ "$bucket_status" = "404" ] || grep -q 'NoSuchBucket' /tmp/bucket.json; then
+            create_status="$(curl --silent --show-error --output /tmp/create-bucket.json --write-out "%{http_code}" \
+              -X POST "${SUPABASE_URL}/storage/v1/bucket" \
+              -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+              -H "Content-Type: application/json" \
+              -d '{"id":"rendered-videos","name":"rendered-videos","public":false}')"
+            if [ "$create_status" != "200" ] && [ "$create_status" != "201" ]; then
+              echo "ERROR: Gagal membuat bucket rendered-videos (HTTP $create_status)"
+              cat /tmp/create-bucket.json
+              exit 1
+            fi
+          elif [ "$bucket_status" != "200" ]; then
+            echo "ERROR: Gagal memeriksa bucket rendered-videos (HTTP $bucket_status)"
+            cat /tmp/bucket.json
+            exit 1
+          fi
+          object_path="peta-sunyi/$EPISODE_ID/$EPISODE_ID-review.mp4"
+          upload_status="$(curl --silent --show-error --output /tmp/upload.json --write-out "%{http_code}" \
+            -X POST "${SUPABASE_URL}/storage/v1/object/rendered-videos/$object_path" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+            -H "Content-Type: video/mp4" -H "x-upsert: true" --data-binary "@output/$EPISODE_ID-review.mp4")"
+          if [ "$upload_status" != "200" ] && [ "$upload_status" != "201" ]; then
+            echo "ERROR: Upload MP4 gagal (HTTP $upload_status)"
+            cat /tmp/upload.json
+            exit 1
+          fi
+          echo "SUPABASE_VIDEO_OK=rendered-videos/$object_path"
+          echo "REVIEW_ONLY=true; NO PUBLISHING"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: peta-sunyi-${{ inputs.episode_id }}-review-video
+          path: output/${{ inputs.episode_id }}-review.mp4
+          if-no-files-found: error
+          retention-days: 7

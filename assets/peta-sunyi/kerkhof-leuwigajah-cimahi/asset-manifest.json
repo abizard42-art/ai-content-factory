@@ -1,0 +1,59 @@
+{
+  "channel": "Peta Sunyi",
+  "episode_id": "kerkhof-leuwigajah-cimahi",
+  "format": "9:16",
+  "provider": "Cloudflare Workers AI",
+  "model": "@cf/black-forest-labs/flux-1-schnell",
+  "policy": "All generated visuals are illustrative reconstructions, not documentary photographs or evidence of paranormal events. Distinguish TPU Kerkhof from Ereveld Leuwigajah. Add visible REKA ADEGAN • ILUSTRASI AI labels.",
+  "assets": [
+    {
+      "id": "01A",
+      "scene": 1,
+      "kind": "old_cemetery_gate",
+      "label_required": true,
+      "prompt": "Vertical 9:16 cinematic documentary-style illustrative reconstruction of an old iron cemetery gate in Cimahi, West Java, early evening mist, tropical trees, subtle old gravestones visible in the distance, quiet solemn atmosphere, no readable names, no people, no ghosts, no text, no watermark. Generic imagined cemetery, not an exact photograph of Kerkhof Leuwigajah."
+    },
+    {
+      "id": "03A",
+      "scene": 3,
+      "kind": "gunung_bohong_historic_cemetery",
+      "label_required": true,
+      "prompt": "Vertical 9:16 historical illustrative reconstruction of a small early-20th-century European cemetery at the foot of a tropical hill in Cimahi, West Java, modest weathered headstones among trees, humid mountain atmosphere, no readable inscriptions, no people, no text, no watermark. Not an exact depiction of a real grave."
+    },
+    {
+      "id": "04A",
+      "scene": 4,
+      "kind": "colonial_archive_map",
+      "label_required": true,
+      "prompt": "Vertical 9:16 cinematic archival research still life, aged map of a colonial-era town in West Java on a wooden desk, subtle road lines and small cemetery symbol but no readable words, archival paper texture, warm desk lamp, no fake official seals, no text, no watermark. Illustrative reconstruction, not an authentic 1931 map."
+    },
+    {
+      "id": "05A",
+      "scene": 5,
+      "kind": "historic_cemetery_headstones",
+      "label_required": true,
+      "prompt": "Vertical 9:16 respectful cinematic view of old varied stone headstones in a tropical cemetery in West Java, soft moss and mature trees, early morning mist, no legible names or dates, no people, no supernatural figures, quiet documentary atmosphere, generic illustration not a photograph of a specific cemetery."
+    },
+    {
+      "id": "06A",
+      "scene": 6,
+      "kind": "junyo_maru_ship_reconstruction",
+      "label_required": true,
+      "prompt": "Vertical 9:16 distant view of a 1940s wartime transport ship on rough dark waters off the coast of Bengkulu, overcast sky, historically plausible silhouette, no explosion, no visible victims, no flags or national insignia, solemn documentary reconstruction, no text, no watermark."
+    },
+    {
+      "id": "07A",
+      "scene": 7,
+      "kind": "war_graves_cemetery",
+      "label_required": true,
+      "prompt": "Vertical 9:16 respectful cinematic reconstruction of a well-maintained war cemetery with neat rows of simple headstones, trimmed grass, tropical trees, soft morning mist, no readable names, no people, no national flags, no supernatural elements, generic illustrative scene not an actual photograph of Ereveld Leuwigajah."
+    },
+    {
+      "id": "08A",
+      "scene": 8,
+      "kind": "cemetery_gate_closing",
+      "label_required": true,
+      "prompt": "Vertical 9:16 contemplative cinematic reconstruction of an old cemetery gate viewed from the public road at dusk, tropical tree silhouettes, subtle warm streetlight, quiet reflective atmosphere, no people, no ghosts, no readable signage, no text, no watermark. Generic illustration only."
+    }
+  ]
+}

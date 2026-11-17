@@ -1,0 +1,52 @@
+{
+  "channel": "Peta Sunyi",
+  "episode_id": "rs-dustira-cimahi",
+  "format": "9:16",
+  "provider": "Cloudflare Workers AI",
+  "model": "@cf/black-forest-labs/flux-1-schnell",
+  "policy": "All generated visuals are illustrative reconstructions, not documentary photographs of RS Dustira or evidence of paranormal events. Burn in visible REKA ADEGAN • ILUSTRASI AI labels.",
+  "assets": [
+    {
+      "id": "01A",
+      "scene": 1,
+      "kind": "generic_historic_hospital_corridor",
+      "label_required": true,
+      "prompt": "Vertical 9:16 cinematic documentary-style illustrative reconstruction of an empty late-19th-century Dutch East Indies military hospital corridor in West Java, simple tiled floor, tall timber doors, high shuttered windows, tropical architectural adaptation, dim warm practical lamps, quiet unsettling atmosphere, no patients, no staff, no readable signs, no text, no watermark. Generic imagined setting, not an actual photograph of RS Dustira."
+    },
+    {
+      "id": "01B",
+      "scene": 1,
+      "kind": "generic_hospital_facade",
+      "label_required": true,
+      "prompt": "Vertical 9:16 cinematic documentary-style reconstruction of a modest late-19th-century Dutch East Indies military hospital in Cimahi, West Java, broad shaded veranda, tall timber windows, clay roof tiles, tropical trees, restrained colonial institutional architecture adapted to the tropics, dusk after rain, no grand European manor, no readable signage, no people, no text, no watermark. Not an exact depiction of RS Dustira."
+    },
+    {
+      "id": "04A",
+      "scene": 4,
+      "kind": "archive_wartime_still_life",
+      "label_required": true,
+      "prompt": "Vertical 9:16 cinematic still life of a historical research desk with an old map of a West Java garrison town, archival folders, handwritten papers with no legible text, warm desk lamp, restrained documentary mood, no fake official seals, no readable text, no people, no watermark. Clearly an illustrative reconstruction, not an authentic archival photograph."
+    },
+    {
+      "id": "05A",
+      "scene": 5,
+      "kind": "folklore_nurse_silhouette",
+      "label_required": true,
+      "prompt": "Vertical 9:16 atmospheric illustrative reconstruction of an empty old hospital corridor at night with a very distant indistinct female nurse silhouette at the far end, no visible face, no identifiable uniform insignia, no supernatural glow, no patients, no blood, no violence, restrained eerie documentary mood. This is a visual metaphor for an urban legend, not evidence of a ghost."
+    },
+    {
+      "id": "06A",
+      "scene": 6,
+      "kind": "symbolic_ward_13_door",
+      "label_required": true,
+      "prompt": "Vertical 9:16 close-up of a generic old wooden institutional ward door in a historic hospital corridor, dim practical light, weathered paint, a simple blank number plate area where editor may add number 13 separately, no legible text, no patients, no medical records, no actual RS Dustira identifying details, atmospheric documentary illustration."
+    },
+    {
+      "id": "08A",
+      "scene": 8,
+      "kind": "generic_hospital_at_dusk",
+      "label_required": true,
+      "prompt": "Vertical 9:16 contemplative wide shot of a modest historic tropical hospital building in West Java at blue hour, broad eaves, tiled roof, shaded veranda, mature tropical trees, calm documentary atmosphere, no identifiable hospital signage, no people, no text, no watermark. Generic illustrative reconstruction only."
+    }
+  ]
+}

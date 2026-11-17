@@ -1,0 +1,81 @@
+{
+  "episode_id": "rs-dustira-cimahi",
+  "title": "RS Dustira: Misteri Suster Bule dan Bangsal 13",
+  "map": {
+    "query": "RS Dustira, Jalan Dustira, Baros, Cimahi, Jawa Barat, Indonesia",
+    "title": "CIMAHI",
+    "subtitle": "KAWASAN BAROS",
+    "pin_label": "RS DUSTIRA • CIMAHI",
+    "footer": "PETA JALAN • BAROS, CIMAHI"
+  },
+  "fact": {
+    "heading": "SEJARAH RS DUSTIRA",
+    "lines": [
+      "ANNO 1887 • TERTULIS PADA GERBANG",
+      "1896 • AWAL PEMBANGUNAN MENURUT RISET ARSIP",
+      "1956 • DINAMAI RUMAH SAKIT DUSTIRA"
+    ],
+    "highlight": "FAKTA SEJARAH / LEGENDA MISTIS"
+  },
+  "end": {
+    "title": "SUSTER BULE?",
+    "subtitle": "MISTERI RS DUSTIRA • CIMAHI",
+    "cta": "FAKTA ATAU LEGENDA?"
+  },
+  "scenes": [
+    {
+      "shot": "01A",
+      "text": "Di Cimahi, ada rumah sakit tua yang menyimpan cerita tentang seorang suster berambut pirang… yang konon memeriksa pasien saat malam, padahal tak seorang pun mengenalnya.",
+      "title": "MISTERI RS DUSTIRA • CIMAHI",
+      "kind": "ai"
+    },
+    {
+      "shot": "MAP",
+      "text": "Tempat itu adalah Rumah Sakit Dustira, di kawasan Baros, Kota Cimahi.",
+      "title": "BAROS • CIMAHI",
+      "kind": "graphic"
+    },
+    {
+      "shot": "01B",
+      "text": "Bangunan ini bermula sebagai rumah sakit militer Hindia Belanda, bagian dari perkembangan Cimahi sebagai kota garnisun. Di gerbangnya tertulis Anno 1887. Namun riset arsip yang dipublikasikan Pemkot Cimahi menunjukkan pembangunan rumah sakit dimulai pada 1896.",
+      "title": "1887 ATAU 1896?",
+      "kind": "ai"
+    },
+    {
+      "shot": "04A",
+      "text": "Rumah sakit ini menjadi bagian dari sejarah militer Cimahi. Pada masa perang, tempat ini merawat tentara dan kemudian mengalami pergantian penguasaan sebelum akhirnya diserahkan kepada TNI.",
+      "title": "JEJAK SEJARAH MILITER",
+      "kind": "ai"
+    },
+    {
+      "shot": "05A",
+      "text": "Tapi cerita yang paling sering dibicarakan justru datang dari lorong-lorongnya. Seorang pegiat sejarah lokal pernah menceritakan legenda pasien yang mengaku diperiksa suster berwajah Eropa, berambut pirang—namun tak dikenal oleh petugas lain.",
+      "title": "LEGENDA SUSTER BULE",
+      "kind": "ai"
+    },
+    {
+      "shot": "06A",
+      "text": "Ada pula cerita tentang Bangsal 13, yang konon dikaitkan dengan pasien gangguan jiwa dan suara-suara dari dalamnya. Namun cerita ini beredar sebagai urban legend, bukan catatan medis atau bukti kejadian gaib.",
+      "title": "BANGSAL 13?",
+      "kind": "ai"
+    },
+    {
+      "shot": "FACT",
+      "text": "Yang bisa ditelusuri adalah sejarah rumah sakitnya. Kisah suster dan Bangsal 13 tetap berada di wilayah cerita yang beredar—belum terbukti sebagai peristiwa paranormal.",
+      "title": "FAKTA DAN LEGENDA",
+      "kind": "graphic"
+    },
+    {
+      "shot": "08A",
+      "text": "Pada 1956, rumah sakit ini dinamai Dustira, untuk mengenang Mayor dr. Dustira Prawiraamidjaja, dokter tentara yang gugur saat membantu para pejuang.",
+      "title": "1956 • NAMA DUSTIRA",
+      "kind": "ai"
+    },
+    {
+      "shot": "END",
+      "text": "Menurutmu, mengapa rumah sakit tua seperti Dustira melahirkan begitu banyak cerita misteri? Tulis pendapatmu.",
+      "title": "MENGAPA CERITA INI BERTAHAN?",
+      "kind": "graphic"
+    }
+  ]
+}
