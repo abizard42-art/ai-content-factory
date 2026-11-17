@@ -39,6 +39,47 @@ jobs:
           done
       - name: Render vertical review cut
         run: python scripts/peta-sunyi/render_video.py
+      - name: Upload review video to Supabase Storage
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: |
+          set -euo pipefail
+          bucket_status=$(curl --silent --show-error --output /tmp/bucket.json --write-out "%{http_code}" \
+            "${SUPABASE_URL}/storage/v1/bucket/rendered-videos" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}")
+          if [ "$bucket_status" = "404" ]; then
+            create_status=$(curl --silent --show-error --output /tmp/create-bucket.json --write-out "%{http_code}" \
+              -X POST "${SUPABASE_URL}/storage/v1/bucket" \
+              -H "apikey: ${SUPABASE_SECRET_KEY}" \
+              -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+              -H "Content-Type: application/json" \
+              -d '{"id":"rendered-videos","name":"rendered-videos","public":false}')
+            if [ "$create_status" != "200" ] && [ "$create_status" != "201" ]; then
+              echo "ERROR: Gagal membuat bucket rendered-videos (HTTP $create_status)"
+              cat /tmp/create-bucket.json
+              exit 1
+            fi
+          elif [ "$bucket_status" != "200" ]; then
+            echo "ERROR: Gagal memeriksa bucket rendered-videos (HTTP $bucket_status)"
+            cat /tmp/bucket.json
+            exit 1
+          fi
+          object_path="peta-sunyi/rumah-kentang-bandung/peta-sunyi-rumah-kentang-review.mp4"
+          upload_status=$(curl --silent --show-error --output /tmp/upload.json --write-out "%{http_code}" \
+            -X POST "${SUPABASE_URL}/storage/v1/object/rendered-videos/$object_path" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+            -H "Content-Type: video/mp4" \
+            -H "x-upsert: true" \
+            --data-binary "@output/peta-sunyi-rumah-kentang-review.mp4")
+          if [ "$upload_status" != "200" ] && [ "$upload_status" != "201" ]; then
+            echo "ERROR: Upload MP4 ke Supabase gagal (HTTP $upload_status)"
+            cat /tmp/upload.json
+            exit 1
+          fi
+          echo "SUPABASE_VIDEO_OK=rendered-videos/$object_path"
       - name: Upload review video
         uses: actions/upload-artifact@v4
         with:
