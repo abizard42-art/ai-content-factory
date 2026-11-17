@@ -192,21 +192,41 @@ jobs:
               f.write(raw)
 
           data = json.loads(raw)
+          if data.get("status") not in (None, "completed"):
+              raise SystemExit(f"Interaksi Gemini belum selesai atau gagal: status={data.get('status')}")
+
           output_text = data.get("output_text")
           if not output_text:
-              # Fallback for response variants that expose text in output blocks.
+              # REST Interactions API mengembalikan teks di steps[].content[].text.
               chunks = []
-              for item in data.get("output", []):
-                  if isinstance(item, dict):
-                      if isinstance(item.get("text"), str):
-                          chunks.append(item["text"])
-                      for part in item.get("content", []) if isinstance(item.get("content"), list) else []:
-                          if isinstance(part, dict) and isinstance(part.get("text"), str):
+              for step in data.get("steps", []):
+                  if not isinstance(step, dict):
+                      continue
+                  if step.get("type") not in (None, "model_output"):
+                      continue
+                  content_blocks = step.get("content", [])
+                  if isinstance(content_blocks, list):
+                      for part in content_blocks:
+                          if isinstance(part, dict) and part.get("type") == "text" and isinstance(part.get("text"), str):
                               chunks.append(part["text"])
+                  elif isinstance(step.get("text"), str):
+                      chunks.append(step["text"])
+
+              # Compatibility fallback for older/alternate response shapes.
+              if not chunks:
+                  for item in data.get("output", []):
+                      if isinstance(item, dict):
+                          if isinstance(item.get("text"), str):
+                              chunks.append(item["text"])
+                          for part in item.get("content", []) if isinstance(item.get("content"), list) else []:
+                              if isinstance(part, dict) and isinstance(part.get("text"), str):
+                                  chunks.append(part["text"])
               output_text = "\n".join(chunks)
 
           if not output_text:
-              print("Respons Gemini tidak berisi output teks yang dikenali.", file=sys.stderr)
+              print("Respons Gemini selesai, tetapi steps tidak mengandung blok teks model_output.", file=sys.stderr)
+              print("Top-level keys:", list(data.keys()), file=sys.stderr)
+              print("Step summary:", [{"type": s.get("type"), "content_types": [p.get("type") for p in s.get("content", []) if isinstance(p, dict)]} for s in data.get("steps", []) if isinstance(s, dict)], file=sys.stderr)
               print(raw[:12000], file=sys.stderr)
               raise SystemExit(1)
 
