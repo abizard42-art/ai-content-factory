@@ -1,0 +1,48 @@
+name: Render Peta Sunyi review video
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install rendering dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-dejavu-core
+          python -m pip install --upgrade pip
+          python -m pip install pillow edge-tts
+      - name: Download generated assets from Supabase Storage
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: |
+          set -euo pipefail
+          mkdir -p work/assets output
+          for id in 01B 03A 03B 04A 05B 06A 08A; do
+            file="peta-sunyi-$id.jpg"
+            url="${SUPABASE_URL}/storage/v1/object/visual-assets/peta-sunyi/rumah-kentang-bandung/$file"
+            status=$(curl --silent --show-error --output "work/assets/$file" --write-out "%{http_code}" \
+              "$url" -H "apikey: $SUPABASE_SECRET_KEY" -H "Authorization: Bearer $SUPABASE_SECRET_KEY" || true)
+            if [ "$status" != "200" ]; then
+              echo "ERROR: Gagal mengambil $file (HTTP $status)."
+              exit 1
+            fi
+            test -s "work/assets/$file"
+            echo "ASSET_OK=$file"
+          done
+      - name: Render vertical review cut
+        run: python scripts/peta-sunyi/render_video.py
+      - name: Upload review video
+        uses: actions/upload-artifact@v4
+        with:
+          name: peta-sunyi-rumah-kentang-review-video
+          path: output/peta-sunyi-rumah-kentang-review.mp4
+          if-no-files-found: error
+          retention-days: 7
