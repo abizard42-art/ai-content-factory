@@ -69,7 +69,7 @@ jobs:
           CONFIG
 
           python - <<'PY'
-          import json, os, re, sys, urllib.request, urllib.error
+          import json, os, re, sys, time, random, urllib.request, urllib.error
 
           config = json.load(open("mystery-channel-config.json", encoding="utf-8"))
           topic = os.environ["TOPIC"].strip()
@@ -172,13 +172,33 @@ jobs:
               headers={"x-goog-api-key": os.environ["GEMINI_API_KEY"], "Content-Type": "application/json"},
               method="POST"
           )
-          try:
-              with urllib.request.urlopen(req, timeout=900) as response:
-                  raw = response.read().decode("utf-8")
-          except urllib.error.HTTPError as e:
-              detail = e.read().decode("utf-8", errors="replace")
-              print(f"Gemini API HTTP {e.code}: {detail}", file=sys.stderr)
-              raise SystemExit(1)
+          # Retry khusus untuk HTTP 503 (kapasitas layanan sementara).
+          # Maksimal 5 retry setelah percobaan pertama; jeda eksponensial + jitter.
+          retry_delays = [5, 10, 20, 40, 60]
+          for attempt in range(len(retry_delays) + 1):
+              try:
+                  with urllib.request.urlopen(req, timeout=900) as response:
+                      raw = response.read().decode("utf-8")
+                  print(f"Gemini API berhasil pada percobaan ke-{attempt + 1}.")
+                  break
+              except urllib.error.HTTPError as e:
+                  detail = e.read().decode("utf-8", errors="replace")
+                  if e.code == 503 and attempt < len(retry_delays):
+                      delay = retry_delays[attempt] + random.uniform(0, 2)
+                      print(
+                          f"Gemini API HTTP 503 (UNAVAILABLE), percobaan "
+                          f"{attempt + 1}/{len(retry_delays) + 1}. "
+                          f"Mencoba ulang dalam {delay:.1f} detik.",
+                          file=sys.stderr
+                      )
+                      time.sleep(delay)
+                      continue
+                  print(f"Gemini API HTTP {e.code}: {detail}", file=sys.stderr)
+                  if e.code == 503:
+                      print("Retry 503 sudah mencapai batas maksimal.", file=sys.stderr)
+                  raise SystemExit(1)
+          else:
+              raise SystemExit("Gemini API gagal setelah seluruh percobaan ulang.")
 
           open("gemini-response-raw.json", "w", encoding="utf-8").write(raw)
           response = json.loads(raw)
