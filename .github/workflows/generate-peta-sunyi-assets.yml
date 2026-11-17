@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       shot_ids:
-        description: "ID shot yang dibuat, pisahkan koma. Shot berikutnya: 03A. Contoh: 03A atau 03A,03B"
+        description: "ID shot yang dibuat, pisahkan koma. Shot berikutnya: 03B. Contoh: 03B atau 03B,04A"
         required: true
-        default: "03A"
+        default: "03B"
         type: string
 
 permissions:
