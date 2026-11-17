@@ -98,28 +98,65 @@ jobs:
           }}
           """
 
-          body = {
-              "model": "gemini-3.6-flash",
-              "previous_interaction_id": previous_id,
-              "input": prompt
-          }
-          req = urllib.request.Request(
-              "https://generativelanguage.googleapis.com/v1beta/interactions",
-              data=json.dumps(body).encode("utf-8"),
-              headers={
-                  "x-goog-api-key": os.environ["GEMINI_API_KEY"],
-                  "Content-Type": "application/json"
-              },
-              method="POST"
-          )
-          try:
-              with urllib.request.urlopen(req, timeout=1100) as response:
-                  raw = response.read().decode("utf-8")
-          except urllib.error.HTTPError as e:
-              detail = e.read().decode("utf-8", errors="replace")
-              print(f"Gemini API HTTP {e.code}: {detail}", file=sys.stderr)
-              if e.code == 400:
-                  print("Periksa apakah ID interaksi benar dan belum kedaluwarsa.", file=sys.stderr)
+          # Model lanjutan boleh berbeda selama kompatibel dengan riwayat interaksi.
+          # Semua kandidat di bawah menghasilkan teks; 429 pindah model, 503 dicoba ulang.
+          models = [
+              "gemini-3.8-flash",
+              "gemini-3.1-flash-lite",
+              "gemini-3.5-flash-lite",
+              "gemini-2.5-flash"
+          ]
+          raw = None
+          last_error = None
+
+          for model in models:
+              for attempt, wait_seconds in enumerate((0, 12, 30), start=1):
+                  if wait_seconds:
+                      print(f"HTTP 503 sementara. Menunggu {wait_seconds} detik sebelum percobaan {attempt}/3 pada {model}...")
+                      import time
+                      time.sleep(wait_seconds)
+
+                  body = {
+                      "model": model,
+                      "previous_interaction_id": previous_id,
+                      "input": prompt
+                  }
+                  req = urllib.request.Request(
+                      "https://generativelanguage.googleapis.com/v1beta/interactions",
+                      data=json.dumps(body).encode("utf-8"),
+                      headers={
+                          "x-goog-api-key": os.environ["GEMINI_API_KEY"],
+                          "Content-Type": "application/json"
+                      },
+                      method="POST"
+                  )
+                  try:
+                      with urllib.request.urlopen(req, timeout=1100) as response:
+                          raw = response.read().decode("utf-8")
+                      print(f"Verifikasi berhasil menggunakan {model}.")
+                      break
+                  except urllib.error.HTTPError as e:
+                      detail = e.read().decode("utf-8", errors="replace")
+                      last_error = f"HTTP {e.code}: {detail}"
+                      if e.code == 503:
+                          print(f"{model} sedang overload (503), percobaan {attempt}/3.")
+                          continue
+                      if e.code == 429:
+                          print(f"{model} terkena rate/quota limit (429); mencoba model cadangan.")
+                          break
+                      print(f"Gemini API gagal pada {model}: {last_error}", file=sys.stderr)
+                      if e.code == 400:
+                          print("Periksa ID interaksi, masa retensi, dan kompatibilitas model dengan riwayat sebelumnya.", file=sys.stderr)
+                      raise SystemExit(1)
+                  except Exception as e:
+                      print(f"Gemini API request gagal pada {model}: {e}", file=sys.stderr)
+                      raise SystemExit(1)
+
+              if raw is not None:
+                  break
+
+          if raw is None:
+              print("Semua model verifikasi terkena limit atau overload. Error terakhir: " + str(last_error), file=sys.stderr)
               raise SystemExit(1)
 
           with open("transcript-verification-raw.json", "w", encoding="utf-8") as f:
