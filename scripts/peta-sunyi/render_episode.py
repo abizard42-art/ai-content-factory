@@ -64,15 +64,20 @@ def make_map(path):
     if not query:
         raise RuntimeError("Episode config is missing map.query")
     headers = {"User-Agent": "PetaSunyiReviewRenderer/2.0 (documentary video map)"}
-    params = urllib.parse.urlencode({"q": query, "format": "jsonv2", "limit": "1"})
-    req = urllib.request.Request("https://nominatim.openstreetmap.org/search?" + params, headers=headers)
-    with urllib.request.urlopen(req, timeout=30) as response:
-        places = json.loads(response.read().decode("utf-8"))
-    if not places:
-        raise RuntimeError("Nominatim could not resolve episode location: " + query)
-    place = places[0]
-    lat, lon = float(place["lat"]), float(place["lon"])
-    print("MAP_GEOCODE_OK=" + place.get("display_name", query), flush=True)
+    coordinates = cfg.get("coordinates")
+    if coordinates:
+        lat, lon = float(coordinates["lat"]), float(coordinates["lon"])
+        print(f"MAP_COORDINATES_OK={lat},{lon}", flush=True)
+    else:
+        params = urllib.parse.urlencode({"q": query, "format": "jsonv2", "limit": "1"})
+        req = urllib.request.Request("https://nominatim.openstreetmap.org/search?" + params, headers=headers)
+        with urllib.request.urlopen(req, timeout=30) as response:
+            places = json.loads(response.read().decode("utf-8"))
+        if not places:
+            raise RuntimeError("Nominatim could not resolve episode location: " + query)
+        place = places[0]
+        lat, lon = float(place["lat"]), float(place["lon"])
+        print("MAP_GEOCODE_OK=" + place.get("display_name", query), flush=True)
     overpass_query = '[out:json][timeout:40];(way["highway"](around:1000,' + str(lat) + ',' + str(lon) + '););out geom;'
     body = urllib.parse.urlencode({"data": overpass_query}).encode("utf-8")
     osm_req = urllib.request.Request("https://overpass-api.de/api/interpreter", data=body,
