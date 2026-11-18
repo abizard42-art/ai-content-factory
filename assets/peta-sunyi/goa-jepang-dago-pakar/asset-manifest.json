@@ -1,0 +1,52 @@
+{
+  "channel": "Peta Sunyi",
+  "episode_id": "goa-jepang-dago-pakar",
+  "format": "9:16",
+  "provider": "Cloudflare Workers AI",
+  "model": "@cf/black-forest-labs/flux-1-schnell",
+  "policy": "All visuals are illustrative AI reconstructions, not documentary photographs or archaeological evidence. Keep historical claims distinct from local folklore. The cave entrance, tunnel dimensions, openings and wall details are intentionally generic until verified location photographs are available. Depict romusha respectfully without violence. No ghosts or paranormal entities. Add visible REKA ADEGAN • ILUSTRASI AI labels in post-production; do not ask the image model to render text.",
+  "assets": [
+    {
+      "id": "01A",
+      "scene": 1,
+      "kind": "pine_forest_cave_hook",
+      "label_required": true,
+      "prompt": "Vertical 9:16 establishing image for an Indonesian historical mystery documentary. A dense pine forest in the Dago Pakar highlands near Bandung at blue dusk, tall straight pine trunks fading into layered fog, a narrow damp dirt path leading toward a low weathered rocky outcrop, a small indistinct cave opening barely visible in the rock, one lone human silhouette holding a flashlight for scale, thin beam cutting through mist, wet ground and fallen pine needles. Compose with strong leading lines and deep foreground-midground-background separation. 2D cinematic hand-painted illustration, painterly matte-painting texture, subtle film grain, muted dark forest green, fog grey and deep umber, restrained volumetric lighting, quiet oppressive atmosphere, detailed environmental storytelling. Generic illustrative reconstruction, not an exact photograph of the site. Avoid photorealism, photography, 3D, CGI, anime, manga, cute cartoon, text, letters, subtitles, watermark, logo, ghosts, glowing eyes, monsters, gore, blood, modern buildings, cars, crowds, neon, oversaturated colors."
+    },
+    {
+      "id": "03A",
+      "scene": 3,
+      "kind": "generic_cave_entrance",
+      "label_required": true,
+      "prompt": "Vertical 9:16 eye-level exterior view of a modest historical cave entrance at the base of a weathered rocky hillside in a tropical pine forest in Dago Pakar, Bandung. Damp grey-brown stone, exposed roots, patches of moss, a rough dark opening with its exact shape and dimensions deliberately generic and not presented as a verified architectural record, a narrow footpath approaching from foreground, one tiny visitor silhouette standing well to the side for scale, the interior completely dark. 2D cinematic hand-painted illustration, atmospheric historical mystery documentary, painterly matte-painting texture, subtle film grain, muted dark forest green, fog grey and deep umber, soft mist and restrained cold side light, vertical composition. Illustrative reconstruction only; do not invent multiple entrances or distinctive architectural features. Avoid photorealism, photography, 3D, CGI, anime, text, signs, graffiti, tourist crowds, stalactites, limestone karst formations, ghosts, creatures, glowing eyes, bright daylight, watermark, logo."
+    },
+    {
+      "id": "04A",
+      "scene": 4,
+      "kind": "romusha_historical_reconstruction",
+      "label_required": true,
+      "prompt": "Vertical 9:16 respectful historical reconstruction of manual rock excavation in West Java during the Japanese occupation in the 1940s. A small group of Indonesian civilian laborers in plain worn period-appropriate clothing carefully chiseling a rough rock face with simple hand tools and carrying small baskets of rubble, tired posture and restrained expressions, no identifiable faces. A distant uniformed guard appears only as a small indistinct silhouette far in the background, not interacting with the workers. Show the physical scale of manual labor and the rough rock surface, subdued sepia light filtering into a shadowed hillside worksite. 2D cinematic hand-painted illustration, painterly matte-painting texture, subtle film grain, muted dark forest green, fog grey and deep umber, dignified documentary tone. Illustrative reconstruction, not a claim to depict a specific documented scene. Avoid violence, whipping, beating, torture, blood, corpses, weapons pointed at people, graphic suffering, caricature, modern tools, machinery, text, watermark, logo, photorealism, 3D, anime."
+    },
+    {
+      "id": "05A",
+      "scene": 5,
+      "kind": "narrow_chiseled_tunnel",
+      "label_required": true,
+      "prompt": "Vertical 9:16 deep one-point-perspective view inside a narrow hand-cut historical tunnel in rough grey-brown rock. The walls are irregular and show subtle hand-tool chisel marks; the ceiling and width remain visually plausible but deliberately unspecified, not a measured reconstruction. One flashlight beam from near the camera cuts through damp air toward a small human silhouette far ahead, with only a few steps illuminated and the rest falling into near-black darkness. Slight moisture sheen on the stone, sparse dust particles, claustrophobic stillness, no dramatic supernatural elements. 2D cinematic hand-painted illustration, atmospheric historical mystery documentary, painterly matte-painting texture, subtle film grain, dark forest green shadows, fog grey and deep umber, restrained volumetric flashlight lighting. Generic illustrative reconstruction pending verified interior reference photos. Avoid wide chambers, invented doors, invented vents, stalactites, railings, ceiling lights, ghosts, apparitions, skulls, red lighting, text, watermark, logo, photorealism, 3D, anime."
+    },
+    {
+      "id": "06A",
+      "scene": 6,
+      "kind": "chisel_marks_rock_detail",
+      "label_required": true,
+      "prompt": "Vertical 9:16 tight cinematic close-up of a rough grey-brown rock wall inside a historical hand-cut tunnel, subtle irregular chisel marks and natural stone texture visible across the surface, slight dampness and a faint mineral sheen, one narrow flashlight edge-light grazing the wall and revealing shallow tool marks while the background falls into deep shadow. Keep the rock texture natural and avoid precise geological claims or invented architectural openings. 2D cinematic hand-painted illustration, painterly matte-painting texture, subtle film grain, muted fog grey, deep umber and dark forest-green shadows, quiet documentary atmosphere, highly detailed environmental surface. Generic illustrative reconstruction; exact wall and opening details must follow location photographs when available. Avoid clean concrete, symmetrical patterns, text, graffiti, signage, faces, figures in the wall, ghosts, bright artificial lights, watermark, logo, photorealism, 3D, anime."
+    },
+    {
+      "id": "08A",
+      "scene": 8,
+      "kind": "deep_tunnel_folklore_mood",
+      "label_required": true,
+      "prompt": "Vertical 9:16 atmospheric view deeper inside a narrow historical rock tunnel, seen from behind a lone visitor silhouette holding a flashlight. The beam weakens and dissolves into damp air before reaching a patch of absolute darkness ahead; rough close-set stone walls frame the perspective, with subtle hand-chisel texture and no identifiable room layout. The person remains ordinary and fully human, small in frame, conveying unease only through scale, silence, darkness and negative space. 2D cinematic hand-painted illustration, atmospheric Indonesian historical mystery documentary, painterly matte-painting texture, subtle film grain, muted dark forest green, fog grey and deep umber, restrained flashlight glow, vertical composition. The local forbidden-word story is folklore only; do not depict a ghost or supernatural being. Avoid ghosts, apparitions, glowing eyes, faces in shadows, extra limbs, blood, skulls, monsters, jump-scare imagery, red lights, text, watermark, logo, photorealism, 3D, anime."
+    }
+  ]
+}
