@@ -10,6 +10,7 @@ on:
         options:
           - rs-dustira-cimahi
           - kerkhof-leuwigajah-cimahi
+          - radio-malabar-gunung-puntang
       shot_ids:
         description: "Comma-separated shot IDs; default: all assets for selected episode"
         required: false
