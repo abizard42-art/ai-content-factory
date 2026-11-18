@@ -27,7 +27,8 @@
       "shot": "01A",
       "text": "Di Leuwigajah, Cimahi, ada pemakaman yang menyimpan lebih dari sekadar batu nisan. Di balik gerbangnya, tersimpan jejak perang dan kisah orang-orang yang tak pernah pulang.",
       "title": "KERKHOF LEUWIGAJAH",
-      "kind": "ai"
+      "kind": "ai",
+      "ambient_context": "neutral"
     },
     {
       "shot": "MAP",
@@ -39,25 +40,29 @@
       "shot": "03A",
       "text": "Namun pemakaman Belanda di Cimahi awalnya bukan berada di Leuwigajah. Catatan sejarah yang dihimpun Pemkot menyebut lokasi awalnya berada di Gunung Bohong, sebelum makam-makam dipindahkan.",
       "title": "DARI GUNUNG BOHONG",
-      "kind": "ai"
+      "kind": "ai",
+      "ambient_context": "neutral"
     },
     {
       "shot": "04A",
       "text": "Pemakaman baru di kawasan Leuwigajah sudah tercatat pada peta tahun 1931. Arsip surat kabar Belanda juga membahas rencana pemakaman baru di Cimahi pada akhir 1920-an.",
       "title": "JEJAK ARSIP • 1931",
-      "kind": "ai"
+      "kind": "ai",
+      "ambient_context": "neutral"
     },
     {
       "shot": "05A",
       "text": "Di kawasan yang sama, ada pula Ereveld Leuwigajah—makam kehormatan perang yang berbeda dari TPU Kerkhof. Gerbang Ereveld dikelola yayasan Belanda dan kunjungannya memerlukan izin.",
       "title": "TPU KERKHOF ≠ EREVELD",
-      "kind": "ai"
+      "kind": "ai",
+      "ambient_context": "neutral"
     },
     {
       "shot": "06A",
       "text": "Ereveld ini berkaitan dengan tawanan perang dan korban masa pendudukan Jepang. Di antara kisah yang tercatat adalah para korban kapal Junyo Maru, yang ditenggelamkan torpedo kapal selam Inggris pada September 1944.",
       "title": "JUNYO MARU • 1944",
-      "kind": "ai"
+      "kind": "ai",
+      "ambient_context": "neutral"
     },
     {
       "shot": "FACT",
@@ -69,7 +74,8 @@
       "shot": "08A",
       "text": "Di balik nama Kerkhof, ada lapisan sejarah Cimahi yang masih layak diingat: pemakaman, perpindahan, dan korban perang.",
       "title": "JEJAK PERANG DI CIMAHI",
-      "kind": "ai"
+      "kind": "ai",
+      "ambient_context": "neutral"
     },
     {
       "shot": "END",
