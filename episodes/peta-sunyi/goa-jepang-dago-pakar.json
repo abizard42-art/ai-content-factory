@@ -6,7 +6,11 @@
     "title": "GOA JEPANG",
     "subtitle": "TAHURA DJUANDA • DAGO PAKAR",
     "pin_label": "GOA JEPANG • DAGO PAKAR",
-    "footer": "PETA LOKASI • DAGO PAKAR"
+    "footer": "PETA LOKASI • DAGO PAKAR",
+    "coordinates": {
+      "lat": -6.8563167,
+      "lon": 107.6323833
+    }
   },
   "fact": {
     "heading": "SEJARAH & BATAS DATA",
