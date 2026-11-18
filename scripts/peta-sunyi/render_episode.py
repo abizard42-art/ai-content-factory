@@ -256,6 +256,45 @@ def probe_duration(path):
     value=subprocess.check_output(["ffprobe","-v","error","-show_entries","format=duration","-of","default=noprint_wrappers=1:nokey=1",str(path)],text=True)
     return float(value.strip())
 
+
+def motion_profile(shot, kind, duration):
+    """Return deterministic, subtle camera motion for each Peta Sunyi scene."""
+    # Direction changes keep a sequence of stills from feeling like one repeated slideshow effect.
+    profiles = {
+        "01A": "push_left", "03A": "push_right", "04A": "push_left",
+        "05A": "push_right", "06A": "pull_center", "07A": "push_left",
+        "08A": "push_center", "END": "pull_center",
+        "MAP": "graphic_right", "FACT": "graphic_left",
+    }
+    profile = profiles.get(shot, "push_center" if kind == "ai" else "graphic_right")
+    frames = max(1, math.ceil(duration * FPS))
+    if profile == "pull_center":
+        z = "max(1.0,1.055-on*0.00028)"
+        x = "iw/2-(iw/zoom/2)"
+        y = "ih/2-(ih/zoom/2)"
+    elif profile == "push_left":
+        z = "min(zoom+0.00024,1.05)"
+        x = "iw*0.38-iw/zoom*0.38"
+        y = "ih/2-(ih/zoom/2)"
+    elif profile == "push_right":
+        z = "min(zoom+0.00024,1.05)"
+        x = "iw*0.62-iw/zoom*0.62"
+        y = "ih/2-(ih/zoom/2)"
+    elif profile == "graphic_left":
+        z = "min(zoom+0.00010,1.025)"
+        x = "iw*0.43-iw/zoom*0.43"
+        y = "ih/2-(ih/zoom/2)"
+    elif profile == "graphic_right":
+        z = "min(zoom+0.00010,1.025)"
+        x = "iw*0.57-iw/zoom*0.57"
+        y = "ih/2-(ih/zoom/2)"
+    else:
+        z = "min(zoom+0.00024,1.05)"
+        x = "iw/2-(iw/zoom/2)"
+        y = "ih/2-(ih/zoom/2)"
+    return {"profile": profile, "frames": frames, "zoom": z, "x": x, "y": y}
+
+
 def main():
     global CONFIG, SCENES
     config_path = pathlib.Path(os.getenv("EPISODE_CONFIG", "episodes/peta-sunyi/rs-dustira-cimahi.json"))
@@ -273,12 +312,18 @@ def main():
         src=generated[shot] if shot in generated else ASSETS/f"peta-sunyi-{shot}.jpg"
         if not src.exists(): raise FileNotFoundError(f"Missing visual asset: {src}")
         clip=OUT/f"scene-{i:02d}.mp4"
+        motion=motion_profile(shot,kind,duration)
         vf=(f"scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},"
-            f"zoompan=z='min(zoom+0.00025,1.045)':d={max(1,math.ceil(duration*FPS))}:"
-            f"x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s={W}x{H}:fps={FPS},"
+            f"zoompan=z='{motion['zoom']}':d={motion['frames']}:"
+            f"x='{motion['x']}':y='{motion['y']}':s={W}x{H}:fps={FPS},"
             f"drawbox=x=0:y=0:w=iw:h=116:color=black@0.48:t=fill,"
             f"drawtext=text='{title.replace(chr(39), chr(92)+chr(39))}':fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:"
             f"fontcolor=white:fontsize=34:box=0:x=(w-text_w)/2:y=42")
+        if kind=="ai":
+            vf+=",vignette=PI/5,noise=alls=2:allf=t"
+        else:
+            vf+=",noise=alls=1:allf=t"
+        print(f"MOTION_PROFILE={shot}; type={motion['profile']}; zoom={motion['zoom']}", flush=True)
         if kind=="ai":
             vf+=",drawbox=x=0:y=122:w=iw:h=62:color=black@0.62:t=fill"
             vf+=",drawtext=text='REKA ADEGAN  •  ILUSTRASI AI':fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:fontcolor=white:fontsize=25:x=(w-text_w)/2:y=139"
