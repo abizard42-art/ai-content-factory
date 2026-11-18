@@ -1,49 +1,52 @@
-# Naskah Produksi — Radio Malabar, Gunung Puntang
+# Naskah Produksi — Radio Malabar: Suara dari Lembah yang Tak Pernah Benar-Benar Diam
 
 **Channel:** Peta Sunyi  
-**Format:** YouTube Shorts / TikTok, horor dominan dengan konteks sejarah  
-**Target durasi:** 65–80 detik  
-**Angle:** Legenda lokal Bejo di reruntuhan Radio Malabar, dibingkai oleh sejarah stasiun radio yang pernah menghubungkan Bandung dan Belanda.
+**Versi:** Claude draft — dipilih untuk uji produksi  
+**Format:** YouTube Shorts / TikTok  
+**Target durasi:** 58–60 detik  
+**Struktur:** 9 scene; sejarah terdokumentasi dipisahkan dari legenda lokal  
+**Catatan editorial:** Detail Bejo dan penampakan selalu disebut sebagai cerita/legenda warga, bukan fakta sejarah terverifikasi.
 
-## Naskah narasi
+## Naskah narasi per scene
 
-**HOOK**  
-"Di tengah hutan Gunung Puntang, ada reruntuhan yang menyimpan dua cerita: kejayaan teknologi radio dunia… dan legenda tentang sosok tanpa kepala yang konon muncul saat angin mendadak menguat."
+### 1. HOOK — 0–6 detik
+“Dari lembah sunyi ini, suara pernah menyeberangi samudra. Kini, orang bilang sesuatu berjalan di sini… tanpa kepala.”
 
-**LOKASI**  
-"Inilah bekas Stasiun Radio Malabar, di kawasan Gunung Puntang, Kecamatan Cimaung, Kabupaten Bandung Selatan."
+### 2. LOKASI — 6–11 detik
+“Gunung Puntang, Bandung Selatan. Di antara pepohonan, puing beton tua berdiri membisu.”
 
-**SEJARAH**  
-"Pada masa Hindia Belanda, stasiun ini dibangun untuk menghubungkan Bandung dengan Belanda. Radio Malabar diresmikan pada 5 Mei 1923, dengan jangkauan komunikasi sekitar dua belas ribu kilometer."
+### 3. SEJARAH — 11–17 detik
+“Tahun 1917, pembangunan Radio Malabar dimulai. Pemancar raksasa, untuk menghubungkan Hindia Belanda dengan Belanda.”
 
-**PERUBAHAN**  
-"Namun setelah masa perang, bangunan dan perangkatnya hancur. Kini yang tersisa adalah puing-puing, sementara kisah yang beredar justru semakin gelap."
+### 4. KEJAYAAN — 17–23 detik
+“Diresmikan 1923, sinyalnya menjangkau sekitar dua belas ribu kilometer. Dari hutan ini, Eropa dipanggil.”
 
-**LEGENDA BEJO**  
-"Warga setempat menuturkan kisah seorang pria bernama Bejo. Menurut cerita yang disampaikan kepada wartawan, ia dituduh menjual komponen radio bekas yang dianggap masih dibutuhkan para pejuang."
+### 5. LEGENDA — 23–29 detik
+“Lalu muncul cerita Bejo. Konon, ia dikaitkan dengan pekerja Radio Malabar. Tiap penutur punya versi sendiri.”
 
-"Dalam kisah itu, Bejo kemudian dikeroyok hingga tewas pada 1947. Ada versi cerita yang menyebut sosok tanpa kepala terlihat di sekitar jembatan, setelah angin tiba-tiba bertiup kencang."
+### 6. MISTERI — 29–37 detik
+“Yang sering disebut: sosok tanpa kepala. Dekat jembatan, di antara kabut dan angin, orang mengaku melihat bayangan berdiri… lalu lenyap.”
 
-**PEMISAH FAKTA**  
-"Kisah Bejo berasal dari penuturan warga yang diberitakan media. Belum ada bukti independen yang memastikan seluruh detailnya. Jadi, ini adalah legenda lokal—bukan peristiwa yang sudah terverifikasi sepenuhnya."
+### 7. FAKTA VS LEGENDA — 37–45 detik
+“Sejarah mencatat pemancarnya. Tentang Bejo, belum ada bukti yang kami temukan. Kehancuran stasiun pun dicatat berbeda: 1942, 1946, bahkan 1947.”
 
-**PENUTUP**  
-"Radio Malabar pernah mengirim suara melintasi benua. Kini, di antara reruntuhannya, cerita Bejo terus diwariskan. Kalau melewati jembatan di sana, apakah kamu berani berhenti?"
+### 8. CLIMAX — 45–52 detik
+“Mungkin hanya angin. Mungkin kabut yang pandai meniru manusia. Tapi di lembah sesunyi ini, telinga mulai mendengar langkah.”
 
-**CTA**  
-"Tulis di komentar: menurutmu, kisah Bejo hanya legenda… atau ada sesuatu yang belum terungkap?"
+### 9. ENDING — 52–58 detik
+“Radio Malabar telah lama bungkam. Tapi jika itu bukan Bejo… siapa yang masih menunggu di balik kabut?”
 
-## Pembagian editorial
-- Horor/legenda dan atmosfer: sekitar 70%.
-- Sejarah terverifikasi dan konteks: sekitar 30%.
-- Klaim penampakan dan detail kematian Bejo selalu diatribusikan sebagai cerita warga/legenda.
-- Jangan menyatakan sosok tanpa kepala benar-benar ada.
-- Hindari visual kekerasan eksplisit atau penggambaran pemenggalan.
+## Catatan fakta dan verifikasi
 
-## Sumber dan batas verifikasi
-1. Ditjen Infrastruktur Digital Komdigi, "Radio Malabar Hubungkan Bandung-Netherlands Sejak 1923" (30 Juli 2020): https://infradigital.komdigi.go.id/berita-radio-malabar-hubungkan-bandung-netherlands-sejak-1923-27-4899
-2. Dinas Perpustakaan dan Arsip Kabupaten Bandung, "Jejak Kejayaan Komunikasi Radio Dunia ... Radio Malabar" (28 Agustus 2025): https://dispusip.bandungkab.go.id/detailblog/030925-23-jejak-kejayaan-komunikasi-radio-dunia-dari-malabar-untuk-nusantara-radio-malabar
-3. DeskJabar, "Puing Radio Malabar ... Cerita Penampakan Hantu si Bejo" (13 September 2021): https://deskjabar.pikiran-rakyat.com/jabar/pr-1132589778/horror-puing-radio-malabar-gunung-puntang-bandung-selatan-cerita-penampakan-hantu-si-bejo
-4. Ruber.id, "Kisah Hantu Bejo, di Stasiun Radio Malabar Bandung" (4 Agustus 2022): https://ruber.id/kisah-hantu-bejo-di-stasiun-radio-malabar-bandung/
+- Tahun pembangunan 1917, tanggal peresmian 5 Mei 1923, dan jangkauan sekitar 12.000 km perlu dipertahankan dengan atribusi ke sumber sejarah yang dapat diperiksa sebelum publikasi.
+- Sumber yang disebut dalam riset Claude mencakup ITENAS (2024), Tirto, GNFI, RRI Voice of Indonesia (2026), UPI, Riar Rizaldi, dan karya akademik Telkom University. Daftar bibliografi dan tautan spesifik belum dilampirkan pada naskah ini; verifikasi ulang sebelum tayang.
+- Tahun kehancuran/penghentian operasional berbeda dalam berbagai sumber (1942, 1946, 1947). Narasi sengaja menyebut adanya perbedaan, bukan memilih satu tahun sebagai kepastian.
+- Kisah Bejo dan penampakan merupakan legenda/penuturan lokal. Belum ada verifikasi arsip independen yang memastikan identitas, kematian, atau penampakannya.
+- Radio Malabar merupakan stasiun komunikasi nirkabel/telegraf jarak jauh; jangan divisualisasikan sebagai stasiun radio hiburan modern.
 
-**Catatan penting:** Detail tentang Bejo bersumber dari cerita lisan warga yang dikutip media, termasuk penuturan Abah Anin kepada DeskJabar. Tidak ditemukan verifikasi arsip independen atas identitas Bejo, detail kematian, atau penampakan. Jangan menyajikan detail itu sebagai fakta sejarah.
+## Arahan produksi
+
+- Pertahankan tempo narasi dan jeda dramatis; estimasi 58 detik perlu diuji dengan voice-over aktual.
+- Porsi horor dibangun lewat atmosfer, kabut, bayangan, dan suara; bukan gore atau jump scare eksplisit.
+- Jangan menampilkan sosok Bejo sebagai tubuh yang benar-benar terpotong. Gunakan siluet jauh dengan fitur wajah tertutup kabut.
+- Visual interior pemancar adalah rekonstruksi artistik, bukan klaim dokumentasi ruang asli.
