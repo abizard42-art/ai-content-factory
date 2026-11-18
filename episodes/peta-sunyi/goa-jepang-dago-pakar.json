@@ -1,0 +1,82 @@
+{
+  "episode_id": "goa-jepang-dago-pakar",
+  "title": "Goa Jepang Dago Pakar: Lorong Gelap Peninggalan Masa Pendudukan",
+  "map": {
+    "query": "Goa Jepang, Tahura Ir. H. Djuanda, Dago Pakar, Kota Bandung, Jawa Barat, Indonesia",
+    "title": "GOA JEPANG",
+    "subtitle": "TAHURA DJUANDA • DAGO PAKAR",
+    "pin_label": "GOA JEPANG • DAGO PAKAR",
+    "footer": "PETA LOKASI • DAGO PAKAR"
+  },
+  "fact": {
+    "heading": "SEJARAH & BATAS DATA",
+    "lines": [
+      "GOA JEPANG • DIKAITKAN DENGAN 1942–1945",
+      "FUNGSI: AMUNISI • LOGISTIK • KOMUNIKASI RADIO",
+      "ROMUSHA • ATRIBUSI KEPADA PANDUAN",
+      "JUMLAH KORBAN & FUNGSI TIAP RUANG • BELUM TERVERIFIKASI"
+    ],
+    "highlight": "FAKTA ≠ LEGENDA"
+  },
+  "end": {
+    "title": "GOA JEPANG",
+    "subtitle": "SATU KATA YANG PANTANG DIUCAPKAN?",
+    "cta": "PETA SUNYI"
+  },
+  "scenes": [
+    {
+      "shot": "01A",
+      "text": "Di bawah hutan pinus Dago Pakar, ada lorong yang dipahat dengan tangan manusia. Dan begitu senter dinyalakan, gelap menelan hampir segalanya.",
+      "title": "LORONG DI BAWAH HUTAN",
+      "kind": "ai"
+    },
+    {
+      "shot": "MAP",
+      "text": "Goa Jepang berada di kawasan Tahura Ir. H. Djuanda, sekitar tujuh kilometer di utara pusat Kota Bandung.",
+      "title": "TAHURA DJUANDA • DAGO PAKAR",
+      "kind": "graphic"
+    },
+    {
+      "shot": "03A",
+      "text": "Dari gerbang Dago Pakar, jalan setapak membawa kita ke tebing berbatu. Di sana, mulut gua terbuka. Gelap. Diam.",
+      "title": "MULUT GOA JEPANG",
+      "kind": "ai"
+    },
+    {
+      "shot": "04A",
+      "text": "Gua ini dikaitkan dengan masa pendudukan Jepang, 1942 sampai 1945. Menurut kajian akademik, fungsinya: amunisi, logistik, dan komunikasi radio. Pemandu menuturkan, pembangunannya melibatkan romusha: kerja paksa rakyat.",
+      "title": "JEJAK PENDUDUKAN • 1942–1945",
+      "kind": "ai"
+    },
+    {
+      "shot": "05A",
+      "text": "Di dalam, lorongnya sempit, dindingnya batu cadas bekas pahatan. Cahaya senter hanya sanggup menjangkau beberapa langkah. Selebihnya, gelap dan sunyi.",
+      "title": "LORONG YANG DIPAHAT",
+      "kind": "ai"
+    },
+    {
+      "shot": "06A",
+      "text": "Menurut pemandu, batuannya ignimbrit, batuan cadas dari letusan Gunung Sunda. Batu dingin yang masih menyimpan bekas pahatan tangan.",
+      "title": "BEKAS PAHATAN DI DINDING",
+      "kind": "ai"
+    },
+    {
+      "shot": "FACT",
+      "text": "Catat: tahun dan fungsi gua ini bersumber dari kajian akademik dan papan informasi. Jumlah korban dan fungsi tiap ruangan belum bisa dipastikan dari arsip.",
+      "title": "FAKTA & BATAS DATA",
+      "kind": "graphic"
+    },
+    {
+      "shot": "08A",
+      "text": "Lalu ada cerita yang beredar: satu kata yang pantang diucapkan di dalam gua. Kata apa, tak pernah disebutkan. Bukan fakta sejarah. Hanya pesan pemandu: bertamulah dengan hormat.",
+      "title": "KATA YANG PANTANG DIUCAPKAN",
+      "kind": "ai"
+    },
+    {
+      "shot": "END",
+      "text": "Mungkin kesunyian di lorong ini adalah cara ia mengingat. Pernahkah kamu ke sana? Tulis di komentar, dan pilih tempat berikutnya.",
+      "title": "JEJAK YANG MASIH TERSISA",
+      "kind": "graphic"
+    }
+  ]
+}
