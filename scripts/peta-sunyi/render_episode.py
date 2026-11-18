@@ -300,11 +300,11 @@ def main():
     config_path = pathlib.Path(os.getenv("EPISODE_CONFIG", "episodes/peta-sunyi/rs-dustira-cimahi.json"))
     CONFIG = json.loads(config_path.read_text(encoding="utf-8"))
     episode_id = CONFIG["episode_id"]
-    SCENES = [(s["shot"], s["text"], s["title"], s["kind"]) for s in CONFIG["scenes"]]
+    SCENES = [(s["shot"], s["text"], s["title"], s["kind"], s.get("ambient_context", "")) for s in CONFIG["scenes"]]
     generated={"MAP":OUT/"graphic-map.jpg","FACT":OUT/"graphic-fact.jpg","END":OUT/"graphic-end.jpg"}
     make_map(generated["MAP"]); make_fact(generated["FACT"]); make_end(generated["END"])
     clips=[]
-    for i,(shot,text,title,kind) in enumerate(SCENES,1):
+    for i,(shot,text,title,kind,ambient_context) in enumerate(SCENES,1):
         audio=OUT/f"scene-{i:02d}.mp3"
         vtt=OUT/f"scene-{i:02d}.vtt"
         generate_tts(text,audio,vtt)
@@ -323,15 +323,32 @@ def main():
             vf+=",vignette=PI/5,noise=alls=2:allf=t"
         else:
             vf+=",noise=alls=1:allf=t"
-        print(f"MOTION_PROFILE={shot}; type={motion['profile']}; zoom={motion['zoom']}", flush=True)
+        ambient_dir = OUT / f"ambient-{i:02d}"
+        if ambient_context:
+            run(["python", "scripts/background_motion.py", "--context", ambient_context,
+                 "--duration", f"{duration:.3f}", "--out", str(ambient_dir)])
+        print(f"MOTION_PROFILE={shot}; type={motion['profile']}; zoom={motion['zoom']}; ambient={ambient_context or 'off'}", flush=True)
         if kind=="ai":
             vf+=",drawbox=x=0:y=122:w=iw:h=62:color=black@0.62:t=fill"
             vf+=",drawtext=text='REKA ADEGAN  •  ILUSTRASI AI':fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:fontcolor=white:fontsize=25:x=(w-text_w)/2:y=139"
         ass=convert_vtt_to_ass(vtt)
         vf+=f",ass={ass}"
-        run(["ffmpeg","-y","-loop","1","-i",str(src),"-i",str(audio),"-t",f"{duration:.3f}",
-             "-vf",vf,"-r",str(FPS),"-c:v","libx264","-preset","veryfast","-crf","20",
-             "-pix_fmt","yuv420p","-c:a","aac","-b:a","160k","-shortest",str(clip)])
+        if ambient_context:
+            ambient_input = str(ambient_dir / "%05d.png")
+            filter_graph = (
+                f"[0:v]{vf}[base];"
+                f"[2:v]scale={W}:{H},format=rgba[ambient];"
+                f"[base][ambient]overlay=shortest=1:format=auto[v]"
+            )
+            run(["ffmpeg","-y","-loop","1","-i",str(src),"-i",str(audio),
+                 "-framerate","12","-i",ambient_input,"-t",f"{duration:.3f}",
+                 "-filter_complex",filter_graph,"-map","[v]","-map","1:a",
+                 "-r",str(FPS),"-c:v","libx264","-preset","veryfast","-crf","20",
+                 "-pix_fmt","yuv420p","-c:a","aac","-b:a","160k","-shortest",str(clip)])
+        else:
+            run(["ffmpeg","-y","-loop","1","-i",str(src),"-i",str(audio),"-t",f"{duration:.3f}",
+                 "-vf",vf,"-r",str(FPS),"-c:v","libx264","-preset","veryfast","-crf","20",
+                 "-pix_fmt","yuv420p","-c:a","aac","-b:a","160k","-shortest",str(clip)])
         clips.append(clip)
         print(f"SCENE_OK={i}; shot={shot}; duration={duration:.2f}s; subtitle={vtt.name}")
     concat=OUT/"concat.txt"
