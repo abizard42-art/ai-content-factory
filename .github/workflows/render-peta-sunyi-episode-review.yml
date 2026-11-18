@@ -10,6 +10,7 @@ on:
         options:
           - rs-dustira-cimahi
           - kerkhof-leuwigajah-cimahi
+          - radio-malabar-gunung-puntang
 
 permissions:
   contents: read

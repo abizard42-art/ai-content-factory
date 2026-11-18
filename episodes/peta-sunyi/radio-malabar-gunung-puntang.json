@@ -1,0 +1,81 @@
+{
+  "episode_id": "radio-malabar-gunung-puntang",
+  "title": "Radio Malabar: Kisah Bejo dan Sosok Tanpa Kepala di Gunung Puntang",
+  "map": {
+    "query": "Gunung Puntang, Cimaung, Kabupaten Bandung, Jawa Barat, Indonesia",
+    "title": "GUNUNG PUNTANG",
+    "subtitle": "CIMAUNG • KABUPATEN BANDUNG",
+    "pin_label": "BEKAS RADIO MALABAR",
+    "footer": "PETA LOKASI • GUNUNG PUNTANG"
+  },
+  "fact": {
+    "heading": "SEJARAH & CERITA WARGA",
+    "lines": [
+      "RADIO MALABAR • DIRESMIKAN 5 MEI 1923",
+      "SINYAL KE BELANDA • ±12.000 KM",
+      "KISAH BEJO • TUTURAN LOKAL, BELUM TERVERIFIKASI"
+    ],
+    "highlight": "FAKTA ≠ LEGENDA"
+  },
+  "end": {
+    "title": "RADIO MALABAR",
+    "subtitle": "KISAH BEJO • GUNUNG PUNTANG",
+    "cta": "BERANI LEWAT JEMBATAN INI?"
+  },
+  "scenes": [
+    {
+      "shot": "01A",
+      "text": "Di tengah hutan Gunung Puntang, ada reruntuhan yang menyimpan dua cerita: kejayaan teknologi radio dunia… dan legenda tentang sosok tanpa kepala yang konon muncul saat angin mendadak menguat.",
+      "title": "SOSOK TANPA KEPALA?",
+      "kind": "ai"
+    },
+    {
+      "shot": "MAP",
+      "text": "Inilah bekas Stasiun Radio Malabar, di kawasan Gunung Puntang, Kecamatan Cimaung, Kabupaten Bandung Selatan.",
+      "title": "GUNUNG PUNTANG • CIMAUNG",
+      "kind": "graphic"
+    },
+    {
+      "shot": "03A",
+      "text": "Pada masa Hindia Belanda, stasiun ini dibangun untuk menghubungkan Bandung dengan Belanda. Radio Malabar diresmikan pada 5 Mei 1923, dengan jangkauan komunikasi sekitar dua belas ribu kilometer.",
+      "title": "BANDUNG TERHUBUNG KE EROPA",
+      "kind": "ai"
+    },
+    {
+      "shot": "04A",
+      "text": "Namun setelah masa perang, bangunan dan perangkatnya hancur. Kini yang tersisa adalah puing-puing, sementara kisah yang beredar justru semakin gelap.",
+      "title": "DARI PEMANCAR JADI PUING",
+      "kind": "ai"
+    },
+    {
+      "shot": "05A",
+      "text": "Warga setempat menuturkan kisah seorang pria bernama Bejo. Menurut cerita yang disampaikan kepada wartawan, ia dituduh menjual komponen radio bekas yang dianggap masih dibutuhkan para pejuang.",
+      "title": "LEGENDA BEJO",
+      "kind": "ai"
+    },
+    {
+      "shot": "06A",
+      "text": "Dalam kisah itu, Bejo kemudian dikeroyok hingga tewas pada 1947. Ada versi cerita yang menyebut sosok tanpa kepala terlihat di sekitar jembatan, setelah angin tiba-tiba bertiup kencang.",
+      "title": "ANGIN, JEMBATAN, DAN BAYANGAN",
+      "kind": "ai"
+    },
+    {
+      "shot": "FACT",
+      "text": "Kisah Bejo berasal dari penuturan warga yang diberitakan media. Belum ada bukti independen yang memastikan seluruh detailnya. Jadi, ini adalah legenda lokal—bukan peristiwa yang sudah terverifikasi sepenuhnya.",
+      "title": "LEGENDA YANG BELUM TERVERIFIKASI",
+      "kind": "graphic"
+    },
+    {
+      "shot": "08A",
+      "text": "Radio Malabar pernah mengirim suara melintasi benua. Kini, di antara reruntuhannya, cerita Bejo terus diwariskan. Kalau melewati jembatan di sana, apakah kamu berani berhenti?",
+      "title": "SUARA DARI MASA LALU",
+      "kind": "ai"
+    },
+    {
+      "shot": "END",
+      "text": "Tulis di komentar: menurutmu, kisah Bejo hanya legenda… atau ada sesuatu yang belum terungkap?",
+      "title": "PETA SUNYI",
+      "kind": "graphic"
+    }
+  ]
+}

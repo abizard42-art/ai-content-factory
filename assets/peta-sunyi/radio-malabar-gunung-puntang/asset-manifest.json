@@ -1,0 +1,52 @@
+{
+  "channel": "Peta Sunyi",
+  "episode_id": "radio-malabar-gunung-puntang",
+  "format": "9:16",
+  "provider": "Cloudflare Workers AI",
+  "model": "@cf/black-forest-labs/flux-1-schnell",
+  "policy": "All visuals are illustrative AI reconstructions, not documentary photographs or evidence of paranormal events. Keep Bejo's story explicitly attributed to local oral accounts and unverified. No graphic violence, blood, decapitation or visible victims. Add visible REKA ADEGAN • ILUSTRASI AI labels.",
+  "assets": [
+    {
+      "id": "01A",
+      "scene": 1,
+      "kind": "radio_ruins_forest",
+      "label_required": true,
+      "prompt": "Vertical 9:16 cinematic dark documentary reconstruction of abandoned early-20th-century radio station ruins deep in a tropical West Java mountain forest at blue hour, tangled roots, wet stone foundations, drifting ground mist, distant indistinct shadow between trees, no visible face, no text, no watermark, eerie restrained atmosphere, not a real photograph."
+    },
+    {
+      "id": "03A",
+      "scene": 3,
+      "kind": "radio_malabar_1920s",
+      "label_required": true,
+      "prompt": "Vertical 9:16 historically plausible 1920s longwave radio transmission station in a tropical mountain valley in West Java, enormous wire antenna spanning between two ridges, modest colonial-era technical buildings, dramatic cloudy sky, archival cinematic color grading, no readable signs, no text, no watermark, illustrative reconstruction."
+    },
+    {
+      "id": "04A",
+      "scene": 4,
+      "kind": "abandoned_transmitter_room",
+      "label_required": true,
+      "prompt": "Vertical 9:16 abandoned early-20th-century radio transmitter room after decades of decay, broken insulators, rusted metal components, vines entering through damaged walls, dust beams, ominous but realistic, no people, no text, no watermark, illustrative reconstruction."
+    },
+    {
+      "id": "05A",
+      "scene": 5,
+      "kind": "bejo_folklore_silhouette",
+      "label_required": true,
+      "prompt": "Vertical 9:16 respectful folklore reconstruction of a lone Indonesian man in simple 1940s rural clothing seen only as a distant backlit silhouette near old radio ruins, face obscured, forest dusk, no violence, no blood, no decapitation, no text, no watermark, fictional illustrative scene based on an unverified local tale."
+    },
+    {
+      "id": "06A",
+      "scene": 6,
+      "kind": "haunted_bridge_folklore",
+      "label_required": true,
+      "prompt": "Vertical 9:16 narrow old footbridge in a dense tropical mountain forest at nightfall, branches bending in a sudden gust, leaves swept across the bridge, an indistinct headless-looking shadow far in the mist but not graphic, no visible body detail, no blood, no text, no watermark, visual metaphor for local folklore, not evidence."
+    },
+    {
+      "id": "08A",
+      "scene": 8,
+      "kind": "radio_ruins_dusk",
+      "label_required": true,
+      "prompt": "Vertical 9:16 cinematic wide view of abandoned radio station stone foundations swallowed by tropical forest at dusk, faint mist, last warm light fading behind the ridge, quiet unsettling atmosphere, no ghosts, no people, no text, no watermark, illustrative reconstruction."
+    }
+  ]
+}
