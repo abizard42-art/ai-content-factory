@@ -1,6 +1,6 @@
 {
   "episode_id": "radio-malabar-gunung-puntang",
-  "title": "Radio Malabar: Kisah Bejo dan Sosok Tanpa Kepala di Gunung Puntang",
+  "title": "Radio Malabar: Suara dari Lembah yang Tak Pernah Benar-Benar Diam",
   "map": {
     "query": "Gunung Puntang, Cimaung, Kabupaten Bandung, Jawa Barat, Indonesia",
     "title": "GUNUNG PUNTANG",
@@ -9,72 +9,73 @@
     "footer": "PETA LOKASI • GUNUNG PUNTANG"
   },
   "fact": {
-    "heading": "SEJARAH & CERITA WARGA",
+    "heading": "SEJARAH & LEGENDA",
     "lines": [
-      "RADIO MALABAR • DIRESMIKAN 5 MEI 1923",
-      "SINYAL KE BELANDA • ±12.000 KM",
-      "KISAH BEJO • TUTURAN LOKAL, BELUM TERVERIFIKASI"
+      "RADIO MALABAR • PEMBANGUNAN DIMULAI 1917",
+      "DIRESMIKAN 1923 • JANGKAUAN ±12.000 KM",
+      "KISAH BEJO • LEGENDA LOKAL, BELUM TERVERIFIKASI",
+      "TAHUN KEHANCURAN • SUMBER BERBEDA"
     ],
     "highlight": "FAKTA ≠ LEGENDA"
   },
   "end": {
     "title": "RADIO MALABAR",
-    "subtitle": "KISAH BEJO • GUNUNG PUNTANG",
-    "cta": "BERANI LEWAT JEMBATAN INI?"
+    "subtitle": "SIAPA YANG MASIH MENUNGGU?",
+    "cta": "PETA SUNYI"
   },
   "scenes": [
     {
       "shot": "01A",
-      "text": "Di tengah hutan Gunung Puntang, ada reruntuhan yang menyimpan dua cerita: kejayaan teknologi radio dunia… dan legenda tentang sosok tanpa kepala yang konon muncul saat angin mendadak menguat.",
-      "title": "SOSOK TANPA KEPALA?",
+      "text": "Dari lembah sunyi ini, suara pernah menyeberangi samudra. Kini, orang bilang sesuatu berjalan di sini… tanpa kepala.",
+      "title": "SUARA DARI LEMBAH SUNYI",
       "kind": "ai"
     },
     {
       "shot": "MAP",
-      "text": "Inilah bekas Stasiun Radio Malabar, di kawasan Gunung Puntang, Kecamatan Cimaung, Kabupaten Bandung Selatan.",
+      "text": "Gunung Puntang, Bandung Selatan. Di antara pepohonan, puing beton tua berdiri membisu.",
       "title": "GUNUNG PUNTANG • CIMAUNG",
       "kind": "graphic"
     },
     {
       "shot": "03A",
-      "text": "Pada masa Hindia Belanda, stasiun ini dibangun untuk menghubungkan Bandung dengan Belanda. Radio Malabar diresmikan pada 5 Mei 1923, dengan jangkauan komunikasi sekitar dua belas ribu kilometer.",
-      "title": "BANDUNG TERHUBUNG KE EROPA",
+      "text": "Tahun 1917, pembangunan Radio Malabar dimulai. Pemancar raksasa, untuk menghubungkan Hindia Belanda dengan Belanda.",
+      "title": "PEMBANGUNAN RADIO MALABAR",
       "kind": "ai"
     },
     {
       "shot": "04A",
-      "text": "Namun setelah masa perang, bangunan dan perangkatnya hancur. Kini yang tersisa adalah puing-puing, sementara kisah yang beredar justru semakin gelap.",
-      "title": "DARI PEMANCAR JADI PUING",
+      "text": "Diresmikan 1923, sinyalnya menjangkau sekitar dua belas ribu kilometer. Dari hutan ini, Eropa dipanggil.",
+      "title": "SINYA​​L MENYEBERANGI SAMUDRA",
       "kind": "ai"
     },
     {
       "shot": "05A",
-      "text": "Warga setempat menuturkan kisah seorang pria bernama Bejo. Menurut cerita yang disampaikan kepada wartawan, ia dituduh menjual komponen radio bekas yang dianggap masih dibutuhkan para pejuang.",
+      "text": "Lalu muncul cerita Bejo. Konon, ia dikaitkan dengan pekerja Radio Malabar. Tiap penutur punya versi sendiri.",
       "title": "LEGENDA BEJO",
       "kind": "ai"
     },
     {
       "shot": "06A",
-      "text": "Dalam kisah itu, Bejo kemudian dikeroyok hingga tewas pada 1947. Ada versi cerita yang menyebut sosok tanpa kepala terlihat di sekitar jembatan, setelah angin tiba-tiba bertiup kencang.",
-      "title": "ANGIN, JEMBATAN, DAN BAYANGAN",
+      "text": "Yang sering disebut: sosok tanpa kepala. Dekat jembatan, di antara kabut dan angin, orang mengaku melihat bayangan berdiri… lalu lenyap.",
+      "title": "BAYANGAN DI JEMBATAN",
       "kind": "ai"
     },
     {
       "shot": "FACT",
-      "text": "Kisah Bejo berasal dari penuturan warga yang diberitakan media. Belum ada bukti independen yang memastikan seluruh detailnya. Jadi, ini adalah legenda lokal—bukan peristiwa yang sudah terverifikasi sepenuhnya.",
-      "title": "LEGENDA YANG BELUM TERVERIFIKASI",
+      "text": "Sejarah mencatat pemancarnya. Tentang Bejo, belum ada bukti yang kami temukan. Kehancuran stasiun pun dicatat berbeda: 1942, 1946, bahkan 1947.",
+      "title": "FAKTA DAN LEGENDA",
       "kind": "graphic"
     },
     {
       "shot": "08A",
-      "text": "Radio Malabar pernah mengirim suara melintasi benua. Kini, di antara reruntuhannya, cerita Bejo terus diwariskan. Kalau melewati jembatan di sana, apakah kamu berani berhenti?",
-      "title": "SUARA DARI MASA LALU",
+      "text": "Mungkin hanya angin. Mungkin kabut yang pandai meniru manusia. Tapi di lembah sesunyi ini, telinga mulai mendengar langkah.",
+      "title": "ADA LANGKAH DI BALIK KABUT?",
       "kind": "ai"
     },
     {
       "shot": "END",
-      "text": "Tulis di komentar: menurutmu, kisah Bejo hanya legenda… atau ada sesuatu yang belum terungkap?",
-      "title": "PETA SUNYI",
+      "text": "Radio Malabar telah lama bungkam. Tapi jika itu bukan Bejo… siapa yang masih menunggu di balik kabut?",
+      "title": "SIAPA YANG MASIH MENUNGGU?",
       "kind": "graphic"
     }
   ]
