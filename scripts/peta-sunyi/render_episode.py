@@ -63,16 +63,21 @@ def make_map(path):
     query = cfg.get("query", "")
     if not query:
         raise RuntimeError("Episode config is missing map.query")
-    headers = {"User-Agent": "PetaSunyiReviewRenderer/2.0 (documentary video map)"}
-    params = urllib.parse.urlencode({"q": query, "format": "jsonv2", "limit": "1"})
-    req = urllib.request.Request("https://nominatim.openstreetmap.org/search?" + params, headers=headers)
-    with urllib.request.urlopen(req, timeout=30) as response:
-        places = json.loads(response.read().decode("utf-8"))
-    if not places:
-        raise RuntimeError("Nominatim could not resolve episode location: " + query)
-    place = places[0]
-    lat, lon = float(place["lat"]), float(place["lon"])
-    print("MAP_GEOCODE_OK=" + place.get("display_name", query), flush=True)
+    # Prefer verified episode coordinates when supplied; use Nominatim only as a fallback.
+    if cfg.get("lat") is not None and cfg.get("lon") is not None:
+        lat, lon = float(cfg["lat"]), float(cfg["lon"])
+        print(f"MAP_COORDINATES_CONFIGURED={lat},{lon}; source=episode_config", flush=True)
+    else:
+        headers = {"User-Agent": "PetaSunyiReviewRenderer/2.0 (documentary video map)"}
+        params = urllib.parse.urlencode({"q": query, "format": "jsonv2", "limit": "1"})
+        req = urllib.request.Request("https://nominatim.openstreetmap.org/search?" + params, headers=headers)
+        with urllib.request.urlopen(req, timeout=30) as response:
+            places = json.loads(response.read().decode("utf-8"))
+        if not places:
+            raise RuntimeError("Nominatim could not resolve episode location: " + query)
+        place = places[0]
+        lat, lon = float(place["lat"]), float(place["lon"])
+        print("MAP_GEOCODE_OK=" + place.get("display_name", query), flush=True)
     overpass_query = '[out:json][timeout:40];(way["highway"](around:1000,' + str(lat) + ',' + str(lon) + '););out geom;'
     body = urllib.parse.urlencode({"data": overpass_query}).encode("utf-8")
     osm_req = urllib.request.Request("https://overpass-api.de/api/interpreter", data=body,
@@ -256,16 +261,55 @@ def probe_duration(path):
     value=subprocess.check_output(["ffprobe","-v","error","-show_entries","format=duration","-of","default=noprint_wrappers=1:nokey=1",str(path)],text=True)
     return float(value.strip())
 
+
+def motion_profile(shot, kind, duration):
+    """Return deterministic, subtle camera motion for each Peta Sunyi scene."""
+    # Direction changes keep a sequence of stills from feeling like one repeated slideshow effect.
+    profiles = {
+        "01A": "push_left", "03A": "push_right", "04A": "push_left",
+        "05A": "push_right", "06A": "pull_center", "07A": "push_left",
+        "08A": "push_center", "END": "pull_center",
+        "MAP": "graphic_right", "FACT": "graphic_left",
+    }
+    profile = profiles.get(shot, "push_center" if kind == "ai" else "graphic_right")
+    frames = max(1, math.ceil(duration * FPS))
+    if profile == "pull_center":
+        z = "max(1.0,1.055-on*0.00028)"
+        x = "iw/2-(iw/zoom/2)"
+        y = "ih/2-(ih/zoom/2)"
+    elif profile == "push_left":
+        z = "min(zoom+0.00024,1.05)"
+        x = "iw*0.38-iw/zoom*0.38"
+        y = "ih/2-(ih/zoom/2)"
+    elif profile == "push_right":
+        z = "min(zoom+0.00024,1.05)"
+        x = "iw*0.62-iw/zoom*0.62"
+        y = "ih/2-(ih/zoom/2)"
+    elif profile == "graphic_left":
+        z = "min(zoom+0.00010,1.025)"
+        x = "iw*0.43-iw/zoom*0.43"
+        y = "ih/2-(ih/zoom/2)"
+    elif profile == "graphic_right":
+        z = "min(zoom+0.00010,1.025)"
+        x = "iw*0.57-iw/zoom*0.57"
+        y = "ih/2-(ih/zoom/2)"
+    else:
+        z = "min(zoom+0.00024,1.05)"
+        x = "iw/2-(iw/zoom/2)"
+        y = "ih/2-(ih/zoom/2)"
+    return {"profile": profile, "frames": frames, "zoom": z, "x": x, "y": y}
+
+
 def main():
     global CONFIG, SCENES
     config_path = pathlib.Path(os.getenv("EPISODE_CONFIG", "episodes/peta-sunyi/rs-dustira-cimahi.json"))
     CONFIG = json.loads(config_path.read_text(encoding="utf-8"))
     episode_id = CONFIG["episode_id"]
-    SCENES = [(s["shot"], s["text"], s["title"], s["kind"]) for s in CONFIG["scenes"]]
+    SCENES = [(s["shot"], s["text"], s["title"], s["kind"], s.get("ambient_context", "")) for s in CONFIG["scenes"]]
     generated={"MAP":OUT/"graphic-map.jpg","FACT":OUT/"graphic-fact.jpg","END":OUT/"graphic-end.jpg"}
     make_map(generated["MAP"]); make_fact(generated["FACT"]); make_end(generated["END"])
     clips=[]
-    for i,(shot,text,title,kind) in enumerate(SCENES,1):
+    for i,(shot,text,title,kind,ambient_context) in enumerate(SCENES,1):
         audio=OUT/f"scene-{i:02d}.mp3"
         vtt=OUT/f"scene-{i:02d}.vtt"
         generate_tts(text,audio,vtt)
@@ -273,20 +317,43 @@ def main():
         src=generated[shot] if shot in generated else ASSETS/f"peta-sunyi-{shot}.jpg"
         if not src.exists(): raise FileNotFoundError(f"Missing visual asset: {src}")
         clip=OUT/f"scene-{i:02d}.mp4"
+        motion=motion_profile(shot,kind,duration)
         vf=(f"scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},"
-            f"zoompan=z='min(zoom+0.00025,1.045)':d={max(1,math.ceil(duration*FPS))}:"
-            f"x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s={W}x{H}:fps={FPS},"
+            f"zoompan=z='{motion['zoom']}':d={motion['frames']}:"
+            f"x='{motion['x']}':y='{motion['y']}':s={W}x{H}:fps={FPS},"
             f"drawbox=x=0:y=0:w=iw:h=116:color=black@0.48:t=fill,"
             f"drawtext=text='{title.replace(chr(39), chr(92)+chr(39))}':fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:"
             f"fontcolor=white:fontsize=34:box=0:x=(w-text_w)/2:y=42")
+        if kind=="ai":
+            vf+=",vignette=PI/5,noise=alls=2:allf=t"
+        else:
+            vf+=",noise=alls=1:allf=t"
+        ambient_dir = OUT / f"ambient-{i:02d}"
+        if ambient_context:
+            run(["python", "scripts/background_motion.py", "--context", ambient_context,
+                 "--duration", f"{duration:.3f}", "--out", str(ambient_dir)])
+        print(f"MOTION_PROFILE={shot}; type={motion['profile']}; zoom={motion['zoom']}; ambient={ambient_context or 'off'}", flush=True)
         if kind=="ai":
             vf+=",drawbox=x=0:y=122:w=iw:h=62:color=black@0.62:t=fill"
             vf+=",drawtext=text='REKA ADEGAN  •  ILUSTRASI AI':fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:fontcolor=white:fontsize=25:x=(w-text_w)/2:y=139"
         ass=convert_vtt_to_ass(vtt)
         vf+=f",ass={ass}"
-        run(["ffmpeg","-y","-loop","1","-i",str(src),"-i",str(audio),"-t",f"{duration:.3f}",
-             "-vf",vf,"-r",str(FPS),"-c:v","libx264","-preset","veryfast","-crf","20",
-             "-pix_fmt","yuv420p","-c:a","aac","-b:a","160k","-shortest",str(clip)])
+        if ambient_context:
+            ambient_input = str(ambient_dir / "%05d.png")
+            filter_graph = (
+                f"[0:v]{vf}[base];"
+                f"[2:v]scale={W}:{H},format=rgba[ambient];"
+                f"[base][ambient]overlay=shortest=1:format=auto[v]"
+            )
+            run(["ffmpeg","-y","-loop","1","-i",str(src),"-i",str(audio),
+                 "-framerate","12","-i",ambient_input,"-t",f"{duration:.3f}",
+                 "-filter_complex",filter_graph,"-map","[v]","-map","1:a",
+                 "-r",str(FPS),"-c:v","libx264","-preset","veryfast","-crf","20",
+                 "-pix_fmt","yuv420p","-c:a","aac","-b:a","160k","-shortest",str(clip)])
+        else:
+            run(["ffmpeg","-y","-loop","1","-i",str(src),"-i",str(audio),"-t",f"{duration:.3f}",
+                 "-vf",vf,"-r",str(FPS),"-c:v","libx264","-preset","veryfast","-crf","20",
+                 "-pix_fmt","yuv420p","-c:a","aac","-b:a","160k","-shortest",str(clip)])
         clips.append(clip)
         print(f"SCENE_OK={i}; shot={shot}; duration={duration:.2f}s; subtitle={vtt.name}")
     concat=OUT/"concat.txt"

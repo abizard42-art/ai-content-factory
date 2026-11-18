@@ -37,18 +37,28 @@ jobs:
           [ -s "$config" ] || { echo "ERROR: Config episode tidak ditemukan."; exit 1; }
           mkdir -p work/assets output
           mapfile -t shot_ids < <(jq -r '.scenes[] | select(.kind == "ai") | .shot' "$config" | sort -u)
+          [ -n "${SUPABASE_URL:-}" ] || { echo "ERROR: GitHub Secret SUPABASE_URL belum diisi."; exit 1; }
+          [ -n "${SUPABASE_SECRET_KEY:-}" ] || { echo "ERROR: GitHub Secret SUPABASE_SECRET_KEY belum diisi."; exit 1; }
+          supabase_url="${SUPABASE_URL%/}"
           for id in "${shot_ids[@]}"; do
             file="peta-sunyi-$id.jpg"
             object_path="peta-sunyi/$EPISODE_ID/$file"
-            status="$(curl --silent --show-error --output "work/assets/$file" --write-out "%{http_code}" \
-              "${SUPABASE_URL}/storage/v1/object/visual-assets/$object_path" \
+            response_file="work/assets/$file.response"
+            status="$(curl --silent --show-error --output "$response_file" --write-out "%{http_code}" \
+              "${supabase_url}/storage/v1/object/visual-assets/$object_path" \
               -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" || true)"
             if [ "$status" != "200" ]; then
-              echo "ERROR: Gagal mengambil $object_path (HTTP $status). Jalankan workflow Generate Peta Sunyi episode assets dahulu."
+              echo "ERROR: Supabase menolak download visual-assets/$object_path (HTTP $status)."
+              echo "SUPABASE_RESPONSE_BODY_BEGIN"
+              head -c 2000 "$response_file" || true
+              echo
+              echo "SUPABASE_RESPONSE_BODY_END"
+              echo "Periksa bucket, object path, dan format GitHub Secrets SUPABASE_URL/SUPABASE_SECRET_KEY."
               exit 1
             fi
+            mv "$response_file" "work/assets/$file"
             test -s "work/assets/$file"
-            echo "ASSET_OK=$object_path"
+            echo "ASSET_OK=visual-assets/$object_path"
           done
       - name: Render review-only video
         env:
