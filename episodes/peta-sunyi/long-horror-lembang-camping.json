@@ -1,0 +1,75 @@
+{
+  "episode_id": "long-horror-lembang-camping",
+  "title": "Malam yang Tidak Selesai di Lembang",
+  "source_status": "anonymous_unverified_submission",
+  "source_note": "Adaptasi dramatik dari cerita kiriman anonim berjudul 'Pengalaman Mengerikan Saat Pergi Camping' yang dimuat dalam arsip Nightmare Side (2012). Cerita menyebut Lembang, tetapi tidak mengidentifikasi nama atau koordinat tempat camping. Tidak ada klaim bahwa kejadian telah diverifikasi secara independen.",
+  "dramatic_reconstruction": true,
+  "visual_style": "rough_pencil",
+  "speaker_voices": {
+    "NARATOR": "id-ID-ArdiNeural",
+    "TEMAN_1": "id-ID-GadisNeural",
+    "TEMAN_2": "id-ID-BasaniNeural"
+  },
+  "scenes": [
+    {
+      "shot": "01A",
+      "title": "MALAM YANG TIDAK SELESAI",
+      "speaker": "NARATOR",
+      "text": "Ada perjalanan yang seharusnya selesai ketika kita pulang. Tapi bagi tiga orang teman yang pergi camping ke kawasan Lembang, malam itu justru terasa mengikuti mereka sampai ke rumah. Mereka berangkat untuk melepas penat setelah ujian. Mereka tidak sedang mencari tempat angker. Mereka hanya ingin bermalam di alam terbuka. Namun, ketika suasana berubah dan satu per satu hal aneh mulai terjadi, mereka menyadari bahwa ada sesuatu yang tidak bisa mereka jelaskan."
+    },
+    {
+      "shot": "02A",
+      "title": "TIGA TEMAN, SATU TENDA",
+      "speaker": "NARATOR",
+      "text": "Dalam cerita yang dimuat di arsip Nightmare Side, seorang pengirim anonim mengisahkan perjalanan camping bersama dua temannya. Cerita itu tidak menyebut nama lokasi camping secara spesifik. Yang disebut hanya kawasan Lembang. Karena itu, kisah ini kita ikuti sebagai pengalaman yang diceritakan oleh pengirim, bukan sebagai kejadian yang telah diverifikasi."
+    },
+    {
+      "shot": "03A",
+      "title": "SUASANA MULAI BERUBAH",
+      "speaker": "TEMAN_1",
+      "text": "Awalnya biasa saja. Kita sudah sampai, barang-barang sudah diturunkan, dan tenda mulai berdiri. Jangan terlalu jauh dari sini, ya."
+    },
+    {
+      "shot": "04A",
+      "title": "DINGIN YANG TIDAK WAJAR",
+      "speaker": "NARATOR",
+      "text": "Malam semakin larut. Di tengah suasana camping yang semula terasa menyenangkan, salah satu teman mulai menggigil. Bukan sekadar kedinginan biasa. Sikapnya berubah dan membuat dua orang lainnya mulai merasa tidak nyaman. Dalam kisah yang dikirimkan, perubahan itu menjadi tanda pertama bahwa malam mereka tidak akan berjalan seperti rencana."
+    },
+    {
+      "shot": "05A",
+      "title": "SOSOK DI BALIK POHON",
+      "speaker": "TEMAN_2",
+      "text": "Tunggu. Barusan kamu lihat sesuatu di dekat pohon itu?"
+    },
+    {
+      "shot": "06A",
+      "title": "SUARA LONCENG DARI GELAP",
+      "speaker": "NARATOR",
+      "text": "Pengirim cerita kemudian menggambarkan kemunculan sosok perempuan di balik pepohonan. Tidak ada penjelasan yang bisa memastikan siapa sosok itu atau apa yang sebenarnya terlihat. Lalu, suasana semakin mencekam ketika mereka mengaku mendengar suara lonceng, disusul bunyi yang mengingatkan pada kereta kuda. Di tengah hutan malam, suara itu terasa datang dari tempat yang tidak terlihat."
+    },
+    {
+      "shot": "07A",
+      "title": "MALAM DI DALAM TENDA",
+      "speaker": "NARATOR",
+      "text": "Ketegangan mencapai puncaknya ketika salah satu teman mengalami kondisi yang oleh pengirim digambarkan seperti kesurupan. Mereka berusaha menghadapi keadaan itu dalam ketakutan dan kebingungan. Setelahnya, cerita menyebut sosok perempuan kembali terlihat, kali ini di dalam tenda. Tidak ada bukti lain yang dapat memastikan apa yang terjadi. Yang tersisa adalah ingatan tentang malam yang membuat mereka ingin segera pergi."
+    },
+    {
+      "shot": "08A",
+      "title": "CERITA YANG BARU TERUNGKAP",
+      "speaker": "TEMAN_1",
+      "text": "Kamu juga mengalami hal itu? Kenapa baru cerita sekarang?"
+    },
+    {
+      "shot": "09A",
+      "title": "TERNYATA MEREKA MENYIMPAN CERITA",
+      "speaker": "NARATOR",
+      "text": "Bagian paling mengganggu justru datang setelah mereka pulang. Dalam kisah tersebut, ketiganya saling menceritakan pengalaman yang sebelumnya tidak mereka ungkapkan. Ada hal-hal yang ternyata mereka rasakan sendiri, tanpa diketahui dua orang lainnya. Apakah semuanya benar-benar terjadi seperti yang mereka ingat? Cerita anonim itu tidak memberi jawaban yang bisa diuji."
+    },
+    {
+      "shot": "10A",
+      "title": "LEMBANG, DAN MALAM YANG TERTINGGAL",
+      "speaker": "NARATOR",
+      "text": "Kisah ini berasal dari kiriman anonim yang dimuat dalam arsip Nightmare Side pada 2012. Nama tempat camping tidak disebutkan, identitas para pencerita tidak tersedia, dan pengalaman mereka tidak dapat diverifikasi secara independen. Dialog dalam video ini merupakan rekonstruksi dramatik, bukan kutipan asli. Mungkin yang paling menakutkan dari cerita ini bukanlah sosok yang muncul di antara pepohonan, melainkan perasaan bahwa ada pengalaman yang tidak pernah benar-benar bisa mereka jelaskan. Menurutmu, apa yang sebenarnya terjadi malam itu?"
+    }
+  ]
+}
