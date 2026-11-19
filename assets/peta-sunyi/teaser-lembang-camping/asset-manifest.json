@@ -1,0 +1,45 @@
+{
+  "channel": "Peta Sunyi",
+  "episode_id": "teaser-lembang-camping",
+  "format": "9:16",
+  "provider": "Cloudflare Workers AI",
+  "model": "@cf/black-forest-labs/flux-1-schnell",
+  "policy": "Ilustrasi AI adalah rekonstruksi atmosferik, bukan foto dokumenter atau bukti kejadian. Jangan tampilkan teks, logo, watermark, gore, atau wujud supernatural secara eksplisit.",
+  "assets": [
+    {
+      "id": "01A",
+      "scene": 1,
+      "kind": "quiet_camp",
+      "label_required": true,
+      "prompt": "Vertical 9:16 rough graphite pencil and charcoal horror illustration, lonely small camping tent in remote Lembang highland forest at night, tall dark trees, faint fog, weak lantern glow, cinematic establishing shot, textured paper, no text, no watermark."
+    },
+    {
+      "id": "02A",
+      "scene": 2,
+      "kind": "shivering_camper",
+      "label_required": true,
+      "prompt": "Vertical 9:16 rough graphite pencil horror illustration inside a modest camping tent, young adult male camper hunched and visibly shivering, friend looking concerned, dim lantern light, tense grounded body language, charcoal cross hatching, no text, no watermark."
+    },
+    {
+      "id": "03A",
+      "scene": 3,
+      "kind": "bell_and_yellow_light",
+      "label_required": true,
+      "prompt": "Vertical 9:16 cinematic graphite horror illustration, view through narrow opening of camping tent toward dense Indonesian mountain forest at night, small distant yellow light between tree trunks, thick fog, ambiguous source, no carriage visible, no text, no watermark."
+    },
+    {
+      "id": "04A",
+      "scene": 4,
+      "kind": "light_near_tent",
+      "label_required": true,
+      "prompt": "Vertical 9:16 rough graphite pencil horror illustration, exterior view of a small camping tent surrounded by towering dark trees, indistinct warm yellow glow just beyond the tent, oppressive mist, no visible monster, unsettling stillness, textured paper, no text, no watermark."
+    },
+    {
+      "id": "05A",
+      "scene": 5,
+      "kind": "final_campground",
+      "label_required": true,
+      "prompt": "Vertical 9:16 rough charcoal horror illustration, isolated camping tent in dark misty highland forest, foreground branches framing tent, faint yellow light fading between trees, ominous cinematic composition, no visible creature, no text, no watermark."
+    }
+  ]
+}
