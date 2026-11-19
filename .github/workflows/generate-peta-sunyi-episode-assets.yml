@@ -12,6 +12,8 @@ on:
           - kerkhof-leuwigajah-cimahi
           - radio-malabar-gunung-puntang
           - goa-jepang-dago-pakar
+          - penjara-banceuy-bandung
+          - observatorium-bosscha-lembang
       shot_ids:
         description: "Comma-separated shot IDs; default: all assets for selected episode"
         required: false
