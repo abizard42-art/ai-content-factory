@@ -15,6 +15,7 @@ on:
           - penjara-banceuy-bandung
           - observatorium-bosscha-lembang
           - teaser-lembang-camping
+          - villa-isola-bandung
       shot_ids:
         description: "Comma-separated shot IDs; default: all assets for selected episode"
         required: false
