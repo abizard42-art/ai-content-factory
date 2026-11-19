@@ -7,8 +7,7 @@
   "visual_style": "rough_pencil",
   "speaker_voices": {
     "NARATOR": "id-ID-ArdiNeural",
-    "TEMAN_1": "id-ID-GadisNeural",
-    "TEMAN_2": "id-ID-BasaniNeural"
+    "TEMAN": "id-ID-GadisNeural"
   },
   "scenes": [
     {
@@ -26,7 +25,7 @@
     {
       "shot": "03A",
       "title": "SUASANA MULAI BERUBAH",
-      "speaker": "TEMAN_1",
+      "speaker": "TEMAN",
       "text": "Awalnya biasa saja. Kita sudah sampai, barang-barang sudah diturunkan, dan tenda mulai berdiri. Jangan terlalu jauh dari sini, ya."
     },
     {
@@ -38,7 +37,7 @@
     {
       "shot": "05A",
       "title": "SOSOK DI BALIK POHON",
-      "speaker": "TEMAN_2",
+      "speaker": "TEMAN",
       "text": "Tunggu. Barusan kamu lihat sesuatu di dekat pohon itu?"
     },
     {
@@ -56,7 +55,7 @@
     {
       "shot": "08A",
       "title": "CERITA YANG BARU TERUNGKAP",
-      "speaker": "TEMAN_1",
+      "speaker": "TEMAN",
       "text": "Kamu juga mengalami hal itu? Kenapa baru cerita sekarang?"
     },
     {
