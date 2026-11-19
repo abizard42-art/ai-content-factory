@@ -115,9 +115,40 @@ def main():
             "fontcolor=white:fontsize=23:x=(w-text_w)/2:y=108,"
             f"ass={ass}")
         clip=OUT/f"long-{i:02d}.mp4"
-        run(["ffmpeg","-y","-loop","1","-i",str(src),"-i",str(audio),"-t",f"{length:.3f}",
-             "-vf",vf,"-r",str(FPS),"-c:v","libx264","-preset","veryfast","-crf","20",
-             "-pix_fmt","yuv420p","-c:a","aac","-b:a","192k","-shortest",str(clip)])
+        cmd=["ffmpeg","-y","-loop","1","-i",str(src),"-i",str(audio)]
+        audio_filters=["[1:a]volume=1.0[voice]"]
+        mix_labels=["[voice]"]
+        input_index=2
+        for field,volume in (("ambience_asset",0.18),("music_asset",0.10)):
+            asset_name=scene.get(field)
+            if asset_name:
+                layer=ASSETS/"audio"/asset_name
+                if not layer.exists():
+                    raise FileNotFoundError(f"Audio layer tidak ditemukan: {layer}")
+                cmd += ["-stream_loop","-1","-i",str(layer)]
+                label=f"layer{input_index}"
+                audio_filters.append(f"[{input_index}:a]volume={volume}[{label}]")
+                mix_labels.append(f"[{label}]")
+                input_index+=1
+        sfx_name=scene.get("sfx_asset")
+        if sfx_name:
+            layer=ASSETS/"audio"/sfx_name
+            if not layer.exists():
+                raise FileNotFoundError(f"SFX tidak ditemukan: {layer}")
+            cmd += ["-i",str(layer)]
+            label=f"layer{input_index}"
+            delay=int(scene.get("sfx_delay_ms",900))
+            audio_filters.append(f"[{input_index}:a]volume=0.30,adelay={delay}|{delay}[{label}]")
+            mix_labels.append(f"[{label}]")
+        if len(mix_labels)>1:
+            audio_filters.append("".join(mix_labels)+f"amix=inputs={len(mix_labels)}:duration=first:dropout_transition=2:normalize=0[aout]")
+            cmd += ["-filter_complex",";".join(audio_filters),"-map","0:v:0","-map","[aout]"]
+        else:
+            cmd += ["-map","0:v:0","-map","1:a:0"]
+        cmd += ["-t",f"{length:.3f}","-vf",vf,"-r",str(FPS),"-c:v","libx264",
+                "-preset","veryfast","-crf","20","-pix_fmt","yuv420p",
+                "-c:a","aac","-b:a","192k","-shortest",str(clip)]
+        run(cmd)
         clips.append(clip)
         print(f"LONG_SCENE_OK={i}; speaker={speaker}; seconds={length:.1f}")
     concat=OUT/"long-concat.txt"
