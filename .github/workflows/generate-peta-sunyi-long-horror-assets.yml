@@ -51,7 +51,7 @@ jobs:
             asset="$(jq -c --arg id "$id" '.assets[] | select(.id == $id)' "$manifest")"
             [ -n "$asset" ] || { echo "ERROR: Shot $id tidak ada di manifest."; exit 1; }
             prompt="$(printf '%s' "$asset" | jq -r '.prompt')"
-            request="$(jq -n --arg prompt "$prompt" '{prompt:$prompt,steps:4,width:1024,height:576}')"
+            request="$(jq -n --arg prompt "$prompt" '{prompt:$prompt,steps:4}')"
             file="peta-sunyi-$id.jpg"
             status="$(curl --silent --show-error --output "output/long-horror/response-$id.json" --write-out "%{http_code}"               "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/black-forest-labs/flux-1-schnell"               -X POST -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" -d "$request" || true)"
             if [ "$status" != "200" ]; then
