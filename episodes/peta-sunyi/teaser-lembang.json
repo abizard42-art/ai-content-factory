@@ -1,14 +1,63 @@
 {
-  "episode_id": "long-horror-lembang-camping",
+  "episode_id": "teaser-lembang-camping",
   "title": "Lonceng Itu Datang dari Tengah Hutan…",
-  "voice": "id-ID-ArdiNeural",
-  "rate": "-5%",
-  "narration": "Malam kedua, suasana camping itu berubah. Lutfi mulai menggigil. Gio tiba-tiba meminta semua orang diam. Katanya… ada suara lonceng. Awalnya terdengar jauh. Tapi semakin lama, bunyinya semakin dekat. Teng… teng… teng… Lalu, dari balik celah tenda, terlihat cahaya kuning bergerak di antara pepohonan. Mereka belum tahu apa yang sedang mendekat. Dan ketika suara itu berhenti tepat di depan tenda… malam itu berubah menjadi sesuatu yang tak pernah mereka lupakan. Kisah lengkapnya, Malam yang Tidak Selesai di Lembang. Di Peta Sunyi.",
-  "prompts": [
-    "Vertical 9:16 rough graphite pencil and charcoal horror illustration, a small lonely camping tent in a quiet remote West Java highland forest at night, tall dark trees, faint mist, weak lantern glow, cinematic establishing shot, textured paper, hand-drawn cross hatching, no text, no watermark.",
-    "Vertical 9:16 rough graphite pencil horror illustration viewed inside a modest camping tent, young adult male camper sitting hunched and visibly shivering, another friend looking concerned, dim lantern light, tense quiet atmosphere, charcoal cross hatching, no text, no watermark.",
-    "Vertical 9:16 cinematic graphite horror illustration, close-up of a young adult male camper inside a dark tent turning toward an unseen sound, finger raised asking everyone to be quiet, subtle fear, deep shadows, rough charcoal strokes, no text, no watermark.",
-    "Vertical 9:16 rough graphite pencil horror illustration, view through a narrow opening in a camping tent toward dense Indonesian mountain forest at night, a small distant yellow light between tree trunks, thick fog, ambiguous source, suspenseful, no carriage visible, no text, no watermark.",
-    "Vertical 9:16 rough charcoal horror illustration, exterior view of a small camping tent surrounded by towering dark trees, indistinct warm yellow glow just beyond the tent, oppressive mist, no visible monster, terrifying stillness, textured paper, no text, no watermark."
+  "visual_style": "rough_pencil",
+  "map": {
+    "query": "Lembang, Kabupaten Bandung Barat, Jawa Barat, Indonesia",
+    "title": "LEMBANG",
+    "subtitle": "KAWASAN PEGUNUNGAN",
+    "pin_label": "LEMBANG",
+    "footer": "ILUSTRASI SUASANA • LEMBANG"
+  },
+  "fact": {
+    "heading": "SEBUAH KISAH KIRIMAN",
+    "lines": [
+      "ARSIP NIGHTMARE SIDE ARDAN FM",
+      "19 SEPTEMBER 2012",
+      "PENGALAMAN PRIBADI ANONIM"
+    ],
+    "highlight": "ADAPTASI DRAMATIK"
+  },
+  "end": {
+    "title": "MALAM YANG TAK SELESAI",
+    "subtitle": "KISAH LENGKAP DI PETA SUNYI",
+    "cta": "TONTON VIDEO LENGKAPNYA"
+  },
+  "scenes": [
+    {
+      "shot": "01A",
+      "text": "Malam kedua camping di Lembang, suasana tiba-tiba berubah. Lutfi mulai menggigil. Gio meminta semua orang diam.",
+      "title": "MALAM KEDUA DI LEMBANG",
+      "kind": "ai",
+      "speaker": "NARATOR"
+    },
+    {
+      "shot": "02A",
+      "text": "Katanya, ada suara lonceng dari tengah hutan. Awalnya terdengar jauh. Tapi bunyinya semakin dekat.",
+      "title": "ADA SUARA LONCENG",
+      "kind": "ai",
+      "speaker": "NARATOR"
+    },
+    {
+      "shot": "03A",
+      "text": "Teng… teng… teng… Lalu terdengar langkah kaki kuda. Dari celah tenda, tampak cahaya kuning bergerak di antara pepohonan.",
+      "title": "CAHAYA DI ANTARA POHON",
+      "kind": "ai",
+      "speaker": "NARATOR"
+    },
+    {
+      "shot": "04A",
+      "text": "Mereka belum tahu apa yang sedang mendekat. Dan ketika suara itu berhenti tepat di depan tenda…",
+      "title": "BERHENTI DI DEPAN TENDA",
+      "kind": "ai",
+      "speaker": "NARATOR"
+    },
+    {
+      "shot": "05A",
+      "text": "Malam itu berubah menjadi sesuatu yang tak pernah mereka lupakan. Malam yang Tidak Selesai di Lembang. Kisah lengkapnya di Peta Sunyi.",
+      "title": "MALAM YANG TIDAK SELESAI",
+      "kind": "ai",
+      "speaker": "NARATOR"
+    }
   ]
 }
