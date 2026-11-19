@@ -52,37 +52,121 @@ def ass_time(s):
     if cs>=100: whole+=1; cs=0
     return f"{h}:{m:02d}:{whole:02d}.{cs:02d}"
 
-def subtitles(vtt, target, speaker):
-    lines=pathlib.Path(vtt).read_text(encoding="utf-8-sig").splitlines()
-    cues=[]; cur=[]
-    for line in lines:
-        line=line.strip()
+def timestamp_seconds(value):
+    parts = value.replace(",", ".").split(":")
+    if len(parts) == 2:
+        hours, minutes, seconds = 0, int(parts[0]), float(parts[1])
+    else:
+        hours, minutes, seconds = int(parts[0]), int(parts[1]), float(parts[2])
+    return hours * 3600 + minutes * 60 + seconds
+
+def seconds_ass(value):
+    value = max(0.0, value)
+    hours = int(value // 3600)
+    minutes = int((value % 3600) // 60)
+    seconds = value % 60
+    whole = int(seconds)
+    centiseconds = int(round((seconds - whole) * 100))
+    if centiseconds >= 100:
+        whole += 1
+        centiseconds = 0
+    return f"{hours}:{minutes:02d}:{whole:02d}.{centiseconds:02d}"
+
+def clean_caption_text(value):
+    value = html.unescape(re.sub(r"<[^>]+>", "", value))
+    return re.sub(r"\s+", " ", value).strip()
+
+def word_tokens(value):
+    return re.findall(r"\S+", clean_caption_text(value))
+
+def normalized_words(value):
+    return re.findall(r"[0-9a-zA-ZÀ-ÿ]+", value.lower())
+
+def split_caption_words(words, max_words=6):
+    return [words[i:i + max_words] for i in range(0, len(words), max_words)]
+
+def subtitles(vtt, target, speaker, source_text, audio_duration):
+    lines = pathlib.Path(vtt).read_text(encoding="utf-8-sig").splitlines()
+    cues = []
+    current = None
+    for raw_line in lines:
+        line = raw_line.strip()
         if not line:
-            if cur: cues.append(cur); cur=[]
-        elif "-->" in line:
-            if cur: cues.append(cur)
-            p=line.split(); cur=[p[0],p[2]]
-        elif cur and line!="WEBVTT" and not line.isdigit():
-            cur.append(line)
-    if cur: cues.append(cur)
-    head=[
-      "[Script Info]","Title: Peta Sunyi Long Form","ScriptType: v4.00+","WrapStyle: 2",
-      "ScaledBorderAndShadow: yes","PlayResX: 1920","PlayResY: 1080","","[V4+ Styles]",
+            if current:
+                cues.append(current)
+                current = None
+            continue
+        if "-->" in line:
+            if current:
+                cues.append(current)
+            timing = line.split()
+            current = {"start": timestamp_seconds(timing[0]), "end": timestamp_seconds(timing[2]), "text": []}
+        elif current and line != "WEBVTT" and not line.isdigit():
+            current["text"].append(line)
+    if current:
+        cues.append(current)
+
+    vtt_text = " ".join(clean_caption_text(x) for cue in cues for x in cue["text"])
+    source_tokens = normalized_words(source_text)
+    vtt_tokens = normalized_words(vtt_text)
+    use_source_fallback = not cues or vtt_tokens != source_tokens
+
+    timed_chunks = []
+    if not use_source_fallback:
+        for cue in cues:
+            words = word_tokens(" ".join(cue["text"]))
+            if not words:
+                continue
+            chunks = split_caption_words(words, 6)
+            total_words = len(words)
+            span = max(0.01, cue["end"] - cue["start"])
+            elapsed_words = 0
+            for chunk in chunks:
+                chunk_start = cue["start"] + span * elapsed_words / total_words
+                elapsed_words += len(chunk)
+                chunk_end = cue["start"] + span * elapsed_words / total_words
+                timed_chunks.append((chunk_start, chunk_end, chunk))
+    else:
+        # Safety fallback: subtitle the complete approved script rather than silently
+        # trusting an incomplete ASR/TTS VTT transcript.
+        words = word_tokens(source_text)
+        chunks = split_caption_words(words, 6)
+        total_words = max(1, len(words))
+        cursor = 0
+        for chunk in chunks:
+            chunk_start = audio_duration * cursor / total_words
+            cursor += len(chunk)
+            chunk_end = audio_duration * cursor / total_words
+            timed_chunks.append((chunk_start, chunk_end, chunk))
+        print(f"SUBTITLE_SOURCE_FALLBACK=true; vtt_words={len(vtt_tokens)}; script_words={len(source_tokens)}")
+
+    head = [
+      "[Script Info]", "Title: Peta Sunyi Long Form", "ScriptType: v4.00+",
+      "WrapStyle: 2", "ScaledBorderAndShadow: yes", "PlayResX: 1920",
+      "PlayResY: 1080", "", "[V4+ Styles]",
       "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding",
-      "Style: Default,DejaVu Sans,44,&H00FFFFFF,&H00FFFFFF,&H00101010,&H90000000,0,0,0,0,100,100,0,0,1,3,1,2,180,180,85,1","","[Events]",
-      "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"]
-    ev=[]
-    for c in cues:
-        if len(c)<3: continue
-        phrase=" ".join(html.unescape(re.sub(r"<[^>]+>","",x)).strip() for x in c[2:])
-        phrase=re.sub(r"\s+"," ",phrase).strip()
-        if not phrase: continue
-        wrapped=textwrap.wrap(phrase,width=58)[:2]
-        tag=re.sub(r"[^A-Z0-9 _-]","",speaker.upper())[:22]
-        text=r"{\an8\fs30\b1\c&H00D6D6D6&}"+tag+r"\N{\rDefault}"+r"\N".join(wrapped).replace("{","(").replace("}",")")
-        ev.append(f"Dialogue: 0,{ass_time(c[0])},{ass_time(c[1])},Default,,0,0,0,,{text}")
-    pathlib.Path(target).write_text("\n".join(head+ev)+"\n",encoding="utf-8")
-    if not ev: raise RuntimeError(f"Tidak ada cue subtitle: {vtt}")
+      "Style: Default,DejaVu Sans,44,&H00FFFFFF,&H00FFFFFF,&H00101010,&H90000000,0,0,0,0,100,100,0,0,1,3,1,2,180,180,85,1", "", "[Events]",
+      "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
+    ]
+    events = []
+    tag = re.sub(r"[^A-Z0-9 _-]", "", speaker.upper())[:22]
+    for start_time, end_time, words in timed_chunks:
+        if not words:
+            continue
+        # Keep each subtitle card to <= 6 words, arranged over at most two lines.
+        if len(words) > 3:
+            caption = " ".join(words[:3]) + r"\N" + " ".join(words[3:])
+        else:
+            caption = " ".join(words)
+        caption = caption.replace("{", "(").replace("}", ")")
+        text = r"{\an8\fs30\b1\c&H00D6D6D6&}" + tag + r"\N{\rDefault}" + caption
+        events.append(
+            f"Dialogue: 0,{seconds_ass(start_time)},{seconds_ass(end_time)},Default,,0,0,0,,{text}"
+        )
+    pathlib.Path(target).write_text("\n".join(head + events) + "\n", encoding="utf-8")
+    if not events:
+        raise RuntimeError(f"Tidak ada cue subtitle: {vtt}")
+    print(f"SUBTITLE_CUES={len(events)}; max_words=6; source_fallback={str(use_source_fallback).lower()}")
     return target
 
 def main():
@@ -102,7 +186,7 @@ def main():
         if not src.exists(): raise FileNotFoundError(f"Aset visual tidak ditemukan: {src}")
         if style=="rough_pencil":
             styled=OUT/f"long-{i:02d}-pencil.jpg"; pencil(src,styled); src=styled
-        ass=subtitles(vtt,OUT/f"long-{i:02d}.ass",speaker)
+        ass=subtitles(vtt,OUT/f"long-{i:02d}.ass",speaker,scene["text"],duration(audio))
         title=scene.get("title","").replace("\\","\\\\").replace("'","\\'")
         vf=(f"scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},"
             f"zoompan=z='min(zoom+0.00018,1.035)':d={max(1,math.ceil(length*FPS))}:"
