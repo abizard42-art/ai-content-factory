@@ -51,9 +51,9 @@
     {
       "id": "07A",
       "scene": 7,
-      "kind": "Leaving at dawn",
+      "kind": "night_car_arrival",
       "label_required": true,
-      "prompt": "Wide 16:9 pencil and charcoal sketch of three exhausted young adult campers walking away from a forest campsite at pale dawn, tent left behind in background, mist between pine trees, subdued body language, scratchy hand-drawn lines, crosshatching, monochrome paper grain, no text."
+      "prompt": "Wide 16:9 rough graphite and charcoal storyboard illustration of a single older dark vehicle stopped at the edge of a remote forest clearing at midnight, two bright headlights cutting through mist and illuminating the dirt path, dense pine tree silhouettes behind it, no visible license plate or identifiable people, ominous but grounded atmosphere, scratchy pencil strokes, heavy crosshatching, imperfect hand-drawn contours, deep charcoal shadows, monochrome paper grain, cinematic wide composition, no text."
     },
     {
       "id": "08A",
