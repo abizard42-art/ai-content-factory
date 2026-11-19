@@ -4,8 +4,8 @@ import asyncio
 import json
 import pathlib
 import re
+import subprocess
 import edge_tts
-from pydub import AudioSegment
 
 OUT = pathlib.Path("output/tts-audition")
 TMP = OUT / "segments"
@@ -25,20 +25,24 @@ async def synthesize(text, voice, rate, path):
 async def make_paced_sample(label, voice, rate):
     # Split only at existing punctuation; words and wording remain identical.
     phrases = re.findall(r"[^,;.!?]+[,;.!?]?", TEXT)
-    combined = AudioSegment.empty()
+    concat_entries = []
     for index, phrase in enumerate(phrases):
         phrase = phrase.strip()
         if not phrase:
             continue
         part = TMP / f"{label}-{index:02d}.mp3"
         await synthesize(phrase, voice, rate, part)
-        combined += AudioSegment.from_file(part)
+        concat_entries.append(part)
         ending = phrase[-1:]
         pause_ms = 320 if ending in ".!?" else 150 if ending in ",;" else 0
         if pause_ms:
-            combined += AudioSegment.silent(duration=pause_ms)
+            silence = TMP / f"{label}-{index:02d}-silence.mp3"
+            subprocess.run(["ffmpeg", "-y", "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono", "-t", f"{pause_ms / 1000:.3f}", "-q:a", "7", str(silence)], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+            concat_entries.append(silence)
+    concat_file = TMP / f"{label}-concat.txt"
+    concat_file.write_text("".join("file '" + str(path.resolve()) + "'\n" for path in concat_entries), encoding="utf-8")
     destination = OUT / f"{label}.mp3"
-    combined.export(destination, format="mp3", bitrate="192k")
+    subprocess.run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", str(concat_file), "-c:a", "libmp3lame", "-b:a", "192k", str(destination)], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
     return destination
 
 async def main():
