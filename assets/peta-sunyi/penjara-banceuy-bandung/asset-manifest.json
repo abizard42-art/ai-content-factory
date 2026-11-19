@@ -1,0 +1,45 @@
+{
+  "channel": "Peta Sunyi",
+  "episode_id": "penjara-banceuy-bandung",
+  "format": "9:16",
+  "provider": "Cloudflare Workers AI",
+  "model": "@cf/black-forest-labs/flux-1-schnell",
+  "policy": "All AI visuals are illustrative reconstructions, not documentary photographs or direct archival evidence. Keep historical claims distinct from atmosphere. No invented quotations, dates, documents, or supernatural entities. Add visible REKA ADEGAN • ILUSTRASI AI labels in post-production; never ask the image model to render text. Use real location/archive photographs only when separately sourced and credited.",
+  "assets": [
+    {
+      "id": "01A",
+      "scene": 1,
+      "kind": "Banceuy courtyard",
+      "label_required": true,
+      "prompt": "Vertical 9:16 cinematic illustration of the historic Penjara Banceuy site and urban surroundings in Bandung, subdued documentary style, no readable text, no ghosts, no watermark. 2D cinematic hand-painted illustration, painterly matte-painting texture, subtle film grain, restrained muted sepia, slate and dark olive palette. Illustrative reconstruction only, not documentary photography. Avoid photorealism, 3D, CGI, anime, ghosts, supernatural entities, letters, subtitles, watermark, logo."
+    },
+    {
+      "id": "03A",
+      "scene": 3,
+      "kind": "1929 arrest",
+      "label_required": true,
+      "prompt": "Vertical 9:16 respectful historical reconstruction of colonial police escorting an Indonesian nationalist in Yogyakarta in 1929, from behind, no identifiable likeness, no violence, no text. 2D cinematic hand-painted illustration, painterly matte-painting texture, subtle film grain, restrained muted sepia, slate and dark olive palette. Illustrative reconstruction only, not documentary photography. Avoid photorealism, 3D, CGI, anime, ghosts, supernatural entities, letters, subtitles, watermark, logo."
+    },
+    {
+      "id": "04A",
+      "scene": 4,
+      "kind": "cell number five",
+      "label_required": true,
+      "prompt": "Vertical 9:16 restrained illustration of a small colonial prison cell, approximate 2.5 by 1.5 meter scale, bare floor and simple iron door, no torture, no text. 2D cinematic hand-painted illustration, painterly matte-painting texture, subtle film grain, restrained muted sepia, slate and dark olive palette. Illustrative reconstruction only, not documentary photography. Avoid photorealism, 3D, CGI, anime, ghosts, supernatural entities, letters, subtitles, watermark, logo."
+    },
+    {
+      "id": "05A",
+      "scene": 5,
+      "kind": "writing defense",
+      "label_required": true,
+      "prompt": "Vertical 9:16 historical reconstruction of a nationalist writing notes in a prison cell, seen from behind, no readable text, no identifiable likeness. 2D cinematic hand-painted illustration, painterly matte-painting texture, subtle film grain, restrained muted sepia, slate and dark olive palette. Illustrative reconstruction only, not documentary photography. Avoid photorealism, 3D, CGI, anime, ghosts, supernatural entities, letters, subtitles, watermark, logo."
+    },
+    {
+      "id": "07A",
+      "scene": 7,
+      "kind": "watchtower",
+      "label_required": true,
+      "prompt": "Vertical 9:16 illustration of preserved Banceuy watchtower and cell remains among modern commercial buildings, grounded scale, no ghosts, no text. 2D cinematic hand-painted illustration, painterly matte-painting texture, subtle film grain, restrained muted sepia, slate and dark olive palette. Illustrative reconstruction only, not documentary photography. Avoid photorealism, 3D, CGI, anime, ghosts, supernatural entities, letters, subtitles, watermark, logo."
+    }
+  ]
+}
