@@ -1,0 +1,26 @@
+name: Generate Peta Sunyi TTS audition
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audition:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install TTS dependency
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install edge-tts
+      - name: Generate matched Indonesian voice samples
+        run: python scripts/peta-sunyi/test_long_horror_tts.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: peta-sunyi-tts-audition
+          path: output/tts-audition/
+          if-no-files-found: error
+          retention-days: 7
