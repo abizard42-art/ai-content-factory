@@ -2,6 +2,12 @@
   "episode_id": "teaser-lembang-camping",
   "title": "Lonceng Itu Datang dari Tengah Hutan…",
   "visual_style": "rough_pencil",
+  "automation": {
+    "build_mode": "automatic_on_push",
+    "workflow": "build-peta-sunyi-teaser.yml",
+    "review_required": true,
+    "youtube_publish": false
+  },
   "map": {
     "query": "Lembang, Kabupaten Bandung Barat, Jawa Barat, Indonesia",
     "title": "LEMBANG",
