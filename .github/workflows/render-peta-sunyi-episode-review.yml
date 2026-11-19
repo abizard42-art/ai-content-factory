@@ -14,6 +14,7 @@ on:
           - goa-jepang-dago-pakar
           - penjara-banceuy-bandung
           - observatorium-bosscha-lembang
+          - teaser-lembang-camping
 
 permissions:
   contents: read
