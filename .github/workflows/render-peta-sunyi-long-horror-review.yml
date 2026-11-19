@@ -63,8 +63,10 @@ jobs:
             test -s "work/assets/$file"
             echo "ASSET_OK=$object_path"
           done
-      - name: Validate renderer syntax
-        run: python -m py_compile scripts/peta-sunyi/render_long_horror.py
+      - name: Validate renderer syntax and subtitle regression tests
+        run: |
+          python -m py_compile scripts/peta-sunyi/render_long_horror.py
+          python -m unittest discover -s tests -p 'test_peta_sunyi_subtitles.py'
       - name: Render 16:9 multi-voice review video
         env:
           EPISODE_CONFIG: episodes/peta-sunyi/${{ inputs.episode_id }}.json
