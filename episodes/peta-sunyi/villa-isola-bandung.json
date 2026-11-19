@@ -113,10 +113,10 @@
     },
     {
       "scene": 9,
-      "shot": "09A",
+      "shot": "END",
       "text": "Kini, bangunan itu tetap berdiri di tengah kampus. Cerita-cerita misteri mungkin terus beredar, tetapi sejarah Villa Isola sendiri sudah menyimpan kisah yang luar biasa. Menurutmu, bagian mana yang paling menarik?",
       "title": "SEJARAH ATAU LEGENDA?",
-      "kind": "ai"
+      "kind": "graphic"
     }
   ]
 }
