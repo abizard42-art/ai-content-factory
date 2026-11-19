@@ -1,0 +1,44 @@
+name: Validate Peta Sunyi long-horror narration
+
+on:
+  push:
+    paths:
+      - "scripts/peta-sunyi/render_long_horror.py"
+      - "tests/test_peta_sunyi_subtitles.py"
+      - "episodes/peta-sunyi/*.json"
+      - ".github/workflows/validate-peta-sunyi-long-horror.yml"
+  pull_request:
+    paths:
+      - "scripts/peta-sunyi/render_long_horror.py"
+      - "tests/test_peta_sunyi_subtitles.py"
+      - "episodes/peta-sunyi/*.json"
+      - ".github/workflows/validate-peta-sunyi-long-horror.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Python syntax and narration tests
+        run: |
+          python -m py_compile scripts/peta-sunyi/render_long_horror.py
+          python -m unittest discover -s tests -p 'test_peta_sunyi_subtitles.py'
+      - name: Validate long-form episode JSON
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          allowed = {"natural", "paced", "suspense", "reflective", "urgent"}
+          for path in Path("episodes/peta-sunyi").glob("*.json"):
+              data = json.loads(path.read_text(encoding="utf-8"))
+              for index, scene in enumerate(data.get("scenes", []), 1):
+                  delivery = scene.get("delivery", "natural")
+                  if delivery not in allowed:
+                      raise SystemExit(f"{path}: scene {index}: invalid delivery {delivery}")
+                  if not isinstance(scene.get("dramatic_pause_after", []), list):
+                      raise SystemExit(f"{path}: scene {index}: dramatic_pause_after must be a list")
+          print("LONG_HORROR_CONFIGS_VALID=true")
+          PY
