@@ -6,7 +6,11 @@
     "title": "PENJARA BANCEUY",
     "subtitle": "JALAN BANCEUY • BANDUNG",
     "pin_label": "SITUS PENJARA BANCEUY",
-    "footer": "PETA LOKASI • BANDUNG"
+    "footer": "PETA LOKASI • BANDUNG",
+    "coordinates": {
+      "lat": -6.9196,
+      "lon": 107.60696
+    }
   },
   "fact": {
     "heading": "FAKTA SEJARAH BANCEUY",
