@@ -1,0 +1,163 @@
+name: Build Peta Sunyi Villa Isola automatically
+
+on:
+  push:
+    paths:
+      - "episodes/peta-sunyi/villa-isola-bandung.json"
+      - "assets/peta-sunyi/villa-isola-bandung/asset-manifest.json"
+      - "scripts/peta-sunyi/render_episode.py"
+      - ".github/workflows/build-peta-sunyi-villa-isola.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: peta-sunyi-villa-isola-build
+  cancel-in-progress: false
+
+jobs:
+  build-villa-isola:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate Villa Isola config and visual manifest
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          config = json.loads(Path("episodes/peta-sunyi/villa-isola-bandung.json").read_text(encoding="utf-8"))
+          manifest = json.loads(Path("assets/peta-sunyi/villa-isola-bandung/asset-manifest.json").read_text(encoding="utf-8"))
+          assert config.get("episode_id") == "villa-isola-bandung", "episode_id tidak sesuai"
+          scenes = config.get("scenes", [])
+          assets = manifest.get("assets", [])
+          scene_ids = [s.get("shot") for s in scenes if s.get("kind") == "ai"]
+          asset_ids = [a.get("id") for a in assets]
+          assert len(scenes) == 9, f"Episode harus memiliki 9 scene, ditemukan {len(scenes)}"
+          assert len(scene_ids) == 5 and len(set(scene_ids)) == 5, "Shot AI harus unik dan berjumlah 5"
+          assert set(scene_ids) == set(asset_ids), f"Shot config {scene_ids} tidak cocok dengan manifest {asset_ids}"
+          assert scenes[1].get("shot") == "MAP", "Scene 2 harus menggunakan peta"
+          assert any(s.get("shot") == "FACT" for s in scenes), "Episode harus memiliki grafis fakta"
+          assert scenes[-1].get("shot") == "END", "Scene terakhir harus menggunakan end card"
+          assert all(s.get("text") and s.get("title") for s in scenes), "Setiap scene wajib punya text dan title"
+          print("VILLA_ISOLA_CONFIG_OK=9 scenes; 5 matching visual prompts")
+          PY
+
+      - name: Generate all Villa Isola visuals with Cloudflare FLUX and save to Supabase
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: |
+          set -euo pipefail
+          for name in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID SUPABASE_URL SUPABASE_SECRET_KEY; do
+            [ -n "${!name:-}" ] || { echo "ERROR: GitHub Secret $name belum diisi."; exit 1; }
+          done
+          manifest="assets/peta-sunyi/villa-isola-bandung/asset-manifest.json"
+          mkdir -p output/peta-sunyi work/assets
+          mapfile -t shot_ids < <(jq -r '.assets[].id' "$manifest")
+          generated=0
+          for shot_id in "${shot_ids[@]}"; do
+            prompt="$(jq -r --arg id "$shot_id" '.assets[] | select(.id == $id) | .prompt' "$manifest")"
+            [ -n "$prompt" ] || { echo "ERROR: Prompt $shot_id kosong."; exit 1; }
+            echo "GENERATING=villa-isola-bandung/$shot_id"
+            request="$(jq -n --arg prompt "$prompt" '{prompt:$prompt,steps:4}')"
+            status="$(curl --silent --show-error --output "output/peta-sunyi/response-$shot_id.json" --write-out "%{http_code}" \
+              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/black-forest-labs/flux-1-schnell" \
+              -X POST -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" -d "$request" || true)"
+            if [ "$status" != "200" ]; then
+              echo "ERROR: Cloudflare HTTP $status untuk $shot_id."
+              cat "output/peta-sunyi/response-$shot_id.json"
+              exit 1
+            fi
+            image_base64="$(jq -r '.result.image // .image // empty' "output/peta-sunyi/response-$shot_id.json")"
+            [ -n "$image_base64" ] || { echo "ERROR: Respons tidak berisi gambar untuk $shot_id."; exit 1; }
+            image_file="peta-sunyi-$shot_id.jpg"
+            printf '%s' "$image_base64" | base64 --decode > "output/peta-sunyi/$image_file"
+            test -s "output/peta-sunyi/$image_file"
+            cp "output/peta-sunyi/$image_file" "work/assets/$image_file"
+            object_path="peta-sunyi/villa-isola-bandung/$image_file"
+            curl --fail-with-body --silent --show-error -X POST \
+              "${SUPABASE_URL}/storage/v1/object/visual-assets/$object_path" \
+              -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+              -H "Content-Type: image/jpeg" -H "x-upsert: true" --data-binary @"output/peta-sunyi/$image_file" >/dev/null
+            echo "SUPABASE_ASSET_OK=visual-assets/$object_path"
+            generated=$((generated+1))
+          done
+          [ "$generated" -eq 5 ] || { echo "ERROR: Seharusnya 5 visual, berhasil $generated."; exit 1; }
+          echo "ASSETS_GENERATED=$generated"
+
+      - name: Install video rendering dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-dejavu-core
+          python -m pip install --upgrade pip
+          python -m pip install pillow edge-tts
+
+      - name: Render Villa Isola using the shared Peta Sunyi Shorts renderer
+        env:
+          EPISODE_CONFIG: episodes/peta-sunyi/villa-isola-bandung.json
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/peta-sunyi/render_episode.py
+          python scripts/peta-sunyi/render_episode.py
+          test -s output/villa-isola-bandung-review.mp4
+          echo "VILLA_ISOLA_RENDER_OK=output/villa-isola-bandung-review.mp4"
+          echo "REVIEW_ONLY=true; NO YOUTUBE PUBLISHING"
+
+      - name: Upload review MP4 to private Supabase bucket
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: |
+          set -euo pipefail
+          for name in SUPABASE_URL SUPABASE_SECRET_KEY; do
+            [ -n "${!name:-}" ] || { echo "ERROR: GitHub Secret $name belum diisi."; exit 1; }
+          done
+          bucket_status="$(curl --silent --show-error --output /tmp/bucket.json --write-out "%{http_code}" \
+            "${SUPABASE_URL}/storage/v1/bucket/rendered-videos" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}")"
+          if [ "$bucket_status" = "404" ] || grep -q 'NoSuchBucket' /tmp/bucket.json; then
+            create_status="$(curl --silent --show-error --output /tmp/create-bucket.json --write-out "%{http_code}" \
+              -X POST "${SUPABASE_URL}/storage/v1/bucket" \
+              -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+              -H "Content-Type: application/json" \
+              -d '{"id":"rendered-videos","name":"rendered-videos","public":false}')"
+            if [ "$create_status" != "200" ] && [ "$create_status" != "201" ]; then
+              echo "ERROR: Gagal membuat bucket rendered-videos (HTTP $create_status)"
+              cat /tmp/create-bucket.json
+              exit 1
+            fi
+          elif [ "$bucket_status" != "200" ]; then
+            echo "ERROR: Gagal memeriksa bucket rendered-videos (HTTP $bucket_status)"
+            cat /tmp/bucket.json
+            exit 1
+          fi
+          object_path="peta-sunyi/villa-isola-bandung/villa-isola-bandung-review.mp4"
+          upload_status="$(curl --silent --show-error --output /tmp/upload.json --write-out "%{http_code}" \
+            -X POST "${SUPABASE_URL}/storage/v1/object/rendered-videos/$object_path" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+            -H "Content-Type: video/mp4" -H "x-upsert: true" --data-binary "@output/villa-isola-bandung-review.mp4")"
+          if [ "$upload_status" != "200" ] && [ "$upload_status" != "201" ]; then
+            echo "ERROR: Upload MP4 gagal (HTTP $upload_status)"
+            cat /tmp/upload.json
+            exit 1
+          fi
+          echo "SUPABASE_VIDEO_OK=rendered-videos/$object_path"
+
+      - name: Upload Villa Isola review artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: peta-sunyi-villa-isola-review
+          path: |
+            output/villa-isola-bandung-review.mp4
+            output/peta-sunyi/
+          if-no-files-found: error
+          retention-days: 7
