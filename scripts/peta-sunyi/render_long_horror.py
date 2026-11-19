@@ -35,6 +35,73 @@ def tts(text, audio, vtt, voice, rate="+0%", pitch="+0Hz", volume="+0%"):
                 raise
             time.sleep(delays[attempt])
 
+
+def split_delivery_phrases(text, split_commas=False):
+    """Split only at natural punctuation boundaries; preserve every source word."""
+    pattern = r".+?(?:[.!?]+[\"')\]]*|[,;]+)|.+$" if split_commas else r".+?[.!?]+[\"')\]]*|.+$"
+    return [part.strip() for part in re.findall(pattern, text, flags=re.S) if part.strip()]
+
+def tts_with_delivery(text, audio, vtt, voice, rate, pitch, volume, delivery, dramatic_pause_after=None):
+    """Render one scene with scene-level pacing and optional phrase-level dramatic holds."""
+    if delivery == "natural":
+        tts(text, audio, vtt, voice, rate=rate, pitch=pitch, volume=volume)
+        return
+    split_commas = delivery in ("suspense", "reflective")
+    phrases = split_delivery_phrases(text, split_commas=split_commas)
+    if not phrases:
+        tts(text, audio, vtt, voice, rate=rate, pitch=pitch, volume=volume)
+        return
+    pause_map = {"paced": (0, 320), "suspense": (170, 460), "reflective": (220, 520), "urgent": (0, 170)}
+    comma_pause, sentence_pause = pause_map.get(delivery, (0, 320))
+    dramatic = set(dramatic_pause_after or [])
+    work = OUT / "delivery_segments"
+    work.mkdir(parents=True, exist_ok=True)
+    concat_entries = []
+    vtt_cues = []
+    elapsed = 0.0
+    for index, phrase in enumerate(phrases):
+        part_audio = work / f"{audio.stem}-{index:03d}.mp3"
+        part_vtt = work / f"{audio.stem}-{index:03d}.vtt"
+        tts(phrase, part_audio, part_vtt, voice, rate=rate, pitch=pitch, volume=volume)
+        concat_entries.append(part_audio)
+        part_duration = duration(part_audio)
+        raw = part_vtt.read_text(encoding="utf-8-sig").splitlines()
+        cue = None
+        for line in raw:
+            line = line.strip()
+            if "-->" in line:
+                if cue:
+                    vtt_cues.append((elapsed + cue[0], elapsed + cue[1], cue[2]))
+                times = line.split()
+                cue = [timestamp_seconds(times[0]), timestamp_seconds(times[2]), []]
+            elif cue and line and line != "WEBVTT" and not line.isdigit():
+                cue[2].append(line)
+        if cue:
+            vtt_cues.append((elapsed + cue[0], elapsed + cue[1], cue[2]))
+        elapsed += part_duration
+        ending = phrase.rstrip()[-1:]
+        pause = sentence_pause if ending in ".!?" else comma_pause if ending in ",;" else 0
+        if phrase in dramatic:
+            pause = max(pause, 850)
+        if pause:
+            silence = work / f"{audio.stem}-{index:03d}-silence.mp3"
+            subprocess.run(["ffmpeg", "-y", "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono",
+                            "-t", f"{pause / 1000:.3f}", "-q:a", "7", str(silence)],
+                           check=True, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+            concat_entries.append(silence)
+            elapsed += pause / 1000.0
+    concat_file = work / f"{audio.stem}-concat.txt"
+    concat_file.write_text("".join("file '" + str(path.resolve()) + "'\n" for path in concat_entries), encoding="utf-8")
+    subprocess.run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", str(concat_file),
+                    "-c:a", "libmp3lame", "-b:a", "192k", str(audio)],
+                   check=True, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
+    vtt_lines = ["WEBVTT", ""]
+    for start, end, cue_words in vtt_cues:
+        vtt_lines += [f"{seconds_ass(start).replace('.', ',')} --> {seconds_ass(end).replace('.', ',')}",
+                      *cue_words, ""]
+    vtt.write_text("\n".join(vtt_lines), encoding="utf-8")
+    print(f"TTS_DELIVERY={delivery}; phrases={len(phrases)}; inserted_pause_seconds={elapsed - duration(audio):.2f}")
+
 def pencil(source, target):
     with Image.open(source) as im:
         gray = ImageOps.autocontrast(im.convert("L"))
@@ -181,14 +248,19 @@ def main():
         speaker=scene.get("speaker","NARATOR")
         voice=voices.get(speaker,DEFAULT_VOICE)
         audio=OUT/f"long-{i:02d}.mp3"; vtt=OUT/f"long-{i:02d}.vtt"
-        tts(
+        delivery = scene.get("delivery", "natural")
+        delivery_rates = {"natural": "+0%", "paced": "-3%", "suspense": "-5%", "reflective": "-4%", "urgent": "+0%"}
+        rate = scene.get("tts_rate", delivery_rates.get(delivery, "+0%"))
+        tts_with_delivery(
             scene["text"], audio, vtt, voice,
-            rate=scene.get("tts_rate", "+0%"),
+            rate=rate,
             pitch=scene.get("tts_pitch", "+0Hz"),
             volume=scene.get("tts_volume", "+0%"),
+            delivery=delivery,
+            dramatic_pause_after=scene.get("dramatic_pause_after", []),
         )
         length=duration(audio)+0.45
-        print(f"TTS_DIRECTION={speaker}; rate={scene.get('tts_rate', '+0%')}; pitch={scene.get('tts_pitch', '+0Hz')}")
+        print(f"TTS_DIRECTION={speaker}; delivery={delivery}; rate={rate}; pitch={scene.get('tts_pitch', '+0Hz')}")
         src=ASSETS/f"peta-sunyi-{scene['shot']}.jpg"
         if not src.exists(): raise FileNotFoundError(f"Aset visual tidak ditemukan: {src}")
         if style=="rough_pencil":
