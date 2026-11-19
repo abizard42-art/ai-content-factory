@@ -1,0 +1,122 @@
+{
+  "episode_id": "villa-isola-bandung",
+  "title": "Misteri Villa Isola: Tragedi di Balik Kemegahan Art Deco Bandung",
+  "visual_style": "rough_pencil",
+  "map": {
+    "query": "Villa Isola, Jl. Dr. Setiabudi No. 229, Isola, Sukasari, Bandung, West Java, Indonesia",
+    "title": "VILLA ISOLA",
+    "subtitle": "SETIABUDI • BANDUNG",
+    "pin_label": "VILLA ISOLA",
+    "footer": "PETA LOKASI • BANDUNG UTARA"
+  },
+  "fact": {
+    "heading": "LINIMASA VILLA ISOLA",
+    "lines": [
+      "1932–1933 • PEMBANGUNAN VILLA ISOLA",
+      "1935 • BERUBAH MENJADI HOTEL ISOLA",
+      "1942 • KEDIAMAN SEMENTARA JENDERAL H. IMAMURA",
+      "1954 • DIRESMIKAN SEBAGAI BANGUNAN PERGURUAN TINGGI",
+      "KINI • GEDUNG REKTORAT UPI"
+    ],
+    "highlight": "FAKTA SEJARAH • LEGENDA TETAP PERLU BUKTI"
+  },
+  "end": {
+    "title": "VILLA ISOLA",
+    "subtitle": "KEMEGAHAN • TRAGEDI • LEGENDA",
+    "cta": "APA MISTERI YANG KAMU PERCAYA?"
+  },
+  "sources": [
+    {
+      "name": "Arsitektur UPI — Story of Villa Isola",
+      "url": "https://arsitektur.upi.edu/story-of-villa-isola/",
+      "supports": "Arsitek C.P. Wolff Schoemaker, pemilik D.W. Berretty, penggunaan oleh Jenderal Hitoshi Imamura pada 1942, dan karakter arsitektur."
+    },
+    {
+      "name": "Kabar UPI — Isola Yang Kesepian",
+      "url": "https://berita.upi.edu/isola-yang-kesepian/",
+      "supports": "Pencarian lokasi dan awal pembangunan pada Oktober 1932 oleh biro AIA."
+    },
+    {
+      "name": "ISBI Bandung — Rektorat UPI & Taman (Villa Isola)",
+      "url": "https://fbm.isbi.ac.id/program-studi/karya-dosen/galeri-cbb-5/villa-isola/",
+      "supports": "Tahun pembangunan, arsitek, pemilik, ANETA, Hotel Isola pada 1935, dan peresmian sebagai bangunan perguruan tinggi pada 1954."
+    },
+    {
+      "name": "Kementerian Keuangan — Villa Isola",
+      "url": "https://mediakeuangan.kemenkeu.go.id/_/media/download/671",
+      "supports": "Konteks sejarah Villa Isola dan C.P. Wolff Schoemaker."
+    }
+  ],
+  "editorial_notes": [
+    "Arsitek Villa Isola adalah C.P. Wolff Schoemaker, bukan Henri Maclaine Pont.",
+    "Jangan menyatakan klaim hantu, terowongan rahasia, atau bunker sebagai fakta.",
+    "Adegan historis buatan AI harus diberi label REKA ADEGAN • ILUSTRASI AI.",
+    "Tanggal kematian Berretty tidak ditampilkan sampai perbedaan tanggal pada sumber diselesaikan; naskah cukup menyebut tahun 1934.",
+    "Fokus episode adalah sejarah bangunan dan tragedi pemiliknya; legenda hanya disebut sebagai cerita yang belum terverifikasi."
+  ],
+  "scenes": [
+    {
+      "scene": 1,
+      "shot": "01A",
+      "text": "Di utara Bandung, berdiri sebuah bangunan dengan lengkungan Art Deco yang begitu khas. Namanya Villa Isola. Di balik kemegahannya, tersimpan kisah tentang ambisi, tragedi, dan sejarah yang berubah berkali-kali.",
+      "title": "KEMEGAHAN DI UTARA BANDUNG",
+      "kind": "ai"
+    },
+    {
+      "scene": 2,
+      "shot": "MAP",
+      "text": "Villa Isola berdiri di Jalan Setiabudi, kawasan Bandung Utara yang mengarah ke Lembang. Dahulu, bangunan ini berdiri jauh dari keramaian pusat kota.",
+      "title": "SETIABUDI • BANDUNG UTARA",
+      "kind": "graphic"
+    },
+    {
+      "scene": 3,
+      "shot": "03A",
+      "text": "Pembangunannya dimulai pada Oktober 1932. Villa ini dirancang sebagai tempat tinggal Dominique Willem Berretty, pengusaha pers sekaligus pendiri kantor berita ANETA.",
+      "title": "PEMBANGUNAN DIMULAI 1932",
+      "kind": "ai"
+    },
+    {
+      "scene": 4,
+      "shot": "04A",
+      "text": "Sosok di balik rancangannya adalah arsitek C.P. Wolff Schoemaker. Garis lengkung, susunan ruang, dan orientasi bangunan memperlihatkan perpaduan arsitektur modern dengan gagasan yang menyesuaikan lingkungan.",
+      "title": "KARYA C.P. WOLFF SCHOEMAKER",
+      "kind": "ai"
+    },
+    {
+      "scene": 5,
+      "shot": "05A",
+      "text": "Pada 1933, Villa Isola menjadi kediaman mewah Berretty. Namun, masa tinggalnya di bangunan itu tidak berlangsung lama. Tahun berikutnya, sebuah tragedi mengakhiri hidup sang pemilik.",
+      "title": "KEDIAMAN D.W. BERRETTY",
+      "kind": "ai"
+    },
+    {
+      "scene": 6,
+      "shot": "FACT",
+      "text": "Berretty meninggal dalam kecelakaan pesawat Uiver pada 1934. Setelah itu, bangunan ini beralih fungsi menjadi Hotel Isola pada 1935, yang terkait dengan jaringan Hotel Savoy Homann.",
+      "title": "TRAGEDI 1934 • HOTEL ISOLA 1935",
+      "kind": "graphic"
+    },
+    {
+      "scene": 7,
+      "shot": "07A",
+      "text": "Ketika Jepang menduduki Indonesia pada 1942, Villa Isola sempat digunakan sebagai kediaman sementara Jenderal Hitoshi Imamura menjelang Perjanjian Kalijati. Bangunan ini kembali menjadi saksi perubahan zaman.",
+      "title": "VILLA ISOLA PADA 1942",
+      "kind": "ai"
+    },
+    {
+      "scene": 8,
+      "shot": "FACT",
+      "text": "Pada 1954, Villa Isola diresmikan sebagai bangunan perguruan tinggi untuk PTPG. Perjalanannya berlanjut melalui IKIP Bandung, hingga kini menjadi Gedung Rektorat Universitas Pendidikan Indonesia.",
+      "title": "1954 • BABAK BARU BUMI SILIWANGI",
+      "kind": "graphic"
+    },
+    {
+      "scene": 9,
+      "shot": "09A",
+      "text": "Kini, bangunan itu tetap berdiri di tengah kampus. Cerita-cerita misteri mungkin terus beredar, tetapi sejarah Villa Isola sendiri sudah menyimpan kisah yang luar biasa. Menurutmu, bagian mana yang paling menarik?",
+      "title": "SEJARAH ATAU LEGENDA?",
+      "kind": "ai"
+    }
+  ]
+}
