@@ -77,57 +77,59 @@ jobs:
               raise SystemExit("Topik tidak boleh kosong.")
 
           prompt = f"""
-          Kamu adalah peneliti dan penulis dokumenter misteri Indonesia untuk channel
+          Kamu adalah peneliti sejarah dan penulis dokumenter misteri Indonesia untuk channel
           "{config['name']}". Buat SATU paket YouTube Shorts berdurasi 60–90 detik
           tentang topik berikut: {topic}
 
-          GAYA EDITORIAL:
-          - Bahasa Indonesia alami, atmosfer mencekam tetapi tenang dan tidak lebay.
-          - Ini dokumenter misteri, bukan klaim bahwa hantu atau kejadian gaib terbukti.
-          - Pisahkan dengan tegas: FAKTA TERVERIFIKASI, LEGENDA/CERITA MASYARAKAT,
-            dan HAL YANG BELUM DAPAT DIVERIFIKASI.
-          - Jangan menciptakan saksi, kutipan, tanggal, peristiwa, alamat, atau sumber.
-          - Jangan menyebut rumor sebagai fakta. Gunakan frasa "menurut cerita yang beredar"
-            jika memang hanya legenda.
-          - Hindari mengarahkan penonton mendatangi lokasi privat/berbahaya atau mengganggu warga.
-          - Tahap ini tidak memiliki akses Google Search grounding. Jangan mengaku telah melakukan
-            pencarian web. Sertakan URL sumber hanya jika URL tersebut benar-benar diketahui dan dapat
-            dipastikan; jangan mengarang URL atau detail sumber. Jika sumber tidak tersedia, tulis []
-            dan jelaskan bahwa verifikasi sumber eksternal masih diperlukan sebelum naskah disetujui.
+          ATURAN RISET & EDITORIAL:
+          - Bahasa Indonesia alami, atmosferik, kuat, akurat, dan tidak bertele-tele.
+          - Utamakan fakta sejarah dan lokasi yang dapat diverifikasi.
+          - Pisahkan FAKTA TERVERIFIKASI, LEGENDA/KLAIM, dan INFORMASI YANG BELUM TERVERIFIKASI.
+          - Jangan menciptakan saksi, kutipan, tanggal, nama, fungsi bangunan, koordinat, atau peristiwa.
+          - Jangan menyebut rumor sebagai fakta atau mengarang cerita paranormal.
+          - Jika sumber atau detail tidak pasti, nyatakan keterbatasannya secara eksplisit.
+          - Tahap ini tidak memiliki Google Search grounding. Jangan mengaku telah melakukan pencarian web.
+          - Sertakan URL hanya jika benar-benar diketahui dan dapat dipastikan; jangan mengarang URL.
+          - Jika sumber primer/tepercaya tidak dapat dipastikan, gunakan source_urls: [] dan set
+            fact_check_status menjadi "insufficient_sources".
+          - Prioritaskan sumber resmi pengelola/institusi, arsip, jurnal akademik, museum,
+            pemerintah, dan media kredibel. Catat judul/nama sumber dan klaim yang didukung.
+          - Rekonstruksi AI bukan foto dokumentasi dan wajib diberi label "REKA ADEGAN • ILUSTRASI AI".
+
+          ARAHAN KHUSUS TOPIK:
+          - Untuk Penjara Banceuy: verifikasi sejarah penjara, lokasi dan sisa bangunan,
+            masa penahanan Soekarno, kronologi 1929, serta detail kondisi sel dari sumber tepercaya.
+            Jangan menambahkan detail pengalaman pribadi Soekarno yang tidak didukung sumber.
+          - Untuk Observatorium Bosscha: verifikasi sejarah pembangunan/peresmian, tokoh pendiri,
+            fungsi observatorium, instrumen/teleskop, dan kondisi pada masa pendudukan Jepang.
+            Jangan menyebut Bosscha sebagai lokasi angker atau mengklaim kejadian paranormal.
+          - Jika topik lain diberikan, riset topik itu secara netral tanpa membawa fakta dari topik lain.
 
           STRUKTUR CERITA:
-          1. Hook 0–3 detik: pertanyaan atau detail paling bikin penasaran.
-          2. Kenalkan tempat dan reputasi misterinya.
-          3. Ceritakan versi legenda dengan atribusi yang jelas.
-          4. Bandingkan dengan fakta sejarah/lokasi yang dapat diperiksa.
-          5. Tutup dengan pertanyaan terbuka yang tidak mengklaim hal gaib sebagai bukti.
+          1. Hook kuat dalam 0–3 detik.
+          2. Kenalkan lokasi dan konteks sejarah.
+          3. Bangun rasa ingin tahu melalui detail konkret, bukan klaim sensasional.
+          4. Jelaskan fakta utama dengan kronologi yang mudah dipahami.
+          5. Pisahkan legenda/interpretasi dari fakta bila relevan.
+          6. Tutup dengan kalimat berkesan dan pertanyaan untuk penonton.
 
-          VISUAL HYBRID — WAJIB IKUTI:
-          Buat 8–10 scene vertikal 9:16 dengan kombinasi:
-          - Foto dokumentasi asli bangunan/lokasi dari media atau arsip yang ditemukan.
-            Cantumkan URL halaman sumber, nama penerbit/fotografer bila tersedia, dan status
-            izin/lisensi. Jangan menganggap foto media bebas dipakai ulang; tandai
-            "reference_only_permission_required" bila izin reuse tidak jelas.
-          - Peta Bandung yang menandai lokasi Rumah Kentang secara jelas. Gunakan titik lokasi
-            yang konsisten dengan sumber: kawasan Jalan Banda No. 18, dekat/perempatan Jalan
-            Banda dan Jalan Aceh, Bandung. Jangan menaruh pin hanya di Jalan Aceh secara umum.
-            Tampilkan label lokasi dan catatan bahwa titik perlu dicek ulang di peta sebelum render.
-            Jangan mengarang koordinat.
-          - Rekonstruksi AI untuk menggambarkan suasana cerita: warga/pengendara pada masa lalu
-            melintas, berhenti sejenak, saling bertanya, atau mencium aroma yang mereka anggap
-            seperti kentang pada sore/malam hari. Adegan ini harus diberi label visual
-            "REKA ADEGAN / ILUSTRASI AI", bukan dokumentasi atau bukti bahwa peristiwa tertentu
-            benar-benar terjadi. Jangan mengarang orang bernama, dialog kutipan, atau saksi.
-          Pilih visual_type dari "real_location_photo", "ai_folklore_reconstruction",
-          "map_or_archive". Variasikan visual agar foto asli, peta, dan reka adegan bergantian.
-          Untuk setiap foto, catat source URL dan reuse_permission_status.
-          Setiap scene harus punya narration, duration_seconds, visual_type, visual_prompt,
-          on_screen_text, source_urls (array), and visual_sourcing_note.
-          Tambahkan pada keluaran research: location_name, location_description,
-          map_label, map_verification_note, documentary_photo_references (array of objects
-          with source_url, publisher_or_photographer, reuse_permission_status).
-          Tambahkan pada setiap scene field visual_disclaimer, gunakan "REKA ADEGAN / ILUSTRASI AI"
-          untuk semua rekonstruksi AI dan null untuk foto dokumentasi/peta.
+          VISUAL HYBRID:
+          Buat 8–10 scene vertikal 9:16. Variasikan:
+          - Dokumentasi lokasi/arsip hanya sebagai referensi; catat URL sumber dan status izin.
+          - Rekonstruksi AI sinematik untuk menggambarkan periode sejarah; selalu beri label
+            "REKA ADEGAN • ILUSTRASI AI".
+          - Peta, garis waktu, diagram, foto arsip, detail arsitektur, atau infografik.
+          - Jangan mengarang koordinat atau menggunakan foto dokumentasi seolah-olah bebas lisensi.
+          Untuk setiap scene sertakan narration, duration_seconds, visual_type, visual_prompt,
+          on_screen_text, source_urls, visual_sourcing_note, dan visual_disclaimer.
+          Pilih visual_type dari "real_location_photo", "ai_historical_reconstruction",
+          "map_or_archive", atau "graphic".
+          Sertakan camera/motion direction di visual_prompt agar aset mudah diproduksi.
+
+          KOMPOSISI EDITORIAL:
+          - Penjara Banceuy: sekitar 70% sejarah dan 30% atmosfer misteri.
+          - Observatorium Bosscha: sekitar 70% atmosfer misteri/keingintahuan dan 30% sejarah/sains.
+          - Jangan memaksakan unsur horor jika tidak didukung cerita atau fakta.
 
           KELUARAN: JSON valid saja, tanpa markdown, dengan skema:
           {{
@@ -139,29 +141,29 @@ jobs:
               "legend_claims": ["..."],
               "unverified_or_disputed": ["..."],
               "source_urls": ["https://..."],
+              "source_notes": [{{"source_name":"...","source_url":"...","supports":"..."}}],
               "research_notes": ["..."]
             }},
-            "script": "narasi lengkap 130-190 kata",
+            "script": "narasi lengkap sekitar 130–190 kata",
             "storyboard": [
               {{
                 "scene": 1,
                 "duration_seconds": 8,
                 "narration": "...",
-                "visual_type": "real_location_photo",
+                "visual_type": "ai_historical_reconstruction",
                 "visual_prompt": "...",
                 "on_screen_text": "...",
-                "source_urls": ["https://..."],
+                "source_urls": [],
                 "visual_sourcing_note": "...",
-                "visual_disclaimer": "REKA ADEGAN / ILUSTRASI AI"
+                "visual_disclaimer": "REKA ADEGAN • ILUSTRASI AI"
               }}
             ],
             "fact_check_status": "ready_for_human_review|insufficient_sources",
             "editorial_warnings": ["..."]
           }}
-          Pastikan jumlah kata narasi cocok untuk 60–90 detik dan total durasi scene mendekati
-          durasi narasi. Jangan menulis "kisah nyata" kecuali ada bukti kuat.
+          Pastikan total durasi scene mendekati target narasi. Jangan menulis "kisah nyata"
+          kecuali didukung bukti kuat. Hasil selalu membutuhkan pemeriksaan manusia sebelum render.
           """
-
           body = {
               "contents": [{"parts": [{"text": prompt}]}],
               "generationConfig": {"temperature": 0.35, "maxOutputTokens": 8192}
