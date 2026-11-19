@@ -38,6 +38,20 @@ jobs:
           [ -s "$manifest" ] || { echo "ERROR: Manifest visual tidak ditemukan."; exit 1; }
           mkdir -p work/assets output
           mapfile -t shot_ids < <(jq -r '.scenes[].shot' "$config" | sort -u)
+          mapfile -t audio_assets < <(jq -r '.scenes[] | [.ambience_asset // "", .music_asset // "", .sfx_asset // ""][] | select(length > 0)' "$config" | sort -u)
+          mkdir -p work/assets/audio
+          for audio in "${audio_assets[@]}"; do
+            object_path="peta-sunyi/$EPISODE_ID/audio/$audio"
+            status="$(curl --silent --show-error --output "work/assets/audio/$audio" --write-out "%{http_code}" \
+              "${SUPABASE_URL}/storage/v1/object/visual-assets/$object_path" \
+              -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" || true)"
+            if [ "$status" != "200" ]; then
+              echo "ERROR: Audio layer $object_path belum ada (HTTP $status)."
+              exit 1
+            fi
+            test -s "work/assets/audio/$audio"
+            echo "AUDIO_LAYER_OK=$object_path"
+          done
           for id in "${shot_ids[@]}"; do
             file="peta-sunyi-$id.jpg"
             object_path="peta-sunyi/$EPISODE_ID/$file"
@@ -49,6 +63,8 @@ jobs:
             test -s "work/assets/$file"
             echo "ASSET_OK=$object_path"
           done
+      - name: Validate renderer syntax
+        run: python -m py_compile scripts/peta-sunyi/render_long_horror.py
       - name: Render 16:9 multi-voice review video
         env:
           EPISODE_CONFIG: episodes/peta-sunyi/${{ inputs.episode_id }}.json
