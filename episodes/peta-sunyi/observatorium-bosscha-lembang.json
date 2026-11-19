@@ -6,7 +6,11 @@
     "title": "OBSERVATORIUM BOSSCHA",
     "subtitle": "LEMBANG • JAWA BARAT",
     "pin_label": "OBSERVATORIUM BOSSCHA",
-    "footer": "PETA LOKASI • LEMBANG"
+    "footer": "PETA LOKASI • LEMBANG",
+    "coordinates": {
+      "lat": -6.82444,
+      "lon": 107.61556
+    }
   },
   "fact": {
     "heading": "LINIMASA OBSERVATORIUM BOSSCHA",
