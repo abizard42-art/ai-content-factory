@@ -1,14 +1,85 @@
-name: Factory heartbeat
-on:
-  workflow_dispatch:
-  schedule:
-    - cron: '17 2 * * *'
-    - cron: '17 9 * * *'
-permissions:
-  contents: read
-jobs:
-  heartbeat:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Confirm scheduled workflow started
-        run: echo "AI Content Factory heartbeat OK — no generation or publishing is enabled."
+{
+  "episode_id": "penjara-banceuy-bandung",
+  "title": "Jejak Sunyi Penjara Banceuy: Sel Nomor Lima dan Indonesia Menggugat",
+  "map": {
+    "query": "Situs Penjara Banceuy, Jalan Banceuy, Bandung, Jawa Barat, Indonesia",
+    "title": "PENJARA BANCEUY",
+    "subtitle": "JALAN BANCEUY • BANDUNG",
+    "pin_label": "SITUS PENJARA BANCEUY",
+    "footer": "PETA LOKASI • BANDUNG"
+  },
+  "fact": {
+    "heading": "FAKTA SEJARAH BANCEUY",
+    "lines": [
+      "1877 • PENJARA DIDIRIKAN",
+      "29 DESEMBER 1929 • SOEKARNO DITANGKAP",
+      "SEL NOMOR 5 • ± 2,5 × 1,5 METER",
+      "18 AGUSTUS 1931 • INDONESIA MENGGUGAT",
+      "1983 • KOMPLEKS PENJARA DIPINDAHKAN"
+    ],
+    "highlight": "FAKTA SEJARAH • BUKAN LEGENDA"
+  },
+  "end": {
+    "title": "PENJARA BANCEUY",
+    "subtitle": "SEJARAH BESAR, RUANG YANG KECIL",
+    "cta": "PETA SUNYI"
+  },
+  "scenes": [
+    {
+      "scene": 1,
+      "shot": "01A",
+      "text": "Di tengah padatnya kawasan pertokoan Jalan Banceuy, masih tersisa jejak sebuah penjara kolonial yang pernah mengurung salah satu tokoh penting pergerakan Indonesia.",
+      "title": "JEJAK PENJARA DI TENGAH KOTA",
+      "kind": "ai"
+    },
+    {
+      "scene": 2,
+      "shot": "MAP",
+      "text": "Penjara Banceuy berdiri sejak 1877 di kawasan yang kini menjadi bagian dari pusat perdagangan Kota Bandung.",
+      "title": "JALAN BANCEUY • BANDUNG",
+      "kind": "graphic"
+    },
+    {
+      "scene": 3,
+      "shot": "03A",
+      "text": "Pada 29 Desember 1929, Soekarno dan sejumlah tokoh PNI ditangkap di Yogyakarta, lalu dibawa ke Bandung untuk ditahan di Banceuy.",
+      "title": "29 DESEMBER 1929",
+      "kind": "ai"
+    },
+    {
+      "scene": 4,
+      "shot": "04A",
+      "text": "Soekarno menempati sel nomor lima. Catatan sejarah menyebut ukurannya sekitar dua setengah kali satu setengah meter.",
+      "title": "SEL NOMOR LIMA",
+      "kind": "ai"
+    },
+    {
+      "scene": 5,
+      "shot": "05A",
+      "text": "Selama ditahan, ia menyusun pledoi yang dikenal sebagai Indonesia Menggugat, kritik tajam terhadap kolonialisme Belanda.",
+      "title": "INDONESIA MENGGUGAT",
+      "kind": "ai"
+    },
+    {
+      "scene": 6,
+      "shot": "FACT",
+      "text": "Pledoi itu dibacakan di sidang Landraad Bandung pada 18 Agustus 1931. Pada 1983, kompleks penjara dipindahkan; sel dan menara pengawas lama tetap tersisa.",
+      "title": "18 AGUSTUS 1931 • 1983",
+      "kind": "graphic"
+    },
+    {
+      "scene": 7,
+      "shot": "07A",
+      "text": "Sisa sel dan menara itu menjadi pengingat bahwa sejarah besar kadang bertahan dalam ruang yang sangat kecil.",
+      "title": "SATU SEL DAN MENARA TERSISA",
+      "kind": "ai"
+    },
+    {
+      "scene": 8,
+      "shot": "END",
+      "text": "Di tengah kota yang terus berubah, jejak Banceuy mengajak kita merawat ingatan. Pernahkah kamu mengunjungi situs ini?",
+      "title": "SEJARAH YANG TERSISA",
+      "kind": "graphic"
+    }
+  ]
+}
