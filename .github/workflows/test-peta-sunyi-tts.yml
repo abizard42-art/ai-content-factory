@@ -17,7 +17,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ffmpeg
           python -m pip install --upgrade pip
-          python -m pip install edge-tts pydub
+          python -m pip install edge-tts
       - name: Generate matched Indonesian voice samples
         run: python scripts/peta-sunyi/test_long_horror_tts.py
       - uses: actions/upload-artifact@v4
