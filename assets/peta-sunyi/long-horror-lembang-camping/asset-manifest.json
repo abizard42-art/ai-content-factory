@@ -1,0 +1,80 @@
+{
+  "channel": "Peta Sunyi",
+  "episode_id": "long-horror-lembang-camping",
+  "format": "16:9",
+  "provider": "Cloudflare Workers AI",
+  "model": "@cf/black-forest-labs/flux-1-schnell",
+  "policy": "Semua visual adalah ilustrasi AI bergaya sketsa pensil/arang, bukan foto dokumenter atau bukti kejadian. Jangan gambarkan hantu secara eksplisit; gunakan siluet ambigu, pepohonan, kabut, tenda, bayangan, dan negative space. Konsistensi tiga teman dan tenda harus dijaga. Tidak ada teks pada gambar.",
+  "assets": [
+    {
+      "id": "01A",
+      "scene": 1,
+      "kind": "Establishing",
+      "label_required": true,
+      "prompt": "Wide 16:9 graphite pencil and charcoal sketch of a remote Lembang highland camping clearing at night, three small human silhouettes near one modest camping tent, dense dark pine trees, low fog, rough scratchy pencil strokes, crosshatching, uneven hand-drawn contours, deep charcoal shadows, monochrome paper texture, cinematic wide composition, no visible supernatural figure, no text."
+    },
+    {
+      "id": "02A",
+      "scene": 2,
+      "kind": "Tent setup",
+      "label_required": true,
+      "prompt": "Wide 16:9 rough graphite storyboard illustration of three Indonesian young adult friends setting up a single camping tent in a forest clearing in the Lembang highlands at dusk, backpacks and camping gear, pine forest around them, natural ordinary clothing, faces not detailed, scratchy pencil lines, crosshatching, charcoal shading, paper grain, monochrome, no text."
+    },
+    {
+      "id": "03A",
+      "scene": 3,
+      "kind": "First unease",
+      "label_required": true,
+      "prompt": "Wide 16:9 graphite and charcoal horror sketch of a young adult camper sitting beside a tent at night, shoulders hunched and arms wrapped around himself as if shivering, two friends looking concerned nearby, dim camping lantern, dark pine forest, rough pencil strokes and heavy crosshatching, monochrome, no text."
+    },
+    {
+      "id": "04A",
+      "scene": 4,
+      "kind": "Tree line",
+      "label_required": true,
+      "prompt": "Wide 16:9 rough pencil illustration from a campsite looking toward dense pine trees, a barely distinguishable feminine human silhouette partly obscured behind a tree trunk far in the background, ambiguous and not detailed, no glowing eyes, no ghost effects, heavy charcoal shadows, scratchy graphite lines, monochrome paper texture, no text."
+    },
+    {
+      "id": "05A",
+      "scene": 5,
+      "kind": "Bell in darkness",
+      "label_required": true,
+      "prompt": "Wide 16:9 charcoal pencil sketch of a dark forest path beyond a camping tent, faint suggestion of a small hanging bell shape among branches, deep negative space, fog and tree trunks, ominous but realistic, no carriage visible, scratchy crosshatched graphite, monochrome, no text."
+    },
+    {
+      "id": "06A",
+      "scene": 6,
+      "kind": "Inside tent",
+      "label_required": true,
+      "prompt": "Wide 16:9 rough graphite horror storyboard view from inside a camping tent at night, two frightened young adult campers in foreground looking toward the tent entrance, outside the entrance a vague human-shaped shadow partially obscured by fabric and darkness, ambiguity only, no explicit ghost features, deep charcoal, rough pencil strokes, monochrome, no text."
+    },
+    {
+      "id": "07A",
+      "scene": 7,
+      "kind": "Leaving at dawn",
+      "label_required": true,
+      "prompt": "Wide 16:9 pencil and charcoal sketch of three exhausted young adult campers walking away from a forest campsite at pale dawn, tent left behind in background, mist between pine trees, subdued body language, scratchy hand-drawn lines, crosshatching, monochrome paper grain, no text."
+    },
+    {
+      "id": "08A",
+      "scene": 8,
+      "kind": "Aftermath",
+      "label_required": true,
+      "prompt": "Wide 16:9 rough graphite illustration of three friends sitting apart in a modest Indonesian living room after returning from a trip, subdued tense expressions, one person speaking while the others listen, no supernatural imagery, hand-drawn charcoal crosshatching, monochrome, no text."
+    },
+    {
+      "id": "09A",
+      "scene": 9,
+      "kind": "Memory",
+      "label_required": true,
+      "prompt": "Wide 16:9 atmospheric charcoal pencil sketch of an empty camping clearing in the Lembang highlands, a single abandoned-looking tent silhouette between tall pine trees, early morning fog, ambiguous shadows, rough pencil lines, deep crosshatching, monochrome, no text."
+    },
+    {
+      "id": "10A",
+      "scene": 10,
+      "kind": "Closing forest",
+      "label_required": true,
+      "prompt": "Wide 16:9 graphite and charcoal illustration of a winding forest trail disappearing into thick fog among tall pine trees, no people, large areas of deep black negative space, scratchy pencil texture, uneven hand-drawn contours, monochrome, cinematic wide composition, no text."
+    }
+  ]
+}
