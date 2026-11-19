@@ -30,9 +30,9 @@
     {
       "id": "05A",
       "scene": 5,
-      "kind": "twin lenses",
+      "kind": "zeiss_telescope_detail",
       "label_required": true,
-      "prompt": "Vertical 9:16 close illustration of the two parallel objective lenses of the historic Zeiss refractor, scientifically grounded, no text. 2D cinematic hand-painted illustration, painterly matte-painting texture, subtle film grain, restrained muted sepia, slate and dark olive palette. Illustrative reconstruction only, not documentary photography. Avoid photorealism, 3D, CGI, anime, ghosts, supernatural entities, letters, subtitles, watermark, logo."
+      "prompt": "Vertical 9:16 museum-quality scientific illustration showing the front end of the historic Zeiss refracting telescope at Bosscha Observatory. Clearly show two round glass elements mounted side by side in a sturdy brass and dark metal telescope assembly, precise mechanical fittings, authentic early twentieth-century astronomical instrument design, viewed at a slight angle inside the observatory dome. Focus on engineering, glass optics and historical scientific equipment. No people. 2D cinematic hand-painted illustration, painterly matte-painting texture, subtle film grain, restrained muted sepia, slate and dark olive palette. Educational historical reconstruction, not documentary photography. Avoid photorealism, 3D, CGI, anime, fantasy machinery, supernatural elements, letters, subtitles, watermark, logo."
     },
     {
       "id": "07A",
