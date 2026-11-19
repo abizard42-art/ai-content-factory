@@ -112,3 +112,19 @@ Do not replace the production voice based only on a generated sample or provider
 5. A multi-character scene is tested separately.
 
 This document defines the editorial target. It does not claim that the renderer already supports expressive performance or that a new voice has been selected.
+
+
+## 8. Implemented scene-level delivery controls
+
+The long-form renderer now reads an optional `delivery` field on each scene:
+- `natural`: provider-default continuous delivery; best for calm exposition.
+- `paced`: sentence-aware delivery at a restrained slower rate, with medium sentence pauses.
+- `suspense`: phrase-aware delivery, including selected comma boundaries, with longer pauses at sentence endings.
+- `reflective`: slower reflective phrasing with room for aftermath and closing thoughts.
+- `urgent`: firmer baseline pace with short sentence gaps for immediate danger.
+
+Optional `dramatic_pause_after` is an array of exact phrase strings. A matching phrase receives an additional 850 ms hold. Use sparingly, only before/after a reveal or a major sound cue. The renderer retains the same speaker voice; these controls change pacing and silence, not the speaker identity or true emotional acting.
+
+For scenes without a `delivery` field, the renderer keeps the previous natural behavior. Scene text is split only at punctuation boundaries, and the generated VTT timings are offset and reassembled so subtitle coverage remains aligned. The subtitle renderer continues to preserve the complete approved script and limits each displayed card to six words.
+
+The Lembang pilot uses natural delivery for the opening and setup, suspense/paced delivery for the anomalies, urgent delivery for the immediate danger, and reflective delivery for the aftermath and closing. These assignments are a first editorial pass and should be reviewed by listening to the rendered episode.
