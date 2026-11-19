@@ -6,7 +6,7 @@ on:
       topic:
         description: "Kisah atau tempat misteri yang ingin diteliti"
         required: true
-        default: "Misteri Rumah Kentang Bandung: asal-usul legenda dan fakta yang bisa diverifikasi"
+        default: "Penjara Banceuy Bandung: sejarah penahanan Soekarno pada 1929 dan jejak penjara kolonial"
         type: string
 
 permissions:
