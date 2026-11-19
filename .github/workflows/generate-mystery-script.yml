@@ -34,7 +34,7 @@ jobs:
             mapfile -t REQUEST_FILES < <(git diff-tree --no-commit-id --name-only -r "$PUSH_SHA" | grep -E '^episodes/peta-sunyi/requests/[^/]+[.]json$' || true)
             if [ "${#REQUEST_FILES[@]}" -ne 1 ]; then
               echo "ERROR: Satu commit harus mengubah tepat satu file request episode."
-              printf 'Request ditemukan: %s\\n' "${REQUEST_FILES[@]}"
+              printf 'Request ditemukan: %s\n' "${REQUEST_FILES[@]}"
               exit 1
             fi
             REQUEST_FILE="${REQUEST_FILES[0]}"
@@ -48,7 +48,7 @@ jobs:
           fi
           {
             echo "TOPIC<<PETA_SUNYI_TOPIC"
-            printf '%s\\n' "$TOPIC"
+            printf '%s\n' "$TOPIC"
             echo "PETA_SUNYI_TOPIC"
           } >> "$GITHUB_ENV"
           echo "Resolved topic: $TOPIC"
