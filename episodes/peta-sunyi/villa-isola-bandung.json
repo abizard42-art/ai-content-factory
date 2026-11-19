@@ -3,11 +3,15 @@
   "title": "Misteri Villa Isola: Tragedi di Balik Kemegahan Art Deco Bandung",
   "visual_style": "rough_pencil",
   "map": {
-    "query": "Villa Isola, Jl. Dr. Setiabudi No. 229, Isola, Sukasari, Bandung, West Java, Indonesia",
+    "query": "Villa Isola, Bandung, Indonesia",
     "title": "VILLA ISOLA",
     "subtitle": "SETIABUDI • BANDUNG",
     "pin_label": "VILLA ISOLA",
-    "footer": "PETA LOKASI • BANDUNG UTARA"
+    "footer": "PETA LOKASI • BANDUNG UTARA",
+    "coordinates": {
+      "lat": -6.86115,
+      "lon": 107.59434
+    }
   },
   "fact": {
     "heading": "LINIMASA VILLA ISOLA",
