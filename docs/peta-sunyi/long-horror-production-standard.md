@@ -1,6 +1,6 @@
 # Peta Sunyi — Long Horror Production Standard
 
-Status: v1.1 — dedicated long-form pipeline added  
+Status: v1.2 — scene-aware narration delivery added  
 Target: YouTube long-form horror stories; runtime is determined by the approved script, not padded to a target.  
 Frame: 16:9 landscape, 1920×1080, 25 fps.
 
@@ -68,6 +68,9 @@ Required:
 
 Optional:
 - `visual_style`: `rough_pencil` (default for the pilot).
+- Per-scene `delivery`: `natural`, `paced`, `suspense`, `reflective`, or `urgent`.
+- Per-scene `dramatic_pause_after`: exact phrase strings that receive an additional 850 ms hold; use sparingly.
+- Per-scene `tts_rate`, `tts_pitch`, and `tts_volume` can override delivery defaults.
 - Per-scene `ambience_asset`, `music_asset`, `sfx_asset`, and `sfx_delay_ms`.
 
 Example:
@@ -112,3 +115,25 @@ Example:
 - [ ] Final video watched from beginning to end.
 - [ ] Title, thumbnail, and description do not overstate evidence.
 - [ ] Upload remains manual until explicitly approved.
+
+
+## Scene-aware narration direction
+
+The script planner (including Gemini when used to draft a scene plan) must assign one `delivery` value to every scene based on its narrative function. Do not apply suspense delivery to the entire episode.
+
+| Delivery | Use when | Renderer behavior |
+|---|---|---|
+| `natural` | Opening, factual context, ordinary action | Existing continuous provider-default TTS |
+| `paced` | A first anomaly or a moment that needs clearer phrasing | Sentence segmentation, -3% rate, 320 ms sentence pauses |
+| `suspense` | Uncertainty, approaching threat, reveal setup | Phrase segmentation at sentence and comma boundaries, -5% rate, 170 ms comma / 460 ms sentence pauses |
+| `reflective` | Aftermath, realization, unresolved ending | Phrase segmentation at sentence and comma boundaries, -4% rate, 220 ms comma / 520 ms sentence pauses |
+| `urgent` | Immediate danger or frantic action | Sentence segmentation, default rate, 170 ms sentence pauses |
+
+Gemini/script planning should:
+1. Choose the delivery from the scene's function, not merely from scary vocabulary.
+2. Keep most exposition `natural`; use special delivery only where it improves the listener's experience.
+3. Add `dramatic_pause_after` only for a specific reveal, impact, or important sound cue. Each entry must exactly match one phrase produced by punctuation splitting; avoid vague directions.
+4. Never alter or omit the approved narration text to create a pause. Pauses are timing instructions, not script edits.
+5. Keep the same narrator voice ID throughout. Delivery changes pace and silence; it does not claim to create human-like emotional acting.
+
+If `delivery` is omitted, the renderer defaults to `natural` so older episode JSON files remain compatible.
