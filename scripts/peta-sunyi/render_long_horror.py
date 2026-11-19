@@ -59,6 +59,7 @@ def tts_with_delivery(text, audio, vtt, voice, rate, pitch, volume, delivery, dr
     concat_entries = []
     vtt_cues = []
     elapsed = 0.0
+    pause_total = 0.0
     for index, phrase in enumerate(phrases):
         part_audio = work / f"{audio.stem}-{index:03d}.mp3"
         part_vtt = work / f"{audio.stem}-{index:03d}.vtt"
@@ -90,6 +91,7 @@ def tts_with_delivery(text, audio, vtt, voice, rate, pitch, volume, delivery, dr
                            check=True, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
             concat_entries.append(silence)
             elapsed += pause / 1000.0
+            pause_total += pause / 1000.0
     concat_file = work / f"{audio.stem}-concat.txt"
     concat_file.write_text("".join("file '" + str(path.resolve()) + "'\n" for path in concat_entries), encoding="utf-8")
     subprocess.run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", str(concat_file),
@@ -97,10 +99,10 @@ def tts_with_delivery(text, audio, vtt, voice, rate, pitch, volume, delivery, dr
                    check=True, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
     vtt_lines = ["WEBVTT", ""]
     for start, end, cue_words in vtt_cues:
-        vtt_lines += [f"{seconds_ass(start).replace('.', ',')} --> {seconds_ass(end).replace('.', ',')}",
+        vtt_lines += [f"{vtt_timestamp(start)} --> {vtt_timestamp(end)}",
                       *cue_words, ""]
     vtt.write_text("\n".join(vtt_lines), encoding="utf-8")
-    print(f"TTS_DELIVERY={delivery}; phrases={len(phrases)}; inserted_pause_seconds={elapsed - duration(audio):.2f}")
+    print(f"TTS_DELIVERY={delivery}; phrases={len(phrases)}; inserted_pause_seconds={pause_total:.2f}")
 
 def pencil(source, target):
     with Image.open(source) as im:
@@ -139,6 +141,13 @@ def seconds_ass(value):
         whole += 1
         centiseconds = 0
     return f"{hours}:{minutes:02d}:{whole:02d}.{centiseconds:02d}"
+
+def vtt_timestamp(value):
+    milliseconds = int(round(max(0.0, value) * 1000))
+    hours, remainder = divmod(milliseconds, 3600000)
+    minutes, remainder = divmod(remainder, 60000)
+    seconds, millis = divmod(remainder, 1000)
+    return f"{hours:02d}:{minutes:02d}:{seconds:02d}.{millis:03d}"
 
 def clean_caption_text(value):
     value = html.unescape(re.sub(r"<[^>]+>", "", value))
