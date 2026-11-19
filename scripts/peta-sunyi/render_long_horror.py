@@ -20,11 +20,12 @@ def font(size, bold=False):
 def duration(path):
     return float(subprocess.check_output(["ffprobe","-v","error","-show_entries","format=duration","-of","default=noprint_wrappers=1:nokey=1",str(path)], text=True).strip())
 
-def tts(text, audio, vtt, voice):
+def tts(text, audio, vtt, voice, rate="+0%", pitch="+0Hz", volume="+0%"):
     delays = [2,4,8,15]
     for attempt in range(len(delays)+1):
         try:
-            subprocess.run(["edge-tts","--voice",voice,"--text",text,"--write-media",str(audio),"--write-subtitles",str(vtt)],check=True,timeout=150)
+            subprocess.run(["edge-tts","--voice",voice,"--rate",str(rate),"--pitch",str(pitch),"--volume",str(volume),
+                            "--text",text,"--write-media",str(audio),"--write-subtitles",str(vtt)],check=True,timeout=150)
             if audio.stat().st_size and vtt.stat().st_size:
                 return
             raise RuntimeError("TTS menghasilkan file kosong")
@@ -180,8 +181,14 @@ def main():
         speaker=scene.get("speaker","NARATOR")
         voice=voices.get(speaker,DEFAULT_VOICE)
         audio=OUT/f"long-{i:02d}.mp3"; vtt=OUT/f"long-{i:02d}.vtt"
-        tts(scene["text"],audio,vtt,voice)
+        tts(
+            scene["text"], audio, vtt, voice,
+            rate=scene.get("tts_rate", "+0%"),
+            pitch=scene.get("tts_pitch", "+0Hz"),
+            volume=scene.get("tts_volume", "+0%"),
+        )
         length=duration(audio)+0.45
+        print(f"TTS_DIRECTION={speaker}; rate={scene.get('tts_rate', '+0%')}; pitch={scene.get('tts_pitch', '+0Hz')}")
         src=ASSETS/f"peta-sunyi-{scene['shot']}.jpg"
         if not src.exists(): raise FileNotFoundError(f"Aset visual tidak ditemukan: {src}")
         if style=="rough_pencil":
