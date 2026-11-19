@@ -1,0 +1,85 @@
+{
+  "episode_id": "observatorium-bosscha-lembang",
+  "title": "Misteri Kubah Bosscha: Jejak Astronomi di Atas Lembang",
+  "map": {
+    "query": "Observatorium Bosscha, Lembang, Kabupaten Bandung Barat, Jawa Barat, Indonesia",
+    "title": "OBSERVATORIUM BOSSCHA",
+    "subtitle": "LEMBANG • JAWA BARAT",
+    "pin_label": "OBSERVATORIUM BOSSCHA",
+    "footer": "PETA LOKASI • LEMBANG"
+  },
+  "fact": {
+    "heading": "LINIMASA OBSERVATORIUM BOSSCHA",
+    "lines": [
+      "1920 • NISV DIBENTUK DI BANDUNG",
+      "1 JANUARI 1923 • OBSERVATORIUM DIRESMIKAN",
+      "7 JUNI 1928 • TELESKOP ZEISS DISERAHKAN",
+      "DIAMETER LENSA • 60 CM (GANDA)",
+      "PANJANG FOKUS • 10,8 METER"
+    ],
+    "highlight": "SEJARAH ASTRONOMI • BUKAN MITOS"
+  },
+  "end": {
+    "title": "OBSERVATORIUM BOSSCHA",
+    "subtitle": "HAMPIR SEABAD MENATAP LANGIT",
+    "cta": "PETA SUNYI"
+  },
+  "scenes": [
+    {
+      "scene": 1,
+      "shot": "01A",
+      "text": "Di perbukitan Lembang, sebuah kubah tua berdiri menghadap langit. Di balik bentuknya yang tenang, tersimpan hampir seabad perjalanan astronomi Indonesia.",
+      "title": "KUBAH TUA DI LEMBANG",
+      "kind": "ai"
+    },
+    {
+      "scene": 2,
+      "shot": "MAP",
+      "text": "Observatorium Bosscha berdiri di Lembang, Kabupaten Bandung Barat, dan menjadi salah satu penanda penting sejarah sains Indonesia.",
+      "title": "LEMBANG • JAWA BARAT",
+      "kind": "graphic"
+    },
+    {
+      "scene": 3,
+      "shot": "03A",
+      "text": "Kisahnya bermula dari gagasan Karel Albert Rudolf Bosscha dan para penggerak NISV, perkumpulan astronomi Hindia Belanda yang dibentuk pada 1920.",
+      "title": "GAGASAN TAHUN 1920",
+      "kind": "ai"
+    },
+    {
+      "scene": 4,
+      "shot": "04A",
+      "text": "Observatorium Bosscha diresmikan pada 1 Januari 1923. Lima tahun kemudian, teleskop Zeiss dan gedung kubahnya diserahkan untuk kegiatan pengamatan.",
+      "title": "DIRESMIKAN 1923 • ZEISS 1928",
+      "kind": "ai"
+    },
+    {
+      "scene": 5,
+      "shot": "05A",
+      "text": "Kubah logam raksasa menaungi Refraktor Ganda Zeiss, dua teleskop utama dengan diameter lensa masing-masing 60 sentimeter.",
+      "title": "REFRAKTOR GANDA ZEISS",
+      "kind": "ai"
+    },
+    {
+      "scene": 6,
+      "shot": "FACT",
+      "text": "Panjang fokus teleskop Zeiss mencapai 10,8 meter. Instrumen ini antara lain digunakan untuk pengamatan bintang ganda dan penelitian astronomi.",
+      "title": "LENSA 60 CM • FOKUS 10,8 M",
+      "kind": "graphic"
+    },
+    {
+      "scene": 7,
+      "shot": "07A",
+      "text": "Kubah dan teleskopnya melewati perubahan zaman, dan hingga kini tetap menjadi bagian dari kegiatan penelitian serta pendidikan astronomi.",
+      "title": "WARISAN ASTRONOMI INDONESIA",
+      "kind": "ai"
+    },
+    {
+      "scene": 8,
+      "shot": "END",
+      "text": "Di tempat yang sunyi ini, manusia menatap benda-benda yang jaraknya begitu jauh. Apa yang ingin kamu lihat pertama kali melalui teleskop Bosscha?",
+      "title": "MENATAP LANGIT",
+      "kind": "graphic"
+    }
+  ]
+}
