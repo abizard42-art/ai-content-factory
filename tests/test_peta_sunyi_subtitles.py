@@ -35,6 +35,15 @@ class SubtitleRegressionTests(unittest.TestCase):
                     caption = re.search(r"\\rDefault\}(.*)$", line).group(1).replace(r"\N", " ")
                     self.assertLessEqual(len(caption.split()), 6)
 
+    def test_scene_delivery_split_preserves_every_word(self):
+        source = "Malam itu sunyi. Lalu, terdengar lonceng dari kejauhan!"
+        phrases = RENDERER.split_delivery_phrases(source, split_commas=True)
+        self.assertEqual(
+            RENDERER.normalized_words(" ".join(phrases)),
+            RENDERER.normalized_words(source),
+        )
+        self.assertGreaterEqual(len(phrases), 3)
+
     def test_incomplete_vtt_falls_back_to_complete_script(self):
         source = "Semua kata dari naskah harus tetap muncul pada subtitle akhir."
         with tempfile.TemporaryDirectory() as temp:
