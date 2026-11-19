@@ -1,0 +1,61 @@
+name: Render Peta Sunyi long horror review
+
+on:
+  workflow_dispatch:
+    inputs:
+      episode_id:
+        description: "Long-form horror episode"
+        required: true
+        type: choice
+        options:
+          - long-horror-lembang-camping
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install rendering dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-dejavu-core
+          python -m pip install --upgrade pip
+          python -m pip install pillow edge-tts
+      - name: Download long-form visual assets
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          EPISODE_ID: ${{ inputs.episode_id }}
+        run: |
+          set -euo pipefail
+          config="episodes/peta-sunyi/$EPISODE_ID.json"
+          manifest="assets/peta-sunyi/$EPISODE_ID/asset-manifest.json"
+          [ -s "$config" ] || { echo "ERROR: Config episode tidak ditemukan."; exit 1; }
+          [ -s "$manifest" ] || { echo "ERROR: Manifest visual tidak ditemukan."; exit 1; }
+          mkdir -p work/assets output
+          mapfile -t shot_ids < <(jq -r '.scenes[].shot' "$config" | sort -u)
+          for id in "${shot_ids[@]}"; do
+            file="peta-sunyi-$id.jpg"
+            object_path="peta-sunyi/$EPISODE_ID/$file"
+            status="$(curl --silent --show-error --output "work/assets/$file" --write-out "%{http_code}"               "${SUPABASE_URL}/storage/v1/object/visual-assets/$object_path"               -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" || true)"
+            if [ "$status" != "200" ]; then
+              echo "ERROR: Aset $object_path belum ada (HTTP $status). Jalankan workflow generate aset long-form dahulu."
+              exit 1
+            fi
+            test -s "work/assets/$file"
+            echo "ASSET_OK=$object_path"
+          done
+      - name: Render 16:9 multi-voice review video
+        env:
+          EPISODE_CONFIG: episodes/peta-sunyi/${{ inputs.episode_id }}.json
+        run: python scripts/peta-sunyi/render_long_horror.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: peta-sunyi-${{ inputs.episode_id }}-long-review
+          path: output/${{ inputs.episode_id }}-long-review.mp4
+          if-no-files-found: error
+          retention-days: 7
