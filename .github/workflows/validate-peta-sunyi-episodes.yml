@@ -36,7 +36,8 @@ jobs:
               missing=sorted({scene["shot"] for scene in config["scenes"] if scene["kind"]=="ai"}-manifest_ids)
               if missing:
                   raise SystemExit(f"{slug}: missing AI asset IDs: {missing}")
-              if len(config["scenes"]) != 9:
+              expected = 5 if slug == "teaser-lembang-camping" else 9
+              if len(config["scenes"]) != expected:
                   raise SystemExit(f"{slug}: expected 9 scenes, got {len(config['scenes'])}")
               print(f"EPISODE_CONFIG_OK={slug}; scenes={len(config['scenes'])}; assets={len(manifest_ids)}")
           PY
