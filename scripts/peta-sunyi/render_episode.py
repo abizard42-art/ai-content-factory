@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Review-only Peta Sunyi renderer v2: scene-aligned narration, subtitles and legible editorial graphics."""
 import pathlib, subprocess, textwrap, os, math, time, json, urllib.parse, urllib.request, re, html
-from PIL import Image, ImageDraw, ImageFont, ImageFilter
+from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageOps
 
 ROOT = pathlib.Path("work")
 ASSETS = ROOT / "assets"
@@ -9,6 +9,8 @@ OUT = pathlib.Path("output")
 OUT.mkdir(exist_ok=True)
 W, H, FPS = 1080, 1920, 30
 VOICE = os.getenv("TTS_VOICE", "id-ID-ArdiNeural")
+SPEAKER_VOICES = {}
+VISUAL_STYLE = "cinematic"
 
 # Stickman intentionally removed: the location, atmosphere and evidence lead the story.
 CONFIG = {}
@@ -17,9 +19,9 @@ SCENES = []
 def run(args):
     subprocess.run(args, check=True)
 
-def generate_tts(text, audio, subtitles):
+def generate_tts(text, audio, subtitles, voice=None):
     """Retry transient Edge Read Aloud websocket failures without leaving partial files."""
-    command = ["edge-tts", "--voice", VOICE, "--text", text,
+    command = ["edge-tts", "--voice", voice or VOICE, "--text", text,
                "--write-media", str(audio), "--write-subtitles", str(subtitles)]
     delays = [2, 4, 8, 15, 25]
     for attempt in range(len(delays) + 1):
@@ -189,7 +191,7 @@ def make_end(path):
     centered(d,cfg.get("cta","TULIS PENDAPATMU"),1280,font(29),(184,202,193,255))
     im.convert("RGB").save(path,quality=95)
 
-def convert_vtt_to_ass(vtt_path):
+def convert_vtt_to_ass(vtt_path, speaker="NARATOR"):
     """Convert WebVTT to ASS with an explicit 1080x1920 canvas and bottom-safe subtitle style."""
     lines = pathlib.Path(vtt_path).read_text(encoding="utf-8-sig").splitlines()
     cues, current = [], []
@@ -234,7 +236,7 @@ def convert_vtt_to_ass(vtt_path):
         "",
         "[V4+ Styles]",
         "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding",
-        "Style: Default,DejaVu Sans,34,&H00FFFFFF,&H00FFFFFF,&H00101010,&H80000000,0,0,0,0,100,100,0,0,1,2,0,2,110,110,245,1",
+        "Style: Default,DejaVu Sans,34,&H00FFFFFF,&H00FFFFFF,&H00101010,&H80000000,0,0,0,0,100,100,0,0,1,3,1,2,110,110,245,1",
         "",
         "[Events]",
         "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
@@ -248,7 +250,8 @@ def convert_vtt_to_ass(vtt_path):
         if not phrase:
             continue
         wrapped = textwrap.wrap(phrase, width=34, max_lines=2, placeholder="…")
-        safe_text = r"\N".join(wrapped).replace("{", "(").replace("}", ")")
+        speaker_tag = re.sub(r"[^A-Z0-9 _-]", "", str(speaker).upper())[:24]
+        safe_text = (r"{\an8\fs25\b1\c&H00C9C9C9&}" + speaker_tag + r"\N{\rDefault}") + r"\N".join(wrapped).replace("{", "(").replace("}", ")")
         events.append(f"Dialogue: 0,{ass_time(cue[0])},{ass_time(cue[1])},Default,,0,0,0,,{safe_text}")
     target = pathlib.Path(vtt_path).with_suffix(".ass")
     target.write_text("\n".join(header + events) + "\n", encoding="utf-8")
@@ -256,6 +259,17 @@ def convert_vtt_to_ass(vtt_path):
         raise RuntimeError(f"Subtitle conversion produced no ASS cues for {vtt_path}")
     return target
 
+
+def make_rough_pencil(source, target):
+    """Apply a restrained graphite/storyboard treatment to generated stills."""
+    with Image.open(source) as original:
+        base = ImageOps.autocontrast(original.convert("L"))
+        edges = base.filter(ImageFilter.FIND_EDGES).filter(ImageFilter.GaussianBlur(0.5))
+        edges = Image.eval(edges, lambda px: 255 if px > 30 else 0)
+        graphite = Image.blend(base, Image.eval(edges, lambda px: 255-px), 0.42)
+        graphite = Image.eval(graphite, lambda px: max(0, min(255, int((px-118)*1.30+128))))
+        paper = Image.new("L", graphite.size, 226)
+        Image.blend(paper, graphite, 0.92).convert("RGB").save(target, quality=94)
 
 def probe_duration(path):
     value=subprocess.check_output(["ffprobe","-v","error","-show_entries","format=duration","-of","default=noprint_wrappers=1:nokey=1",str(path)],text=True)
@@ -266,17 +280,25 @@ def main():
     config_path = pathlib.Path(os.getenv("EPISODE_CONFIG", "episodes/peta-sunyi/rs-dustira-cimahi.json"))
     CONFIG = json.loads(config_path.read_text(encoding="utf-8"))
     episode_id = CONFIG["episode_id"]
-    SCENES = [(s["shot"], s["text"], s["title"], s["kind"]) for s in CONFIG["scenes"]]
+    SCENES = [(s["shot"], s["text"], s["title"], s["kind"], s.get("speaker", "NARATOR")) for s in CONFIG["scenes"]]
+    SPEAKER_VOICES.update(CONFIG.get("speaker_voices", {}))
+    global VISUAL_STYLE
+    VISUAL_STYLE = CONFIG.get("visual_style", "cinematic")
     generated={"MAP":OUT/"graphic-map.jpg","FACT":OUT/"graphic-fact.jpg","END":OUT/"graphic-end.jpg"}
     make_map(generated["MAP"]); make_fact(generated["FACT"]); make_end(generated["END"])
     clips=[]
-    for i,(shot,text,title,kind) in enumerate(SCENES,1):
+    for i,(shot,text,title,kind,speaker) in enumerate(SCENES,1):
         audio=OUT/f"scene-{i:02d}.mp3"
         vtt=OUT/f"scene-{i:02d}.vtt"
-        generate_tts(text,audio,vtt)
+        voice = SPEAKER_VOICES.get(speaker, VOICE)
+        generate_tts(text,audio,vtt,voice=voice)
         duration=probe_duration(audio)+0.35
         src=generated[shot] if shot in generated else ASSETS/f"peta-sunyi-{shot}.jpg"
         if not src.exists(): raise FileNotFoundError(f"Missing visual asset: {src}")
+        if kind == "ai" and VISUAL_STYLE == "rough_pencil":
+            styled = OUT/f"scene-{i:02d}-pencil.jpg"
+            make_rough_pencil(src, styled)
+            src = styled
         clip=OUT/f"scene-{i:02d}.mp4"
         vf=(f"scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},"
             f"zoompan=z='min(zoom+0.00025,1.045)':d={max(1,math.ceil(duration*FPS))}:"
@@ -287,7 +309,7 @@ def main():
         if kind=="ai":
             vf+=",drawbox=x=0:y=122:w=iw:h=62:color=black@0.62:t=fill"
             vf+=",drawtext=text='REKA ADEGAN  •  ILUSTRASI AI':fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:fontcolor=white:fontsize=25:x=(w-text_w)/2:y=139"
-        ass=convert_vtt_to_ass(vtt)
+        ass=convert_vtt_to_ass(vtt,speaker=speaker)
         vf+=f",ass={ass}"
         run(["ffmpeg","-y","-loop","1","-i",str(src),"-i",str(audio),"-t",f"{duration:.3f}",
              "-vf",vf,"-r",str(FPS),"-c:v","libx264","-preset","veryfast","-crf","20",
