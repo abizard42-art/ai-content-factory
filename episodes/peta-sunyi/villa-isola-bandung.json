@@ -118,5 +118,11 @@
       "title": "SEJARAH ATAU LEGENDA?",
       "kind": "graphic"
     }
-  ]
+  ],
+  "automation": {
+    "build_mode": "automatic_on_push",
+    "workflow": "build-peta-sunyi-villa-isola.yml",
+    "review_required": true,
+    "youtube_publish": false
+  }
 }
