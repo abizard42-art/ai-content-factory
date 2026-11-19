@@ -1,0 +1,76 @@
+name: Generate Peta Sunyi long-form horror assets
+
+on:
+  workflow_dispatch:
+    inputs:
+      episode_id:
+        description: "Long-form horror episode"
+        required: true
+        type: choice
+        options:
+          - long-horror-lembang-camping
+      shot_ids:
+        description: "Comma-separated shot IDs; default ALL"
+        required: false
+        default: "ALL"
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate 16:9 pencil-storyboard stills
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          EPISODE_ID: ${{ inputs.episode_id }}
+          SHOT_IDS: ${{ inputs.shot_ids }}
+        run: |
+          set -euo pipefail
+          for name in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID SUPABASE_URL SUPABASE_SECRET_KEY; do
+            [ -n "${!name:-}" ] || { echo "ERROR: GitHub Secret $name belum diisi."; exit 1; }
+          done
+          manifest="assets/peta-sunyi/$EPISODE_ID/asset-manifest.json"
+          [ -s "$manifest" ] || { echo "ERROR: Manifest tidak ditemukan: $manifest"; exit 1; }
+          mkdir -p output/long-horror
+          if [ "$SHOT_IDS" = "ALL" ] || [ -z "$SHOT_IDS" ]; then
+            mapfile -t requested_ids < <(jq -r '.assets[].id' "$manifest")
+          else
+            IFS=',' read -ra requested_ids <<< "$SHOT_IDS"
+          fi
+          for raw_id in "${requested_ids[@]}"; do
+            id="$(printf '%s' "$raw_id" | tr -d '[:space:]')"
+            [ -n "$id" ] || continue
+            asset="$(jq -c --arg id "$id" '.assets[] | select(.id == $id)' "$manifest")"
+            [ -n "$asset" ] || { echo "ERROR: Shot $id tidak ada di manifest."; exit 1; }
+            prompt="$(printf '%s' "$asset" | jq -r '.prompt')"
+            request="$(jq -n --arg prompt "$prompt" '{prompt:$prompt,steps:4}')"
+            file="peta-sunyi-$id.jpg"
+            status="$(curl --silent --show-error --output "output/long-horror/response-$id.json" --write-out "%{http_code}"               "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/black-forest-labs/flux-1-schnell"               -X POST -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" -d "$request" || true)"
+            if [ "$status" != "200" ]; then
+              echo "ERROR: Cloudflare HTTP $status untuk $id."
+              cat "output/long-horror/response-$id.json"
+              exit 1
+            fi
+            image_base64="$(jq -r '.result.image // .image // empty' "output/long-horror/response-$id.json")"
+            [ -n "$image_base64" ] || { echo "ERROR: Respons tidak berisi gambar untuk $id."; exit 1; }
+            printf '%s' "$image_base64" | base64 --decode > "output/long-horror/$file"
+            test -s "output/long-horror/$file"
+            object_path="peta-sunyi/$EPISODE_ID/$file"
+            curl --fail-with-body --silent --show-error -X POST               "${SUPABASE_URL}/storage/v1/object/visual-assets/$object_path"               -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}"               -H "Content-Type: image/jpeg" -H "x-upsert: true" --data-binary @"output/long-horror/$file" >/dev/null
+            echo "LONG_HORROR_ASSET_OK=$object_path"
+          done
+          echo "NO_RENDER_OR_PUBLISH=true"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: peta-sunyi-${{ inputs.episode_id }}-16x9-assets
+          path: output/long-horror/
+          if-no-files-found: error
+          retention-days: 7
