@@ -106,7 +106,7 @@ jobs:
           CONFIG
 
           python - <<'PY'
-          import json, os, re, sys, time, random, urllib.request, urllib.error
+          import json, os, re, sys, time, random, urllib.request, urllib.error, subprocess
 
           config = json.load(open("mystery-channel-config.json", encoding="utf-8"))
           topic = os.environ["TOPIC"].strip()
@@ -269,7 +269,16 @@ jobs:
           with open("mystery-package.json", "w", encoding="utf-8") as f:
               json.dump(package, f, ensure_ascii=False, indent=2)
 
-          print("Paket cerita berhasil dibuat.")
+          # Humanize narration before it is written to the review database.
+          subprocess.run([
+              sys.executable,
+              "scripts/peta-sunyi/humanize_narration.py",
+              "--input", "mystery-package.json",
+              "--output", "mystery-package.json"
+          ], check=True)
+
+          package = json.load(open("mystery-package.json", encoding="utf-8"))
+          print("Paket cerita berhasil dibuat dan melewati Humanizer.")
           print("Judul:", package["title"])
           print("Fact-check:", package["fact_check_status"])
           print("Jumlah scene:", len(package["storyboard"]))
