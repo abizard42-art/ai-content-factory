@@ -209,7 +209,7 @@ def convert_vtt_to_ass(vtt_path, speaker="NARATOR", source_text=None, audio_dura
                 cues.append(current)
             parts = line.split()
             current = {"start": parts[0], "end": parts[2], "text": []}
-        elif current and not re.fullmatch(r"\\d+", line):
+        elif current and not re.fullmatch(r"\d+", line):
             current["text"].append(line)
     if current:
         cues.append(current)
@@ -236,7 +236,7 @@ def convert_vtt_to_ass(vtt_path, speaker="NARATOR", source_text=None, audio_dura
 
     def clean(value):
         value = html.unescape(re.sub(r"<[^>]+>", "", value))
-        return re.sub(r"\\s+", " ", value).strip()
+        return re.sub(r"\s+", " ", value).strip()
 
     def tokens(value):
         return re.findall(r"[0-9a-zA-ZÀ-ÿ]+", clean(value).lower())
@@ -260,8 +260,7 @@ def convert_vtt_to_ass(vtt_path, speaker="NARATOR", source_text=None, audio_dura
             timed_chunks.append((start, end, chunk))
     else:
         for cue in cues:
-            phrase = clean(" ".join(cue["text"]))
-            words = phrase.split()
+            words = clean(" ".join(cue["text"])).split()
             if not words:
                 continue
             start, end = seconds(cue["start"]), seconds(cue["end"])
@@ -287,14 +286,11 @@ def convert_vtt_to_ass(vtt_path, speaker="NARATOR", source_text=None, audio_dura
     for start, end, words in timed_chunks:
         if not words:
             continue
-        if len(words) > 3:
-            caption = " ".join(words[:3]) + r"\\N" + " ".join(words[3:])
-        else:
-            caption = " ".join(words)
-        safe_text = (r"{\\an8\\fs25\\b1\\c&H00C9C9C9&}" + speaker_tag + r"\\N{\\rDefault}") + caption.replace("{", "(").replace("}", ")")
+        caption = " ".join(words[:3]) + (r"\N" + " ".join(words[3:]) if len(words) > 3 else "")
+        safe_text = (r"{\an8\fs25\b1\c&H00C9C9C9&}" + speaker_tag + r"\N{\rDefault}") + caption.replace("{", "(").replace("}", ")")
         events.append(f"Dialogue: 0,{ass_time(start)},{ass_time(end)},Default,,0,0,0,,{safe_text}")
     target = pathlib.Path(vtt_path).with_suffix(".ass")
-    target.write_text("\\n".join(header + events) + "\\n", encoding="utf-8")
+    target.write_text("\n".join(header + events) + "\n", encoding="utf-8")
     if not events or target.stat().st_size == 0:
         raise RuntimeError(f"Subtitle conversion produced no ASS cues for {vtt_path}")
     print(f"SUBTITLE_CUES={len(events)}; max_words=6; script_fallback={str(use_fallback).lower()}", flush=True)
