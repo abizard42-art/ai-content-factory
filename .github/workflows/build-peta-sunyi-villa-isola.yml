@@ -6,6 +6,7 @@ on:
       - "episodes/peta-sunyi/villa-isola-bandung.json"
       - "assets/peta-sunyi/villa-isola-bandung/asset-manifest.json"
       - "scripts/peta-sunyi/render_episode.py"
+      - "scripts/peta-sunyi/humanize_narration.py"
       - ".github/workflows/build-peta-sunyi-villa-isola.yml"
   workflow_dispatch:
 
@@ -116,10 +117,20 @@ jobs:
           sudo apt-get install -y ffmpeg fonts-dejavu-core
           python -m pip install --upgrade pip
           python -m pip install pillow edge-tts
+      - name: Humanize Villa Isola narration with pinned Humanizer
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          set -euo pipefail
+          [ -n "${GEMINI_API_KEY:-}" ] || { echo "ERROR: GitHub Secret GEMINI_API_KEY belum diisi."; exit 1; }
+          python -m py_compile scripts/peta-sunyi/humanize_narration.py
+          python scripts/peta-sunyi/humanize_narration.py \
+            --input episodes/peta-sunyi/villa-isola-bandung.json \
+            --output work/villa-isola-humanized.json
 
       - name: Render Villa Isola using the shared Peta Sunyi Shorts renderer
         env:
-          EPISODE_CONFIG: episodes/peta-sunyi/villa-isola-bandung.json
+          EPISODE_CONFIG: work/villa-isola-humanized.json
         run: |
           set -euo pipefail
           python -m py_compile scripts/peta-sunyi/render_episode.py
