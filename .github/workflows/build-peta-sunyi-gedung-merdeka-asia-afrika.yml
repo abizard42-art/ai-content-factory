@@ -88,6 +88,11 @@ jobs:
                 fi
                 echo "WARN: Cloudflare HTTP $status untuk $shot_id (percobaan $attempt/4)."
                 cat "output/peta-sunyi/response-$shot_id.json"
+                if grep -qE '"code"[[:space:]]*:[[:space:]]*4006|used up your daily free allocation' "output/peta-sunyi/response-$shot_id.json"; then
+                  echo "ERROR: Kuota gratis Cloudflare Workers AI harian habis. Retry tidak akan membantu; hentikan generator agar tidak membuang percobaan."
+                  echo "ACTION: Tunggu reset kuota atau ganti provider/plan, lalu jalankan workflow_dispatch."
+                  exit 1
+                fi
                 if [ "$attempt" -lt 4 ]; then sleep $((attempt * 10)); fi
               done
               if [ "$status" != "200" ]; then
