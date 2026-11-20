@@ -11,35 +11,35 @@
       "scene": 1,
       "kind": "Villa Isola exterior",
       "label_required": true,
-      "prompt": "Vertical 9:16 atmospheric illustration of Villa Isola in North Bandung in the early 1930s, iconic white curved Art Deco facade on a green hillside, terraced gardens and misty highland atmosphere, historically plausible architecture, no modern high-rise buildings. 2D cinematic hand-drawn graphite and charcoal illustration, expressive pencil hatching, textured archival paper, restrained sepia, slate and dark olive palette, subtle cinematic lighting. Historical reconstruction only, not documentary photography. No photorealism, no 3D, no CGI, no anime, no ghosts, no text, no lettering, no watermark, no logo."
+      "prompt": "Vertical 9:16 atmospheric cinematic 2D color illustration of Villa Isola in North Bandung in the early 1930s, iconic white curved Art Deco facade on a green hillside, terraced gardens and misty highland atmosphere, historically plausible architecture, no modern high-rise buildings. Preserve the original scene composition and subject. Painterly animated-film background art, refined hand-drawn contours with rich natural colors: warm ivory architecture, deep olive gardens, muted teal mountain atmosphere, soft golden light and layered cinematic shadows. Historical reconstruction only, not documentary photography. No pencil sketch, no graphite, no charcoal, no monochrome, no photorealism, no 3D, no CGI, no anime, no ghosts, no text, no lettering, no watermark, no logo."
     },
     {
       "id": "03A",
       "scene": 3,
       "kind": "construction 1932",
       "label_required": true,
-      "prompt": "Vertical 9:16 historical reconstruction of Villa Isola under construction in October 1932 on a hillside north of Bandung, period-accurate colonial-era workers and scaffolding around a distinctive curved modernist villa taking shape, avoid readable signs and identifiable real people. 2D cinematic hand-drawn graphite and charcoal illustration, expressive pencil hatching, textured archival paper, restrained sepia, slate and dark olive palette. Illustrative reconstruction only, not documentary evidence. No photorealism, no 3D, no CGI, no anime, no text, no watermark, no logo."
+      "prompt": "Vertical 9:16 historical reconstruction of Villa Isola under construction in October 1932 on a hillside north of Bandung, period-accurate colonial-era workers and scaffolding around a distinctive curved modernist villa taking shape, avoid readable signs and identifiable real people. Preserve the original scene composition and subject. Cinematic 2D color illustration, painterly animated-film background art, refined hand-drawn contours, warm earth tones, muted terracotta, olive greenery, pale blue-grey Bandung sky and natural golden daylight. Illustrative reconstruction only, not documentary evidence. No pencil sketch, no graphite, no charcoal, no monochrome, no photorealism, no 3D, no CGI, no anime, no text, no watermark, no logo."
     },
     {
       "id": "04A",
       "scene": 4,
       "kind": "architectural design",
       "label_required": true,
-      "prompt": "Vertical 9:16 architectural study of Villa Isola by C.P. Wolff Schoemaker, show the distinctive curved Art Deco facade, balanced horizontal and vertical forms, terraces, broad windows, and relationship between building and terraced landscape; include a generic architect figure seen from behind studying plans, no identifiable likeness and no readable writing. 2D cinematic hand-drawn graphite and charcoal illustration, precise pencil linework, cross-hatching, textured archival paper, restrained sepia and slate palette. Historical reconstruction only. No photorealism, no 3D, no CGI, no anime, no text, no watermark, no logo."
+      "prompt": "Vertical 9:16 architectural study of Villa Isola by C.P. Wolff Schoemaker, show the distinctive curved Art Deco facade, balanced horizontal and vertical forms, terraces, broad windows, and relationship between building and terraced landscape; include a generic architect figure seen from behind studying plans, no identifiable likeness and no readable writing. Preserve the original scene composition and subject. Cinematic 2D color illustration, painterly architectural background art, precise clean hand-drawn contours, warm ivory stone, muted sage and olive landscape, soft amber highlights and slate-blue shadows. Historical reconstruction only. No pencil sketch, no graphite, no charcoal, no monochrome, no photorealism, no 3D, no CGI, no anime, no text, no watermark, no logo."
     },
     {
       "id": "05A",
       "scene": 5,
       "kind": "Berretty residence",
       "label_required": true,
-      "prompt": "Vertical 9:16 respectful historical reconstruction of a 1930s media entrepreneur standing on the curved balcony of Villa Isola overlooking Bandung, seen from behind in period-appropriate formal clothing, elegant villa interior and distant hills, do not create a specific identifiable portrait of Dominique Willem Berretty. 2D cinematic hand-drawn graphite and charcoal illustration, expressive pencil hatching, textured archival paper, restrained sepia and dark olive palette. Illustrative reconstruction only. No photorealism, no 3D, no CGI, no anime, no ghost, no text, no watermark, no logo."
+      "prompt": "Vertical 9:16 respectful historical reconstruction of a 1930s media entrepreneur standing on the curved balcony of Villa Isola overlooking Bandung, seen from behind in period-appropriate formal clothing, elegant villa interior and distant hills, do not create a specific identifiable portrait of Dominique Willem Berretty. Preserve the original scene composition and subject. Cinematic 2D color illustration, painterly animated-film background art, refined hand-drawn contours, warm amber interior light, ivory architecture, deep olive hills and muted blue-green distance, restrained period-appropriate colors. Illustrative reconstruction only. No pencil sketch, no graphite, no charcoal, no monochrome, no photorealism, no 3D, no CGI, no anime, no ghost, no text, no watermark, no logo."
     },
     {
       "id": "07A",
       "scene": 7,
       "kind": "Japanese occupation 1942",
       "label_required": true,
-      "prompt": "Vertical 9:16 historical reconstruction of Villa Isola in March 1942 during the Japanese occupation, period-accurate military staff arriving at the curved entrance, a formal Japanese general represented from a respectful distant rear view, no battle spectacle and no identifiable likeness. 2D cinematic hand-drawn graphite and charcoal illustration, textured archival paper, expressive cross-hatching, restrained sepia, slate and dark olive palette. Illustrative reconstruction only, not documentary evidence. No photorealism, no 3D, no CGI, no anime, no text, no watermark, no logo."
+      "prompt": "Vertical 9:16 historical reconstruction of Villa Isola in March 1942 during the Japanese occupation, period-accurate military staff arriving at the curved entrance, a formal Japanese general represented from a respectful distant rear view, no battle spectacle and no identifiable likeness. Preserve the original scene composition and subject. Cinematic 2D color illustration, painterly historical animated-film background art, clean hand-drawn contours, subdued olive and khaki uniforms, warm ivory architecture, muted slate-blue shadows and restrained earthy colors. Illustrative reconstruction only, not documentary evidence. No pencil sketch, no graphite, no charcoal, no monochrome, no photorealism, no 3D, no CGI, no anime, no text, no watermark, no logo."
     }
   ]
 }
