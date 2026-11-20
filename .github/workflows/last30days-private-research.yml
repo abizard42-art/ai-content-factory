@@ -1,0 +1,76 @@
+name: Last30Days private research
+
+on:
+  workflow_dispatch:
+    inputs:
+      scope:
+        description: "Pilih cakupan riset"
+        required: true
+        default: "all"
+        type: choice
+        options:
+          - all
+          - peta-sunyi
+          - sejarah-dunia
+          - ai-content-factory
+          - business-opportunity
+      topic:
+        description: "Fokus tambahan (opsional, diterapkan ke setiap cakupan yang dipilih)"
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: last30days-manual-research
+  cancel-in-progress: false
+
+jobs:
+  research:
+    name: Research and save private reports
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout AI Content Factory
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Set up Node.js runtime
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install free YouTube research adapter
+        run: python -m pip install --disable-pip-version-check yt-dlp
+
+      - name: Fetch Last30Days at the approved immutable commit
+        env:
+          LAST30DAYS_COMMIT: "262391603f3c2807606bffa0170547273fc273e5"
+        run: |
+          set -euo pipefail
+          git clone --filter=blob:none https://github.com/mvanhorn/last30days-skill.git /tmp/last30days-skill
+          git -C /tmp/last30days-skill checkout --detach "$LAST30DAYS_COMMIT"
+          actual="$(git -C /tmp/last30days-skill rev-parse HEAD)"
+          test "$actual" = "$LAST30DAYS_COMMIT"
+          echo "LAST30DAYS_UPSTREAM_PIN=$actual"
+
+      - name: Run research and upload only to private Supabase Storage
+        env:
+          SCOPE: ${{ inputs.scope }}
+          TOPIC: ${{ inputs.topic }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/last30days/run_research.py
+          python scripts/last30days/run_research.py \
+            --scope "$SCOPE" \
+            --topic "$TOPIC" \
+            --engine /tmp/last30days-skill/skills/last30days/scripts/last30days.py
