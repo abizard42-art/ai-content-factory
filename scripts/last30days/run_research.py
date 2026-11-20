@@ -177,7 +177,7 @@ def main() -> int:
 
     base = os.environ.get("SUPABASE_URL", "").rstrip("/")
     secret = os.environ.get("SUPABASE_SECRET_KEY", "")
-    run_id = os.environ.get("GITHUB_RUN_ID", "manual")
+    run_id = os.environ.get("GITHUB_RUN_ID", "manual") + "-attempt-" + os.environ.get("GITHUB_RUN_ATTEMPT", "1")
     if not base or not secret:
         raise SystemExit("GitHub Secrets SUPABASE_URL dan SUPABASE_SECRET_KEY wajib tersedia.")
     if not args.engine.is_file():
