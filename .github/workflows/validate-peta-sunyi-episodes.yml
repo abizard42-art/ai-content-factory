@@ -25,6 +25,8 @@ jobs:
         run: |
           set -euo pipefail
           python -m py_compile scripts/peta-sunyi/render_episode.py
+          python -m py_compile scripts/peta-sunyi/humanize_narration.py
+          python -m unittest tests.test_peta_sunyi_humanizer
           python - <<'PY'
           import json, pathlib
           for config_path in pathlib.Path("episodes/peta-sunyi").glob("*.json"):
