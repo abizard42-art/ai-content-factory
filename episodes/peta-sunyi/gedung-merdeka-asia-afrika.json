@@ -1,0 +1,141 @@
+{
+  "episode_id": "gedung-merdeka-asia-afrika",
+  "title": "Gedung Merdeka: Dari Societeit Concordia ke Panggung Asia-Afrika",
+  "visual_style": "etching_charcoal_gothic_oil",
+  "map": {
+    "query": "Gedung Merdeka, Jalan Asia Afrika No. 65, Bandung, Jawa Barat, Indonesia",
+    "title": "GEDUNG MERDEKA",
+    "subtitle": "JALAN ASIA AFRIKA • BANDUNG",
+    "pin_label": "GEDUNG MERDEKA",
+    "footer": "PETA LOKASI • BRAGA, BANDUNG",
+    "coordinates": {
+      "lat": -6.92107,
+      "lon": 107.60956
+    }
+  },
+  "fact": {
+    "heading": "LINIMASA GEDUNG MERDEKA",
+    "lines": [
+      "1895 • TEMPAT PERTEMUAN SOCIETEIT CONCORDIA",
+      "1921 • DIRANCANG ULANG BERGAYA ART DECO",
+      "1942 • BERGANTI NAMA MENJADI DAI TOA KAIKAN",
+      "7 APRIL 1955 • DIRESMIKAN SEBAGAI GEDUNG MERDEKA",
+      "18–24 APRIL 1955 • KONFERENSI ASIA AFRIKA"
+    ],
+    "highlight": "29 NEGARA • 10 PRINSIP DASASILA BANDUNG"
+  },
+  "end": {
+    "title": "GEDUNG MERDEKA",
+    "subtitle": "DARI RUANG EKSKLUSIF KE PANGGUNG DUNIA",
+    "cta": "PETA SUNYI • BANDUNG"
+  },
+  "sources": [
+    {
+      "name": "Museum Konferensi Asia Afrika — Gedung Merdeka",
+      "url": "https://mkaa.kemlu.go.id/halaman/Gedung-Merdeka",
+      "supports": "Sejarah 1895, Societeit Concordia, renovasi 1921 oleh C.P. Wolff Schoemaker, renovasi sayap 1940 oleh A.F. Aalbers, Dai Toa Kaikan, Yamato, dan kebakaran sayap pada 1944."
+    },
+    {
+      "name": "Museum Konferensi Asia Afrika — KAA 1955",
+      "url": "https://mkaa.kemlu.go.id/halaman/KAA-1955",
+      "supports": "Penggantian nama pada 7 April 1955, tanggal konferensi 18–24 April 1955, 29 negara peserta, Bandung Walks, proses sidang, dan Dasasila Bandung."
+    },
+    {
+      "name": "Museum Konferensi Asia Afrika — Tentang Museum",
+      "url": "https://mkaa.kemlu.go.id/halaman/Tentang-Museum-KAA",
+      "supports": "Latar belakang konferensi dan peran Dasasila Bandung."
+    },
+    {
+      "name": "Arsip Nasional RI — Arsip Konferensi Asia Afrika",
+      "url": "https://mow.anri.go.id/warisan-dokumenter/dunia/detail/arsip-konferensi-asia-afrika",
+      "supports": "Arsip KAA sebagai warisan dokumenter, konferensi di Bandung 18–24 April 1955, dihadiri 29 negara."
+    },
+    {
+      "name": "Setjen MPR RI — Sejarah Kembali Berulang di Gedung Merdeka",
+      "url": "https://setjen.mpr.go.id/detailBerita/213/Siti-Fauziah-%3A-Sejarah-Kembali-Berulang-di-Gedung-Merdeka",
+      "supports": "Konteks renovasi dan pergantian nama Gedung Merdeka pada 7 April 1955."
+    }
+  ],
+  "editorial_notes": [
+    "Bedakan sejarah bangunan dari sejarah Konferensi Asia Afrika; jangan mencampur kronologi.",
+    "Societeit Concordia adalah perkumpulan sosial orang Eropa, terutama Belanda; jangan romantisasi eksklusivitas kolonial.",
+    "Tahun 1895 merujuk pada bangunan sederhana tempat pertemuan; renovasi besar bergaya Art Deco dilakukan pada 1921.",
+    "Pada masa pendudukan Jepang, bangunan utama disebut Dai Toa Kaikan; sayap kiri bernama Yamato dan terbakar pada 1944.",
+    "Soekarno meresmikan nama Gedung Merdeka dan Jalan Asia Afrika pada 7 April 1955.",
+    "Konferensi berlangsung 18–24 April 1955 dan dihadiri 29 negara. Jangan menyebut 30 negara hadir.",
+    "Adegan AI adalah reka adegan ilustratif, bukan dokumentasi foto. Wajib tampilkan label REKA ADEGAN • ILUSTRASI AI.",
+    "Jangan membuat kutipan langsung palsu, wajah tokoh sejarah yang diklaim akurat, atau detail peristiwa yang tidak didukung sumber.",
+    "Tidak perlu menambahkan cerita hantu; kekuatan episode ada pada perubahan fungsi bangunan dan dampak sejarahnya."
+  ],
+  "scenes": [
+    {
+      "scene": 1,
+      "shot": "01A",
+      "text": "Di Jalan Asia Afrika, ada sebuah gedung yang pernah menjadi tempat berkumpulnya kaum elite kolonial. Puluhan tahun kemudian, ruangan yang sama menjadi saksi pertemuan bangsa-bangsa yang sedang mencari suara di panggung dunia. Inilah Gedung Merdeka.",
+      "title": "DARI RUANG EKSKLUSIF KE PANGGUNG DUNIA",
+      "kind": "ai"
+    },
+    {
+      "scene": 2,
+      "shot": "MAP",
+      "text": "Gedung Merdeka berdiri di Jalan Asia Afrika Nomor 65, kawasan Braga, pusat Kota Bandung. Hari ini, bangunan bersejarah itu menjadi rumah bagi Museum Konferensi Asia Afrika.",
+      "title": "JALAN ASIA AFRIKA • BANDUNG",
+      "kind": "graphic"
+    },
+    {
+      "scene": 3,
+      "shot": "03A",
+      "text": "Pada 1895, bangunan di tempat ini masih sederhana. Ia menjadi tempat pertemuan Societeit Concordia, perkumpulan sosial orang-orang Eropa, terutama Belanda, yang tinggal di Bandung dan sekitarnya. Ruang ini lahir dari dunia kolonial yang sangat terbatas bagi sebagian besar penduduk pribumi.",
+      "title": "1895 • SOCIETEIT CONCORDIA",
+      "kind": "ai"
+    },
+    {
+      "scene": 4,
+      "shot": "04A",
+      "text": "Pada 1921, Concordia dirombak besar-besaran oleh arsitek C.P. Wolff Schoemaker. Gaya Art Deco memberi wajah baru: lebih megah, modern, dan menjadi salah satu gedung pertemuan paling mewah pada masanya. Tahun 1940, sayap kirinya kembali direnovasi oleh A.F. Aalbers.",
+      "title": "1921 • WAJAH ART DECO",
+      "kind": "ai"
+    },
+    {
+      "scene": 5,
+      "shot": "05A",
+      "text": "Pendudukan Jepang mengubah fungsi gedung ini. Bangunan utamanya berganti nama menjadi Dai Toa Kaikan dan digunakan sebagai pusat kebudayaan. Sayap kirinya dikenal sebagai Yamato. Pada 1944, bagian sayap itu terbakar.",
+      "title": "1942–1944 • DAI TOA KAIKAN",
+      "kind": "ai"
+    },
+    {
+      "scene": 6,
+      "shot": "FACT",
+      "text": "Menjelang konferensi internasional, Bandung bersiap menjadi tuan rumah. Pada 7 April 1955, Presiden Soekarno meresmikan nama Gedung Merdeka dan Jalan Asia Afrika. Sebelas hari kemudian, pertemuan besar itu dimulai.",
+      "title": "7 APRIL 1955 • NAMA BARU",
+      "kind": "graphic"
+    },
+    {
+      "scene": 7,
+      "shot": "07A",
+      "text": "Pagi 18 April 1955, delegasi dari Asia dan Afrika berjalan dari Hotel Homann dan Hotel Preanger menuju gedung ini. Warga memadati tepi jalan untuk menyambut mereka. Momen itu kemudian dikenal sebagai Bandung Walks: langkah para delegasi yang menjadi bagian dari ingatan dunia.",
+      "title": "18 APRIL 1955 • BANDUNG WALKS",
+      "kind": "ai"
+    },
+    {
+      "scene": 8,
+      "shot": "08A",
+      "text": "Selama sepekan, 29 negara membicarakan kerja sama, kolonialisme, hak menentukan nasib sendiri, dan perdamaian dunia. Pada 24 April, konferensi ditutup dengan sepuluh prinsip yang dikenal sebagai Dasasila Bandung. Gagasan dari Bandung melampaui dinding gedung ini.",
+      "title": "29 NEGARA • DASASILA BANDUNG",
+      "kind": "ai"
+    },
+    {
+      "scene": 9,
+      "shot": "END",
+      "text": "Dulu, gedung ini berdiri sebagai simbol ruang sosial yang eksklusif. Pada 1955, ia menjadi panggung bagi suara bangsa-bangsa Asia dan Afrika. Kini, ia menyimpan jejak peristiwa itu sebagai museum. Sebuah bangunan, dengan sejarah yang berubah bersama zamannya.",
+      "title": "GEDUNG YANG MENYAKSIKAN PERUBAHAN ZAMAN",
+      "kind": "graphic"
+    }
+  ],
+  "automation": {
+    "build_mode": "automatic_on_push",
+    "workflow": "build-peta-sunyi-gedung-merdeka-asia-afrika.yml",
+    "review_required": true,
+    "youtube_publish": false
+  }
+}
