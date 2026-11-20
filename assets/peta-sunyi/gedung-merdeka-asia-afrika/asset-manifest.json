@@ -1,0 +1,59 @@
+{
+  "channel": "Peta Sunyi",
+  "episode_id": "gedung-merdeka-asia-afrika",
+  "format": "9:16",
+  "provider": "Cloudflare Workers AI",
+  "model": "@cf/black-forest-labs/flux-1-schnell",
+  "policy": "All AI visuals are illustrative reconstructions, not documentary photographs or direct archival evidence. Historical claims must remain distinct from atmosphere. Do not invent quotations, dates, documents, or supernatural entities. Renderer adds visible REKA ADEGAN • ILUSTRASI AI labels; never ask the image model to render text. Use real location/archive photographs only when separately sourced and credited.",
+  "art_direction": {
+    "name": "Etsa Klasik + Sketsa Arang + Dark Gothic Oil Painting",
+    "palette": "charcoal black, dark brown, sepia, muted antique gold, restrained maroon",
+    "texture": "aged paper, etched cross-hatching, charcoal grain, painterly oil texture",
+    "composition": "cinematic vertical 9:16, strong architectural silhouettes, deep shadows, controlled highlights, historically plausible Bandung 1895–1955",
+    "allocation": "3 engraving/etching scenes, 2 charcoal scenes, 1 dark gothic oil painting scene"
+  },
+  "assets": [
+    {
+      "id": "01A",
+      "scene": 1,
+      "kind": "Gedung Merdeka establishing exterior",
+      "label_required": true,
+      "prompt": "Vertical 9:16 cinematic historical illustration of the real Gedung Merdeka / former Societeit Concordia on Jalan Asia Afrika, Bandung, viewed from a dramatic low three-quarter street angle, historically recognizable facade and proportions, late afternoon fading into dusk, sparse period street silhouettes, no modern vehicles or signage. STYLE: classical copperplate engraving and vintage etching, dense fine cross-hatching, engraved architectural linework, aged parchment grain. PALETTE: sepia, charcoal black, dark umber, muted antique gold, restrained maroon accents. Deep cinematic shadows and luminous architectural highlights. Historical reconstruction, not a photograph. No pencil-only monochrome, no photorealism, no 3D, no CGI, no anime, no ghosts, no readable text, no lettering, no watermark, no logo."
+    },
+    {
+      "id": "03A",
+      "scene": 3,
+      "kind": "Societeit Concordia interior 1895",
+      "label_required": true,
+      "prompt": "Vertical 9:16 historically grounded reconstruction of a modest late-19th-century meeting room in Bandung, 1895, used by the European Societeit Concordia association, wooden chairs, simple tables, high colonial-era windows, a few distant period-dressed adult silhouettes, restrained and critical historical atmosphere, no luxury ballroom exaggeration. STYLE: charcoal drawing with layered charcoal grain, expressive dark tonal blocks, selective fine chalk highlights, rough paper texture, strong chiaroscuro. PALETTE: charcoal black, deep brown, faded sepia, muted gold. Clearly an illustrative historical reconstruction, not documentary evidence. No modern objects, no readable text, no photorealism, no 3D, no CGI, no anime, no ghosts, no watermark, no logo."
+    },
+    {
+      "id": "04A",
+      "scene": 4,
+      "kind": "Art Deco renovation 1921",
+      "label_required": true,
+      "prompt": "Vertical 9:16 architectural historical reconstruction of Gedung Concordia in Bandung around 1921 after its major redesign by C.P. Wolff Schoemaker, show the recognizable Art Deco facade, strong geometric rhythm, monumental columns and windows, period-accurate street context, no invented extra towers. STYLE: classical vintage architectural engraving, precise etched lines, intricate cross-hatching, aged archival paper, elegant composition. PALETTE: dark sepia, charcoal, antique gold highlights, brown-black shadows, slight muted maroon. Dramatic but accurate architecture. Historical illustration only, not a photograph. No pencil sketch filter, no photorealism, no 3D, no CGI, no anime, no text, no watermark, no logo."
+    },
+    {
+      "id": "05A",
+      "scene": 5,
+      "kind": "Dai Toa Kaikan occupation era",
+      "label_required": true,
+      "prompt": "Vertical 9:16 respectful historical reconstruction of Gedung Concordia during Japanese occupation in Bandung around 1942, the main building used as Dai Toa Kaikan cultural center, period-accurate Japanese occupation-era uniforms seen only as small distant silhouettes, tense subdued atmosphere, retain the recognizable building architecture, no combat or fabricated atrocities. STYLE: charcoal sketch, textured charcoal grain, rough gestural shadows, dramatic chiaroscuro and restrained hand-drawn architectural contours. PALETTE: charcoal black, dark umber, smoky sepia, muted antique gold and a restrained maroon accent. Illustrative reconstruction only, not documentary photography. No readable signs, no text, no photorealism, no 3D, no CGI, no anime, no ghosts, no watermark, no logo."
+    },
+    {
+      "id": "07A",
+      "scene": 7,
+      "kind": "Bandung Walks 18 April 1955",
+      "label_required": true,
+      "prompt": "Vertical 9:16 cinematic historical reconstruction of Bandung Walks on 18 April 1955, a diverse group of Asian and African conference delegates in historically plausible national formal clothing walking together along Jalan Asia Afrika toward Gedung Merdeka, Bandung residents lining both sides of the street, period-correct 1950s Bandung architecture and vehicles in the distance, respectful dignified atmosphere, no identifiable portrait likenesses. STYLE: dark gothic oil painting, expressive painterly brushwork, layered varnished oil texture, dramatic chiaroscuro, glowing warm light across the delegates against deep shadows. PALETTE: dark sepia, charcoal, antique gold, warm umber, subtle maroon. Historical illustration, not documentary photograph. No readable text, no modern cars, no photorealism, no 3D, no CGI, no anime, no ghosts, no watermark, no logo."
+    },
+    {
+      "id": "08A",
+      "scene": 8,
+      "kind": "Asia Africa Conference plenary interior",
+      "label_required": true,
+      "prompt": "Vertical 9:16 dramatic historical reconstruction inside Gedung Merdeka during the Asian-African Conference in April 1955, a wide plenary hall with rows of delegates from Asian and African countries seated at long tables, period microphones, flags suggested without legible emblems, formal dignified discussion, architecture appropriate to the actual hall, viewed from rear balcony so no individual portrait is identifiable. STYLE: dark gothic oil painting with rich layered brushstrokes, deep chiaroscuro, subtle aged canvas texture, luminous antique-gold light over the assembly. PALETTE: charcoal black, deep brown, sepia, muted gold, restrained maroon. Illustrative reconstruction only, not documentary evidence. No invented readable documents, no text, no photorealism, no 3D, no CGI, no anime, no ghosts, no watermark, no logo."
+    }
+  ]
+}
