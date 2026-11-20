@@ -191,74 +191,114 @@ def make_end(path):
     centered(d,cfg.get("cta","TULIS PENDAPATMU"),1280,font(29),(184,202,193,255))
     im.convert("RGB").save(path,quality=95)
 
-def convert_vtt_to_ass(vtt_path, speaker="NARATOR"):
-    """Convert WebVTT to ASS with an explicit 1080x1920 canvas and bottom-safe subtitle style."""
+def convert_vtt_to_ass(vtt_path, speaker="NARATOR", source_text=None, audio_duration=None):
+    """Render every spoken-script word; split captions into <=6-word cards without truncation."""
     lines = pathlib.Path(vtt_path).read_text(encoding="utf-8-sig").splitlines()
-    cues, current = [], []
+    cues, current = [], None
     for raw in lines:
         line = raw.strip()
         if not line:
             if current:
-                cues.append(current); current = []
+                cues.append(current)
+                current = None
             continue
-        if line == "WEBVTT" or line.startswith("NOTE") or line.startswith("STYLE"):
+        if line == "WEBVTT" or line.startswith(("NOTE", "STYLE")):
             continue
         if "-->" in line:
             if current:
                 cues.append(current)
             parts = line.split()
-            current = [parts[0], parts[2]]
-        elif current and not re.fullmatch(r"\d+", line):
-            current.append(line)
+            current = {"start": parts[0], "end": parts[2], "text": []}
+        elif current and not re.fullmatch(r"\\d+", line):
+            current["text"].append(line)
     if current:
         cues.append(current)
 
-    def ass_time(value):
+    def seconds(value):
         bits = value.replace(",", ".").split(":")
         if len(bits) == 2:
-            hours, minutes, seconds = 0, int(bits[0]), float(bits[1])
+            hours, minutes, secs = 0, int(bits[0]), float(bits[1])
         else:
-            hours, minutes, seconds = int(bits[0]), int(bits[1]), float(bits[2])
-        whole = int(seconds)
-        centis = int(round((seconds - whole) * 100))
+            hours, minutes, secs = int(bits[0]), int(bits[1]), float(bits[2])
+        return hours * 3600 + minutes * 60 + secs
+
+    def ass_time(value):
+        value = max(0.0, value)
+        hours = int(value // 3600)
+        minutes = int((value % 3600) // 60)
+        secs = value % 60
+        whole = int(secs)
+        centis = int(round((secs - whole) * 100))
         if centis >= 100:
-            whole += 1; centis = 0
+            whole += 1
+            centis = 0
         return f"{hours}:{minutes:02d}:{whole:02d}.{centis:02d}"
 
+    def clean(value):
+        value = html.unescape(re.sub(r"<[^>]+>", "", value))
+        return re.sub(r"\\s+", " ", value).strip()
+
+    def tokens(value):
+        return re.findall(r"[0-9a-zA-ZÀ-ÿ]+", clean(value).lower())
+
+    timed_chunks = []
+    vtt_source = " ".join(clean(t) for cue in cues for t in cue["text"])
+    use_fallback = not cues
+    if source_text is not None and tokens(vtt_source) != tokens(source_text):
+        use_fallback = True
+
+    if use_fallback:
+        if not source_text or not audio_duration or audio_duration <= 0:
+            raise RuntimeError(f"VTT cues missing or incomplete and no valid script fallback: {vtt_path}")
+        words = clean(source_text).split()
+        print(f"SUBTITLE_SCRIPT_FALLBACK=true; vtt_words={len(tokens(vtt_source))}; script_words={len(tokens(source_text))}", flush=True)
+        total = max(1, len(words))
+        for offset in range(0, len(words), 6):
+            chunk = words[offset:offset + 6]
+            start = audio_duration * offset / total
+            end = audio_duration * min(offset + len(chunk), total) / total
+            timed_chunks.append((start, end, chunk))
+    else:
+        for cue in cues:
+            phrase = clean(" ".join(cue["text"]))
+            words = phrase.split()
+            if not words:
+                continue
+            start, end = seconds(cue["start"]), seconds(cue["end"])
+            span = max(0.01, end - start)
+            total = len(words)
+            for offset in range(0, total, 6):
+                chunk = words[offset:offset + 6]
+                chunk_start = start + span * offset / total
+                chunk_end = start + span * min(offset + len(chunk), total) / total
+                timed_chunks.append((chunk_start, chunk_end, chunk))
+
     header = [
-        "[Script Info]",
-        "Title: Peta Sunyi subtitles",
-        "ScriptType: v4.00+",
-        "WrapStyle: 2",
-        "ScaledBorderAndShadow: yes",
-        "PlayResX: 1080",
-        "PlayResY: 1920",
-        "",
-        "[V4+ Styles]",
+        "[Script Info]", "Title: Peta Sunyi subtitles", "ScriptType: v4.00+",
+        "WrapStyle: 2", "ScaledBorderAndShadow: yes", "PlayResX: 1080",
+        "PlayResY: 1920", "", "[V4+ Styles]",
         "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding",
         "Style: Default,DejaVu Sans,34,&H00FFFFFF,&H00FFFFFF,&H00101010,&H80000000,0,0,0,0,100,100,0,0,1,3,1,2,110,110,245,1",
-        "",
-        "[Events]",
+        "", "[Events]",
         "Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text"
     ]
     events = []
-    for cue in cues:
-        if len(cue) < 3:
+    speaker_tag = re.sub(r"[^A-Z0-9 _-]", "", str(speaker).upper())[:24]
+    for start, end, words in timed_chunks:
+        if not words:
             continue
-        phrase = " ".join(html.unescape(re.sub(r"<[^>]+>", "", x)).strip() for x in cue[2:])
-        phrase = re.sub(r"\s+", " ", phrase).strip()
-        if not phrase:
-            continue
-        wrapped = textwrap.wrap(phrase, width=34, max_lines=2, placeholder="…")
-        speaker_tag = re.sub(r"[^A-Z0-9 _-]", "", str(speaker).upper())[:24]
-        safe_text = (r"{\an8\fs25\b1\c&H00C9C9C9&}" + speaker_tag + r"\N{\rDefault}") + r"\N".join(wrapped).replace("{", "(").replace("}", ")")
-        events.append(f"Dialogue: 0,{ass_time(cue[0])},{ass_time(cue[1])},Default,,0,0,0,,{safe_text}")
+        if len(words) > 3:
+            caption = " ".join(words[:3]) + r"\\N" + " ".join(words[3:])
+        else:
+            caption = " ".join(words)
+        safe_text = (r"{\\an8\\fs25\\b1\\c&H00C9C9C9&}" + speaker_tag + r"\\N{\\rDefault}") + caption.replace("{", "(").replace("}", ")")
+        events.append(f"Dialogue: 0,{ass_time(start)},{ass_time(end)},Default,,0,0,0,,{safe_text}")
     target = pathlib.Path(vtt_path).with_suffix(".ass")
-    target.write_text("\n".join(header + events) + "\n", encoding="utf-8")
+    target.write_text("\\n".join(header + events) + "\\n", encoding="utf-8")
     if not events or target.stat().st_size == 0:
         raise RuntimeError(f"Subtitle conversion produced no ASS cues for {vtt_path}")
+    print(f"SUBTITLE_CUES={len(events)}; max_words=6; script_fallback={str(use_fallback).lower()}", flush=True)
     return target
-
 
 def make_rough_pencil(source, target):
     """Apply a restrained graphite/storyboard treatment to generated stills."""
@@ -309,7 +349,7 @@ def main():
         if kind=="ai":
             vf+=",drawbox=x=0:y=122:w=iw:h=62:color=black@0.62:t=fill"
             vf+=",drawtext=text='REKA ADEGAN  •  ILUSTRASI AI':fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:fontcolor=white:fontsize=25:x=(w-text_w)/2:y=139"
-        ass=convert_vtt_to_ass(vtt,speaker=speaker)
+        ass=convert_vtt_to_ass(vtt,speaker=speaker,source_text=text,audio_duration=probe_duration(audio))
         vf+=f",ass={ass}"
         run(["ffmpeg","-y","-loop","1","-i",str(src),"-i",str(audio),"-t",f"{duration:.3f}",
              "-vf",vf,"-r",str(FPS),"-c:v","libx264","-preset","veryfast","-crf","20",
