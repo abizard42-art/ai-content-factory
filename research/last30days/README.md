@@ -41,7 +41,7 @@ Object layout:
 
 ```
 research-reports/
-  peta-sunyi/YYYY-MM-DD/run-GITHUB_RUN_ID.md
+  peta-sunyi/YYYY-MM-DD/run-GITHUB_RUN_ID-attempt-GITHUB_RUN_ATTEMPT.md
   sejarah-dunia/YYYY-MM-DD/run-GITHUB_RUN_ID.md
   ai-content-factory/YYYY-MM-DD/run-GITHUB_RUN_ID.md
   business-opportunity/YYYY-MM-DD/run-GITHUB_RUN_ID.md
