@@ -7,7 +7,6 @@ import argparse
 import datetime as dt
 import json
 import os
-import re
 import subprocess
 import sys
 import tempfile
@@ -149,6 +148,7 @@ def run_one(scope: str, focus: str, engine: Path, base: str, secret: str, run_id
             f"--register={profile['register']}",
             f"--search={KEYLESS_SOURCES}",
             "--no-browser-cookies",
+            "--auto-resolve",
             "--output", str(report),
         ]
         print(f"Menjalankan riset scope: {scope}")
