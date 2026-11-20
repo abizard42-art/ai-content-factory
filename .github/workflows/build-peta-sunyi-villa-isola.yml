@@ -66,28 +66,44 @@ jobs:
           for shot_id in "${shot_ids[@]}"; do
             prompt="$(jq -r --arg id "$shot_id" '.assets[] | select(.id == $id) | .prompt' "$manifest")"
             [ -n "$prompt" ] || { echo "ERROR: Prompt $shot_id kosong."; exit 1; }
-            echo "GENERATING=villa-isola-bandung/$shot_id"
-            request="$(jq -n --arg prompt "$prompt" '{prompt:$prompt,steps:4}')"
-            status="$(curl --silent --show-error --output "output/peta-sunyi/response-$shot_id.json" --write-out "%{http_code}" \
-              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/black-forest-labs/flux-1-schnell" \
-              -X POST -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" -d "$request" || true)"
-            if [ "$status" != "200" ]; then
-              echo "ERROR: Cloudflare HTTP $status untuk $shot_id."
-              cat "output/peta-sunyi/response-$shot_id.json"
-              exit 1
-            fi
-            image_base64="$(jq -r '.result.image // .image // empty' "output/peta-sunyi/response-$shot_id.json")"
-            [ -n "$image_base64" ] || { echo "ERROR: Respons tidak berisi gambar untuk $shot_id."; exit 1; }
             image_file="peta-sunyi-$shot_id.jpg"
-            printf '%s' "$image_base64" | base64 --decode > "output/peta-sunyi/$image_file"
-            test -s "output/peta-sunyi/$image_file"
-            cp "output/peta-sunyi/$image_file" "work/assets/$image_file"
             object_path="peta-sunyi/villa-isola-bandung/$image_file"
-            curl --fail-with-body --silent --show-error -X POST \
+            existing_status="$(curl --silent --show-error --output /tmp/isola-existing.json --write-out "%{http_code}" \
               "${SUPABASE_URL}/storage/v1/object/visual-assets/$object_path" \
               -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
-              -H "Content-Type: image/jpeg" -H "x-upsert: true" --data-binary @"output/peta-sunyi/$image_file" >/dev/null
-            echo "SUPABASE_ASSET_OK=visual-assets/$object_path"
+              --output "output/peta-sunyi/$image_file" || true)"
+            if [ "$existing_status" = "200" ] && [ -s "output/peta-sunyi/$image_file" ]; then
+              echo "SUPABASE_ASSET_REUSED=visual-assets/$object_path"
+            else
+              echo "GENERATING=villa-isola-bandung/$shot_id"
+              request="$(jq -n --arg prompt "$prompt" '{prompt:$prompt,steps:4}')"
+              status=""
+              for attempt in 1 2 3 4; do
+                status="$(curl --silent --show-error --output "output/peta-sunyi/response-$shot_id.json" --write-out "%{http_code}" \
+                  "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/black-forest-labs/flux-1-schnell" \
+                  -X POST -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" -d "$request" || true)"
+                if [ "$status" = "200" ]; then
+                  break
+                fi
+                echo "WARN: Cloudflare HTTP $status untuk $shot_id (percobaan $attempt/4)."
+                cat "output/peta-sunyi/response-$shot_id.json"
+                if [ "$attempt" -lt 4 ]; then sleep $((attempt * 10)); fi
+              done
+              if [ "$status" != "200" ]; then
+                echo "ERROR: Gagal membuat visual $shot_id setelah 4 percobaan."
+                exit 1
+              fi
+              image_base64="$(jq -r '.result.image // .image // empty' "output/peta-sunyi/response-$shot_id.json")"
+              [ -n "$image_base64" ] || { echo "ERROR: Respons tidak berisi gambar untuk $shot_id."; exit 1; }
+              printf '%s' "$image_base64" | base64 --decode > "output/peta-sunyi/$image_file"
+              test -s "output/peta-sunyi/$image_file"
+              curl --fail-with-body --silent --show-error -X POST \
+                "${SUPABASE_URL}/storage/v1/object/visual-assets/$object_path" \
+                -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+                -H "Content-Type: image/jpeg" -H "x-upsert: true" --data-binary @"output/peta-sunyi/$image_file" >/dev/null
+              echo "SUPABASE_ASSET_OK=visual-assets/$object_path"
+            fi
+            cp "output/peta-sunyi/$image_file" "work/assets/$image_file"
             generated=$((generated+1))
           done
           [ "$generated" -eq 5 ] || { echo "ERROR: Seharusnya 5 visual, berhasil $generated."; exit 1; }
