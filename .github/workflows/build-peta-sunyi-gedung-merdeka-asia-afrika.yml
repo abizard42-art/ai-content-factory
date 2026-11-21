@@ -103,10 +103,23 @@ jobs:
               [ -n "$image_base64" ] || { echo "ERROR: Respons tidak berisi gambar untuk $shot_id."; exit 1; }
               printf '%s' "$image_base64" | base64 --decode > "output/peta-sunyi/$image_file"
               test -s "output/peta-sunyi/$image_file"
-              curl --fail-with-body --silent --show-error -X POST \
-                "${SUPABASE_URL}/storage/v1/object/visual-assets/$object_path" \
-                -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
-                -H "Content-Type: image/jpeg" -H "x-upsert: true" --data-binary @"output/peta-sunyi/$image_file" >/dev/null
+              upload_status=""
+              for upload_attempt in 1 2 3 4 5; do
+                upload_status="$(curl --silent --show-error --output "/tmp/supabase-upload-$shot_id.json" --write-out "%{http_code}" -X POST \
+                  "${SUPABASE_URL}/storage/v1/object/visual-assets/$object_path" \
+                  -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+                  -H "Content-Type: image/jpeg" -H "x-upsert: true" --data-binary @"output/peta-sunyi/$image_file" || true)"
+                if [ "$upload_status" = "200" ] || [ "$upload_status" = "201" ]; then
+                  break
+                fi
+                echo "WARN: Supabase upload HTTP $upload_status untuk $shot_id (percobaan $upload_attempt/5)."
+                cat "/tmp/supabase-upload-$shot_id.json" || true
+                if [ "$upload_attempt" -lt 5 ]; then sleep $((upload_attempt * 8)); fi
+              done
+              if [ "$upload_status" != "200" ] && [ "$upload_status" != "201" ]; then
+                echo "ERROR: Gagal menyimpan visual $shot_id ke Supabase setelah 5 percobaan."
+                exit 1
+              fi
               echo "SUPABASE_ASSET_OK=visual-assets/$object_path"
             fi
             cp "output/peta-sunyi/$image_file" "work/assets/$image_file"
