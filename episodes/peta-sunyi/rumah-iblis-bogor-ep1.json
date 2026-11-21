@@ -1,0 +1,93 @@
+{
+  "episode_id": "rumah-iblis-bogor-ep1",
+  "title": "Rumah Iblis Bogor — Rumah yang Tidak Kosong",
+  "episode_label": "EP 1",
+  "visual_style": "cinematic_2d",
+  "map": {
+    "query": "Bogor, Jawa Barat, Indonesia",
+    "title": "BOGOR",
+    "subtitle": "PETA KOTA • LOKASI CERITA TIDAK DIPERINCI",
+    "pin_label": "KOTA BOGOR",
+    "footer": "PETA KOTA • BUKAN TITIK RUMAH"
+  },
+  "fact": {
+    "heading": "BATAS KESAKSIAN",
+    "lines": [
+      "SUMBER UTAMA: KESAKSIAN BANG ASEP",
+      "JEJAK KAKI & PESANAN GRAB: DICERITAKAN OLEH NARASUMBER",
+      "TIDAK ADA VERIFIKASI INDEPENDEN ATAS PERISTIWA PARANORMAL"
+    ],
+    "highlight": "KESAKSIAN ≠ BUKTI"
+  },
+  "end": {
+    "title": "RUMAH IBLIS BOGOR",
+    "subtitle": "JEJAK YANG TIDAK PUNYA ASAL",
+    "cta": "PETA SUNYI"
+  },
+  "speaker_voices": {
+    "NARATOR": "id-ID-ArdiNeural"
+  },
+  "sources": [
+    {
+      "name": "Lentera Malam — Kesaksian Penjaga Rumah Iblis Bogor",
+      "url": "https://www.youtube.com/watch?v=u7qrXm5A_hM",
+      "supports": "Kesaksian Bang Asep yang dipublikasikan; bukan verifikasi independen."
+    },
+    {
+      "name": "Podscan — Transkrip Lentera Malam episode 879",
+      "url": "https://www.podscan.fm/podcasts/lentera-malam-podcast-horor/episodes/879-sumpah-merindink-parah-cerita-horor-penjaga-rumah-iblis-bogor",
+      "supports": "Transkrip yang menjadi rujukan detail kesaksian; cuplikan transkrip perlu dicocokkan lagi sebelum final."
+    },
+    {
+      "name": "Lentera Malam — Kesaksian penghuni rumah",
+      "url": "https://www.youtube.com/watch?v=7K4mLQxv1fY",
+      "supports": "Konteks cerita yang beredar; bukan bukti independen untuk dugaan tragedi."
+    }
+  ],
+  "editorial_notes": [
+    "Rumah Iblis Bogor adalah label editorial/media, bukan nama resmi lokasi.",
+    "Jangan menampilkan alamat, pemilik, penghuni, atau ciri properti yang dapat mengidentifikasi rumah asli.",
+    "Semua gambar adalah komposit rekonstruksi AI, bukan foto dokumenter atau bukti.",
+    "Jejak kaki, pesanan Grab, api, suara, dan penampakan hanya disampaikan sebagai kesaksian Bang Asep.",
+    "Jangan menyatakan dugaan tragedi sebagai fakta. Tidak ada peristiwa paranormal yang boleh ditambahkan.",
+    "Jangan membuat UI Grab palsu yang tampak seperti bukti atau notifikasi asli.",
+    "Jaga kesinambungan rumah yang sama di semua episode; jangan mendesain ulang tata ruang."
+  ],
+  "scenes": [
+    {
+      "shot": "01A",
+      "text": "Rumah ini sudah lama ditinggalkan. Tidak ada penghuni, tidak ada aktivitas. Tapi menurut cerita Bang Asep, di lantai berdebu rumah itu pernah ditemukan satu jejak kaki. Hanya satu. Dan bentuknya seperti seseorang sedang berjalan berjinjit. Jejak itu sendiri tidak otomatis membuktikan kehadiran siapa pun. Tetapi justru karena hanya ada satu, detail kecil itu menjadi awal cerita yang sulit dilupakan.",
+      "title": "SATU JEJAK DI LANTAI",
+      "kind": "ai",
+      "speaker": "NARATOR"
+    },
+    {
+      "shot": "02A",
+      "text": "Saat diminta menjaga rumah tersebut, Asep menggambarkan kondisinya sudah terbengkalai. Rumput meninggi, gerbang berkarat, lantai berdebu, dan bagian rumah dipenuhi sarang laba-laba. Tidak ada yang terlihat seperti baru saja dihuni. Dari luar, tidak ada tanda rumah itu sedang digunakan. Setidaknya, begitulah kondisi yang Asep gambarkan ketika pertama kali datang.",
+      "title": "RUMAH YANG TERBENGKALAI",
+      "kind": "ai",
+      "speaker": "NARATOR"
+    },
+    {
+      "shot": "03A",
+      "text": "Tapi perhatikan lagi jejak tadi. Dalam cerita yang ia sampaikan, tidak ada rangkaian jejak lain yang menjelaskan dari mana asalnya. Tidak ada petunjuk yang cukup untuk memastikan siapa yang meninggalkannya.",
+      "title": "DARI MANA ASALNYA?",
+      "kind": "ai",
+      "speaker": "NARATOR"
+    },
+    {
+      "shot": "04A",
+      "text": "Asep juga bercerita pernah menerima dua pesanan Grab menuju sebuah Puskesmas di Kemiri Muka. Padahal, menurut pengakuannya, ia tidak pernah memesan apa pun. Kejadian itu menambah daftar hal yang sulit ia pahami.",
+      "title": "PESANAN YANG TAK DIKENAL",
+      "kind": "ai",
+      "speaker": "NARATOR"
+    },
+    {
+      "shot": "05A",
+      "text": "Tapi ada satu kejadian lain yang membuat cerita rumah ini semakin ganjil. Saat mencoba membersihkan halaman belakang, Asep mengaku api sulit bertahan. Lalu, setelah mencoba cara lain, terdengar suara dari salah satu kamar. Dan belum ada yang tahu apa sumbernya.",
+      "title": "SUARA DARI KAMAR",
+      "kind": "ai",
+      "speaker": "NARATOR"
+    }
+  ]
+}
