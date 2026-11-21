@@ -1,0 +1,45 @@
+{
+  "channel": "Peta Sunyi",
+  "episode_id": "rumah-iblis-bogor-ep2",
+  "format": "9:16",
+  "provider": "Cloudflare Workers AI",
+  "model": "@cf/black-forest-labs/flux-1-schnell",
+  "policy": "All visuals are illustrative AI composite reconstructions, not documentary photographs or evidence. The real property is intentionally anonymized; do not depict an identifiable address, owner, resident, or exact facade. Keep the same fictional composite house across all episodes. Do not invent witness events, quotations, dates, or supernatural claims. Renderer adds REKA ADEGAN • ILUSTRASI AI labels; never ask the image model to render text.",
+  "assets": [
+    {
+      "id": "01A",
+      "scene": 1,
+      "kind": "anonymized composite horror reconstruction",
+      "label_required": true,
+      "prompt": "Backyard of the same abandoned house, small weak fire among damp yard debris struggling to stay lit, overgrown tropical plants, house veranda looming in background, no people, no dramatic supernatural effects.. the same anonymized composite abandoned Indonesian house in every image: modest two-storey colonial-era tropical house, weathered pale cream plaster, dark green wooden shutters, broad front veranda, rusty black iron gate, dense overgrown tropical garden, narrow central hallway and several wooden doors; no recognizable real address or identifiable owner. Vertical 9:16 cinematic 2D color illustration, painterly animated-film background art, refined hand-drawn contours, rich but restrained colors, deep olive and muted teal shadows, warm amber practical light, atmospheric haze, layered cinematic composition, eerie negative space, detailed environmental storytelling. This is an illustrative composite reconstruction, not a documentary photograph or evidence. No pencil sketch, no graphite, no charcoal, no monochrome, no photorealism, no 3D, no CGI, no anime, no gore, no readable text, no watermark, no logo."
+    },
+    {
+      "id": "02A",
+      "scene": 2,
+      "kind": "anonymized composite horror reconstruction",
+      "label_required": true,
+      "prompt": "A small dish with shrimp paste near a low smoldering ember in the backyard, the same house softly visible behind, a thin trail of smoke drifting toward the dark doorway, no text or labels.. the same anonymized composite abandoned Indonesian house in every image: modest two-storey colonial-era tropical house, weathered pale cream plaster, dark green wooden shutters, broad front veranda, rusty black iron gate, dense overgrown tropical garden, narrow central hallway and several wooden doors; no recognizable real address or identifiable owner. Vertical 9:16 cinematic 2D color illustration, painterly animated-film background art, refined hand-drawn contours, rich but restrained colors, deep olive and muted teal shadows, warm amber practical light, atmospheric haze, layered cinematic composition, eerie negative space, detailed environmental storytelling. This is an illustrative composite reconstruction, not a documentary photograph or evidence. No pencil sketch, no graphite, no charcoal, no monochrome, no photorealism, no 3D, no CGI, no anime, no gore, no readable text, no watermark, no logo."
+    },
+    {
+      "id": "03A",
+      "scene": 3,
+      "kind": "anonymized composite horror reconstruction",
+      "label_required": true,
+      "prompt": "View from the backyard into the same narrow dark hallway, closed wooden room door at the end, composition suggests a faint unexplained sound from beyond the door without showing its source.. the same anonymized composite abandoned Indonesian house in every image: modest two-storey colonial-era tropical house, weathered pale cream plaster, dark green wooden shutters, broad front veranda, rusty black iron gate, dense overgrown tropical garden, narrow central hallway and several wooden doors; no recognizable real address or identifiable owner. Vertical 9:16 cinematic 2D color illustration, painterly animated-film background art, refined hand-drawn contours, rich but restrained colors, deep olive and muted teal shadows, warm amber practical light, atmospheric haze, layered cinematic composition, eerie negative space, detailed environmental storytelling. This is an illustrative composite reconstruction, not a documentary photograph or evidence. No pencil sketch, no graphite, no charcoal, no monochrome, no photorealism, no 3D, no CGI, no anime, no gore, no readable text, no watermark, no logo."
+    },
+    {
+      "id": "04A",
+      "scene": 4,
+      "kind": "anonymized composite horror reconstruction",
+      "label_required": true,
+      "prompt": "Empty interior room in the same house, aged walls, dusty floor, partially open wooden door, deep shadows and unsettling stillness, no visible apparition, no invented evidence.. the same anonymized composite abandoned Indonesian house in every image: modest two-storey colonial-era tropical house, weathered pale cream plaster, dark green wooden shutters, broad front veranda, rusty black iron gate, dense overgrown tropical garden, narrow central hallway and several wooden doors; no recognizable real address or identifiable owner. Vertical 9:16 cinematic 2D color illustration, painterly animated-film background art, refined hand-drawn contours, rich but restrained colors, deep olive and muted teal shadows, warm amber practical light, atmospheric haze, layered cinematic composition, eerie negative space, detailed environmental storytelling. This is an illustrative composite reconstruction, not a documentary photograph or evidence. No pencil sketch, no graphite, no charcoal, no monochrome, no photorealism, no 3D, no CGI, no anime, no gore, no readable text, no watermark, no logo."
+    },
+    {
+      "id": "05A",
+      "scene": 5,
+      "kind": "anonymized composite horror reconstruction",
+      "label_required": true,
+      "prompt": "Long view down the same house hallway with two extremely faint distant human-shaped silhouettes at the far end, one taller and one shorter, faces completely obscured, ambiguous and understated, cinematic not explicit.. the same anonymized composite abandoned Indonesian house in every image: modest two-storey colonial-era tropical house, weathered pale cream plaster, dark green wooden shutters, broad front veranda, rusty black iron gate, dense overgrown tropical garden, narrow central hallway and several wooden doors; no recognizable real address or identifiable owner. Vertical 9:16 cinematic 2D color illustration, painterly animated-film background art, refined hand-drawn contours, rich but restrained colors, deep olive and muted teal shadows, warm amber practical light, atmospheric haze, layered cinematic composition, eerie negative space, detailed environmental storytelling. This is an illustrative composite reconstruction, not a documentary photograph or evidence. No pencil sketch, no graphite, no charcoal, no monochrome, no photorealism, no 3D, no CGI, no anime, no gore, no readable text, no watermark, no logo."
+    }
+  ]
+}
