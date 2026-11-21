@@ -44,7 +44,7 @@ jobs:
               manifest_path=pathlib.Path("assets/peta-sunyi")/slug/"asset-manifest.json"
               manifest=json.loads(manifest_path.read_text(encoding="utf-8"))
               manifest_ids={item["id"] for item in manifest["assets"]}
-              missing=sorted({scene["shot"] for scene in config["scenes"] if scene["kind"]=="ai"}-manifest_ids)
+              missing=sorted({scene["shot"] for scene in config["scenes"] if scene.get("kind", "ai")=="ai"}-manifest_ids)
               if missing:
                   raise SystemExit(f"{slug}: missing AI asset IDs: {missing}")
               expected=expected_scenes.get(slug, 9)
