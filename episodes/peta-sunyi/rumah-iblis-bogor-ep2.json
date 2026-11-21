@@ -1,0 +1,93 @@
+{
+  "episode_id": "rumah-iblis-bogor-ep2",
+  "title": "Rumah Iblis Bogor — Suara dari Dalam Kamar",
+  "episode_label": "EP 2",
+  "visual_style": "cinematic_2d",
+  "map": {
+    "query": "Bogor, Jawa Barat, Indonesia",
+    "title": "BOGOR",
+    "subtitle": "PETA KOTA • LOKASI CERITA TIDAK DIPERINCI",
+    "pin_label": "KOTA BOGOR",
+    "footer": "PETA KOTA • BUKAN TITIK RUMAH"
+  },
+  "fact": {
+    "heading": "BATAS KESAKSIAN",
+    "lines": [
+      "SUMBER UTAMA: KESAKSIAN BANG ASEP",
+      "API & SUARA SETELAH MEMBAKAR TERASI: KLAIM NARASUMBER",
+      "SUARA TIDAK TERSEDIA SEBAGAI REKAMAN YANG DAPAT DIPERIKSA"
+    ],
+    "highlight": "KESAKSIAN ≠ BUKTI"
+  },
+  "end": {
+    "title": "RUMAH IBLIS BOGOR",
+    "subtitle": "SESUATU SEOLAH MENJAWAB",
+    "cta": "PETA SUNYI"
+  },
+  "speaker_voices": {
+    "NARATOR": "id-ID-ArdiNeural"
+  },
+  "sources": [
+    {
+      "name": "Lentera Malam — Kesaksian Penjaga Rumah Iblis Bogor",
+      "url": "https://www.youtube.com/watch?v=u7qrXm5A_hM",
+      "supports": "Kesaksian Bang Asep yang dipublikasikan; bukan verifikasi independen."
+    },
+    {
+      "name": "Podscan — Transkrip Lentera Malam episode 879",
+      "url": "https://www.podscan.fm/podcasts/lentera-malam-podcast-horor/episodes/879-sumpah-merindink-parah-cerita-horor-penjaga-rumah-iblis-bogor",
+      "supports": "Transkrip yang menjadi rujukan detail kesaksian; cuplikan transkrip perlu dicocokkan lagi sebelum final."
+    },
+    {
+      "name": "Lentera Malam — Kesaksian penghuni rumah",
+      "url": "https://www.youtube.com/watch?v=7K4mLQxv1fY",
+      "supports": "Konteks cerita yang beredar; bukan bukti independen untuk dugaan tragedi."
+    }
+  ],
+  "editorial_notes": [
+    "Rumah Iblis Bogor adalah label editorial/media, bukan nama resmi lokasi.",
+    "Jangan menampilkan alamat, pemilik, penghuni, atau ciri properti yang dapat mengidentifikasi rumah asli.",
+    "Semua gambar adalah komposit rekonstruksi AI, bukan foto dokumenter atau bukti.",
+    "Jejak kaki, pesanan Grab, api, suara, dan penampakan hanya disampaikan sebagai kesaksian Bang Asep.",
+    "Jangan menyatakan dugaan tragedi sebagai fakta. Tidak ada peristiwa paranormal yang boleh ditambahkan.",
+    "Jangan membuat UI Grab palsu yang tampak seperti bukti atau notifikasi asli.",
+    "Jaga kesinambungan rumah yang sama di semua episode; jangan mendesain ulang tata ruang."
+  ],
+  "scenes": [
+    {
+      "shot": "01A",
+      "text": "Ada satu bagian dari cerita Bang Asep yang terdengar sederhana: ia sedang membersihkan halaman belakang rumah kosong. Ia mencoba membakar sampah, tetapi menurut pengakuannya, api beberapa kali sulit bertahan. Seolah selalu kehilangan tenaga.",
+      "title": "API YANG SULIT MENYALA",
+      "kind": "ai",
+      "speaker": "NARATOR"
+    },
+    {
+      "shot": "02A",
+      "text": "Halaman itu dipenuhi rumput dan barang-barang yang terbengkalai. Asep kemudian menceritakan bahwa ia mencoba membakar terasi. Dan setelah itu, katanya, terdengar suara dari salah satu ruangan di dalam rumah.",
+      "title": "SESUDAH TERASI TERBAKAR",
+      "kind": "ai",
+      "speaker": "NARATOR"
+    },
+    {
+      "shot": "03A",
+      "text": "Coba bayangkan posisinya: halaman belakang terbuka, rumah di depan terlihat gelap, dan suara justru datang dari dalam. Dalam kesaksiannya, Asep tidak bisa memastikan sumber suara tersebut. Ia hanya tahu suara itu terdengar setelah kejadian tadi.",
+      "title": "SUARA DARI DALAM",
+      "kind": "ai",
+      "speaker": "NARATOR"
+    },
+    {
+      "shot": "04A",
+      "text": "Asep menyebut ada orang lain yang juga mendengar suara serupa. Namun, cerita ini tetap harus dipahami sebagai kesaksian yang dipublikasikan, bukan bukti bahwa penyebabnya pasti paranormal. Tidak ada rekaman independen yang memastikan sumber suara itu.",
+      "title": "KESAKSIAN, BUKAN BUKTI",
+      "kind": "ai",
+      "speaker": "NARATOR"
+    },
+    {
+      "shot": "05A",
+      "text": "Tapi suara itu bukan bagian paling mengganggu dari cerita Asep. Ia juga mengaku pernah melihat dua sosok di rumah tersebut. Seorang laki-laki dan seorang perempuan. Dan menurut ceritanya, ia bukan satu-satunya orang yang pernah melihat mereka.",
+      "title": "DUA SOSOK DI RUMAH",
+      "kind": "ai",
+      "speaker": "NARATOR"
+    }
+  ]
+}
