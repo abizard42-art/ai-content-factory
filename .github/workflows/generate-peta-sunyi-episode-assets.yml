@@ -16,6 +16,9 @@ on:
           - observatorium-bosscha-lembang
           - teaser-lembang-camping
           - villa-isola-bandung
+          - rumah-iblis-bogor-ep1
+          - rumah-iblis-bogor-ep2
+          - rumah-iblis-bogor-ep3
       shot_ids:
         description: "Comma-separated shot IDs; default: all assets for selected episode"
         required: false
