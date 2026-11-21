@@ -142,9 +142,37 @@ jobs:
           set -euo pipefail
           [ -n "${GEMINI_API_KEY:-}" ] || { echo "ERROR: GitHub Secret GEMINI_API_KEY belum diisi."; exit 1; }
           python -m py_compile scripts/peta-sunyi/humanize_narration.py
-          python scripts/peta-sunyi/humanize_narration.py \
+          humanizer_log="work/gedung-merdeka-asia-afrika-humanizer.log"
+          mkdir -p work
+          if python scripts/peta-sunyi/humanize_narration.py \
             --input episodes/peta-sunyi/gedung-merdeka-asia-afrika.json \
-            --output work/gedung-merdeka-asia-afrika-humanized.json
+            --output work/gedung-merdeka-asia-afrika-humanized.json 2>&1 | tee "$humanizer_log"; then
+            echo "HUMANIZER_PATH=gemini_success"
+          else
+            if grep -q "Gemini Humanizer HTTP 503" "$humanizer_log"; then
+              echo "WARN: Gemini sedang HTTP 503; lanjut memakai narasi asli tanpa rewrite."
+              cp episodes/peta-sunyi/gedung-merdeka-asia-afrika.json work/gedung-merdeka-asia-afrika-humanized.json
+              python - <<'PY'
+          import json
+          from pathlib import Path
+          path = Path("work/gedung-merdeka-asia-afrika-humanized.json")
+          data = json.loads(path.read_text(encoding="utf-8"))
+          data["humanizer"] = {
+              "engine": "blader/humanizer",
+              "skill_version": "3.1.0",
+              "status": "skipped_provider_unavailable",
+              "scope": "narration_only",
+              "fields_processed": 0,
+              "note": "Gemini returned HTTP 503 after retries; original narration retained unchanged for human review."
+          }
+          path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+          print("HUMANIZER_FALLBACK=original_narration_retained; HUMAN_REVIEW_REQUIRED=true")
+          PY
+            else
+              echo "ERROR: Humanizer gagal bukan karena Gemini HTTP 503; hentikan build."
+              exit 1
+            fi
+          fi
 
       - name: Render Gedung Merdeka Asia Afrika using the shared Peta Sunyi Shorts renderer
         env:
