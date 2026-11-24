@@ -1,6 +1,6 @@
 {
   "episode_id": "rumah-iblis-bogor-ep3",
-  "title": "Rumah Iblis Bogor — Dua Sosok di Dalam Rumah",
+  "title": "Rumah Iblis Bogor — Dua Sosok yang Sama",
   "episode_label": "EP 3",
   "visual_style": "cinematic_2d",
   "map": {
@@ -14,14 +14,14 @@
     "heading": "BATAS KESAKSIAN",
     "lines": [
       "SUMBER UTAMA: KESAKSIAN BANG ASEP",
-      "SOSOK LAKI-LAKI & PEREMPUAN: KLAIM PENAMPAKAN",
-      "DUGAAN TRAGEDI DI BALIK RUMAH BELUM TERVERIFIKASI"
+      "SOSOK & PEKERJA LAIN: DIKLAIM OLEH NARASUMBER",
+      "IDENTITAS SOSOK DAN DUGAAN TRAGEDI BELUM TERVERIFIKASI"
     ],
     "highlight": "KESAKSIAN ≠ BUKTI"
   },
   "end": {
     "title": "RUMAH IBLIS BOGOR",
-    "subtitle": "KESAKSIAN YANG TERTINGGAL",
+    "subtitle": "DUA SOSOK, TANPA JAWABAN",
     "cta": "PETA SUNYI"
   },
   "speaker_voices": {
@@ -36,56 +36,56 @@
     {
       "name": "Podscan — Transkrip Lentera Malam episode 879",
       "url": "https://www.podscan.fm/podcasts/lentera-malam-podcast-horor/episodes/879-sumpah-merindink-parah-cerita-horor-penjaga-rumah-iblis-bogor",
-      "supports": "Transkrip yang menjadi rujukan detail kesaksian; cuplikan transkrip perlu dicocokkan lagi sebelum final."
+      "supports": "Pada 03:23–03:57, Asep menyebut sosok laki-laki dan perempuan serta pekerja lain yang menurutnya melihat sosok serupa."
     },
     {
       "name": "Lentera Malam — Kesaksian penghuni rumah",
       "url": "https://www.youtube.com/watch?v=7K4mLQxv1fY",
-      "supports": "Konteks cerita yang beredar; bukan bukti independen untuk dugaan tragedi."
+      "supports": "Konteks kesaksian penghuni yang lebih awal; bukan bukti independen untuk dugaan tragedi."
     }
   ],
   "editorial_notes": [
     "Rumah Iblis Bogor adalah label editorial/media, bukan nama resmi lokasi.",
     "Jangan menampilkan alamat, pemilik, penghuni, atau ciri properti yang dapat mengidentifikasi rumah asli.",
     "Semua gambar adalah komposit rekonstruksi AI, bukan foto dokumenter atau bukti.",
-    "Jejak kaki, pesanan Grab, api, suara, dan penampakan hanya disampaikan sebagai kesaksian Bang Asep.",
-    "Jangan menyatakan dugaan tragedi sebagai fakta. Tidak ada peristiwa paranormal yang boleh ditambahkan.",
-    "Jangan membuat UI Grab palsu yang tampak seperti bukti atau notifikasi asli.",
-    "Jaga kesinambungan rumah yang sama di semua episode; jangan mendesain ulang tata ruang."
+    "Semua penampakan dan kesaksian pekerja disampaikan sebagai klaim Bang Asep, bukan fakta terverifikasi.",
+    "Jangan menyatakan dugaan tragedi sebagai fakta; jangan menambah detail korban, motif, atau peristiwa yang tidak tersedia dalam sumber.",
+    "Jangan menggambarkan sosok sebagai hantu atau iblis yang terbukti ada.",
+    "Jaga kesinambungan rumah komposit yang sama di semua episode."
   ],
   "scenes": [
     {
       "shot": "01A",
-      "text": "Bang Asep mengaku pernah melihat dua sosok di rumah itu. Seorang laki-laki dan seorang perempuan. Bukan sekadar bayangan yang ia lihat sekilas, menurut ceritanya, karena ia mengaku kejadian itu pernah terulang.",
-      "title": "LAKI-LAKI DAN PEREMPUAN",
+      "text": "Di akhir cerita sebelumnya, ada satu hal yang belum terjawab. Bang Asep mengaku pernah melihat dua sosok di rumah itu: seorang laki-laki dan seorang perempuan. Menurut kesaksiannya, keduanya bukan hanya muncul dalam satu cerita yang ia dengar dari orang lain. Asep mengatakan, ia sendiri pernah melihat mereka.",
+      "title": "DUA SOSOK DI RUMAH",
       "kind": "ai",
       "speaker": "NARATOR"
     },
     {
       "shot": "02A",
-      "text": "Dalam cerita yang sama, Asep menyebut beberapa pekerja yang pernah datang ke rumah itu juga mengaku melihat sosok serupa. Kita tidak memiliki rekaman langsung dari kejadian tersebut. Yang tersedia adalah cerita dan kesaksian yang dipublikasikan.",
-      "title": "ORANG LAIN JUGA BERCERITA",
+      "text": "Yang membuat cerita ini semakin rumit, Asep menyebut beberapa orang yang datang untuk bekerja di rumah tersebut juga pernah melihat sosok serupa. Ia menyebut pekerja properti, teknisi AC, hingga pekerja batu alam. Namun, bagian ini tetap berasal dari penuturan Asep. Kita tidak memiliki kesaksian langsung dari masing-masing pekerja untuk memeriksa cerita itu secara terpisah.",
+      "title": "KESAKSIAN YANG DISEBUT BERULANG",
       "kind": "ai",
       "speaker": "NARATOR"
     },
     {
       "shot": "03A",
-      "text": "Ketika cerita rumah ini menyebar, muncul dugaan tentang tragedi yang mungkin berkaitan dengan dua sosok tersebut. Tetapi dugaan itu tidak bisa diperlakukan sebagai fakta. Tidak ada dasar yang cukup untuk memastikan apa yang pernah terjadi di rumah itu.",
-      "title": "TEORI YANG BELUM TERBUKTI",
+      "text": "Jadi, apakah mereka benar-benar melihat hal yang sama? Atau pengalaman yang berbeda kemudian diingat sebagai satu cerita yang serupa? Tanpa rekaman kejadian atau keterangan langsung dari orang-orang tersebut, kita tidak bisa memastikan apa yang sebenarnya mereka lihat.",
+      "title": "APA YANG MEREKA LIHAT?",
       "kind": "ai",
       "speaker": "NARATOR"
     },
     {
       "shot": "04A",
-      "text": "Jadi, apa sebenarnya yang dialami orang-orang di sana? Apakah ada penjelasan biasa yang belum ditemukan? Apakah suasana rumah dan cerita yang beredar membuat setiap kejadian terasa semakin menakutkan? Atau masih ada bagian yang belum diketahui? Kita perlu memisahkan apa yang diketahui dari apa yang hanya diduga. Sampai di sini, tidak ada bukti yang memastikan identitas kedua sosok itu, atau menjelaskan mengapa mereka terlihat.",
-      "title": "APA YANG SEBENARNYA TERJADI?",
+      "text": "Deskripsi episode Lentera Malam juga menyebut dugaan bahwa kemunculan dua sosok itu berkaitan dengan sebuah tragedi di rumah tersebut. Tetapi dugaan bukanlah kepastian. Dari informasi yang dapat kita periksa, identitas kedua sosok dan peristiwa yang diduga menjadi latar belakangnya belum bisa dipastikan. Kita tidak akan mengubah bagian yang belum jelas menjadi fakta.",
+      "title": "DUGAAN TRAGEDI",
       "kind": "ai",
       "speaker": "NARATOR"
     },
     {
       "shot": "05A",
-      "text": "Kita tidak punya jawaban pasti. Yang tersisa adalah kesaksian orang-orang yang mengaku pernah mengalami sesuatu di tempat yang seharusnya kosong. Dan mungkin, bagian paling mengganggu dari cerita ini adalah kita tidak pernah benar-benar tahu apa yang mereka lihat.",
-      "title": "RUMAH YANG MENYISAKAN MISTERI",
+      "text": "Pada akhirnya, cerita Rumah Iblis Bogor menyisakan lebih banyak pertanyaan daripada jawaban. Ada jejak kaki, pesanan yang tak dikenal, suara dari kamar, dan kesaksian tentang dua sosok. Semuanya adalah cerita yang disampaikan narasumber. Kita boleh merasakan kengeriannya, tetapi tetap harus tahu batas antara kesaksian, dugaan, dan fakta. Karena tidak semua misteri harus dipastikan jawabannya.",
+      "title": "MISTERI TANPA JAWABAN",
       "kind": "ai",
       "speaker": "NARATOR"
     }
