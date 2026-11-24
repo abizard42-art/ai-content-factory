@@ -1,0 +1,112 @@
+{
+  "episode_id": "taman-festival-bali",
+  "title": "Taman Festival Bali: Taman Hiburan yang Berakhir Menjadi Legenda",
+  "visual_style": "balinese_gothic_documentary",
+  "fact": {
+    "heading": "LINIMASA TAMAN FESTIVAL BALI",
+    "lines": [
+      "1997 • PEMBANGUNAN TAMAN FESTIVAL DIMULAI",
+      "±9 HEKTARE • KAWASAN HIBURAN DI PADANG GALAK",
+      "1999 • USAHA MENGALAMI KEBANGKRUTAN",
+      "2026 • KAWASAN BEKAS TAMAN FESTIVAL MULAI DITATA ULANG"
+    ],
+    "highlight": "DARI TAMAN HIBURAN MENJADI LOKASI DARK TOURISM"
+  },
+  "end": {
+    "title": "TAMAN FESTIVAL BALI",
+    "subtitle": "TAMAN HIBURAN YANG BERAKHIR MENJADI LEGENDA",
+    "cta": "PETA SUNYI • PADANG GALAK, BALI"
+  },
+  "sources": [
+    {
+      "name": "Jurnal Destinasi Pariwisata, Universitas Udayana (2025) — Narasi Horor dengan Konsep Storynomics sebagai Bentuk Dark Tourism di Kawasan Terbengkalai Taman Festival Bali",
+      "supports": "Sejarah dan karakter kawasan Taman Festival, fasilitas, kondisi terbengkalai, serta kompilasi cerita lokal. Cerita paranormal diperlakukan sebagai legenda atau kesaksian, bukan fakta terverifikasi."
+    },
+    {
+      "name": "Pemerintah Kota Denpasar (30 November 2020) — Bangunan Tua Jadi Destinasi Wisata",
+      "supports": "Tahun pembangunan 1997, fasilitas rekreasi, kebangkrutan pada 1999, dan perubahan kawasan menjadi destinasi bangunan tua."
+    },
+    {
+      "name": "Bali Post (28 April 2026) — Penataan Ulang Eks Taman Festival",
+      "supports": "Informasi pembongkaran bangunan lama dan rencana penataan ulang kawasan menjadi beberapa zona pemanfaatan pada 2026."
+    },
+    {
+      "name": "RRI (2 Mei 2026) — Eks Taman Festival Ditata Ulang Jadi Tiga Zona Pemanfaatan",
+      "supports": "Konteks rencana pemanfaatan ulang kawasan bekas Taman Festival."
+    }
+  ],
+  "editorial_notes": [
+    "Episode ini berfokus pada sejarah perubahan fungsi Taman Festival, bukan membuktikan cerita paranormal.",
+    "Tahun 1997, luas sekitar 9 hektare, fasilitas, dan kebangkrutan 1999 merujuk pada sumber pemerintah dan kajian Universitas Udayana.",
+    "Cerita energi mistis dan penampakan harus disebut sebagai cerita atau kepercayaan yang beredar, bukan fakta terverifikasi.",
+    "Visual reruntuhan harus diberi konteks sebagai arsip atau rekonstruksi kondisi sebelum pembongkaran pada 2026. Jangan tampilkan reruntuhan lama seolah-olah kondisi terkini.",
+    "Adegan AI adalah reka adegan ilustratif, bukan dokumentasi. Gunakan label REKA ADEGAN • ILUSTRASI AI bila diperlukan.",
+    "Jangan membuat kutipan langsung warga, dialog, atau pengalaman saksi yang tidak tersedia dalam sumber.",
+    "Gunakan bumbu atmosferik secara terbatas untuk engagement; jangan menambahkan peristiwa palsu atau mengubah legenda menjadi fakta.",
+    "Hindari menjadikan simbol, tradisi, atau benda ritual Bali sebagai lambang kejahatan. Perlakukan konteks budaya secara hormat."
+  ],
+  "scenes": [
+    {
+      "scene": 1,
+      "shot": "01A",
+      "title": "TEMPAT YANG PERNAH MENJANJIKAN KEGEMBIRAAN",
+      "kind": "ai",
+      "text": "Di Bali, ada sebuah tempat yang dulunya dibangun untuk menghadirkan kegembiraan. Sebuah kawasan hiburan dengan berbagai fasilitas rekreasi. Tempat keluarga datang untuk menghabiskan waktu, anak-anak bermain, dan pengunjung menikmati hari libur. Namun, ada sesuatu yang membuat tempat ini kemudian dikenal dengan cerita yang sangat berbeda. Bangunannya perlahan ditinggalkan. Alam mulai mengambil alih. Pepohonan tumbuh di antara dinding, akar merambat melewati bangunan, dan lorong-lorong yang dulu dipenuhi aktivitas berubah menjadi ruang kosong. Tempat ini kemudian dikenal dengan satu nama… Taman Festival Bali. Dan kisahnya tidak berhenti ketika pintu-pintunya ditutup.",
+      "visual": "Layar hitam dan ambience angin; teks lokasi Padang Galak, Denpasar, Bali; potongan arsip bangunan Taman Festival; rekonstruksi lorong kosong, akar pohon, dan fasilitas hiburan lama. Gunakan visual reruntuhan sebagai arsip atau rekonstruksi pra-pembongkaran."
+    },
+    {
+      "scene": 2,
+      "shot": "02A",
+      "title": "AMBISI BESAR DI PADANG GALAK",
+      "kind": "graphic",
+      "text": "Taman Festival dibangun pada era 1990-an, tepatnya mulai tahun 1997. Kawasan ini berdiri di Padang Galak, Denpasar, dengan luas sekitar sembilan hektare. Bayangkan sebuah kompleks hiburan yang dirancang untuk menjadi tujuan rekreasi besar. Di dalamnya terdapat berbagai fasilitas, mulai dari teater, amfiteater, bioskop tiga dimensi, restoran, hingga area rekreasi lainnya. Bukan proyek kecil. Taman Festival membawa ambisi untuk menjadi salah satu destinasi hiburan yang menarik perhatian masyarakat dan wisatawan di Bali. Pada masanya, tempat ini menawarkan sesuatu yang berbeda. Namun, membangun sebuah tempat besar ternyata jauh lebih mudah daripada mempertahankan kehidupannya. Dan Taman Festival akan segera menghadapi kenyataan itu.",
+      "visual": "Peta Bali menuju Denpasar dan Padang Galak; tampilkan angka sekitar 9 hektare; rekonstruksi kompleks hiburan akhir 1990-an, teater, amfiteater, bioskop 3D, restoran."
+    },
+    {
+      "scene": 3,
+      "shot": "03A",
+      "title": "KETIKA TEMPAT HIBURAN KEHILANGAN PENGUNJUNG",
+      "kind": "ai",
+      "text": "Menjelang akhir 1990-an, Indonesia mengalami krisis ekonomi yang mengguncang banyak sektor usaha. Taman Festival ikut menghadapi persoalan keuangan dan kesulitan mempertahankan operasionalnya. Tempat yang sebelumnya dirancang untuk ramai dikunjungi, perlahan kehilangan aktivitas. Tidak ada lagi keramaian seperti yang dibayangkan ketika kawasan ini pertama kali dibangun. Menurut catatan Pemerintah Kota Denpasar, Taman Festival mengalami kebangkrutan pada 1999 akibat krisis moneter dan keterbatasan pendanaan. Pada akhirnya, kawasan ini berhenti beroperasi. Sebuah tempat yang dibangun dengan harapan besar, mendadak kehilangan tujuan awalnya. Dan setelah manusia pergi, sesuatu yang lain mulai mengambil alih ruang-ruang yang ditinggalkan.",
+      "visual": "Rekonstruksi taman hiburan yang semakin sepi; loket dan kursi kosong; grafis krisis ekonomi akhir 1990-an; transisi musik dari optimistis menjadi muram."
+    },
+    {
+      "scene": 4,
+      "shot": "04A",
+      "title": "ALAM MULAI MENGAMBIL ALIH",
+      "kind": "ai",
+      "text": "Tahun demi tahun berlalu. Bangunan yang dulunya menjadi bagian dari sebuah taman hiburan mulai berubah bentuk. Tanaman liar tumbuh tanpa kendali. Akar-akar pohon menjalar melewati dinding dan struktur bangunan. Beberapa bagian kompleks terlihat seperti sedang ditelan hutan. Ada sesuatu yang ganjil ketika melihat tempat seperti ini. Kita tahu bangunan tersebut pernah dipenuhi manusia. Namun sekarang, yang tersisa hanya lorong kosong, dinding lapuk, dan suara alam. Di beberapa sudut, sulit membedakan mana bagian bangunan yang masih bertahan dan mana yang sudah menjadi bagian dari alam. Taman Festival tidak lagi terlihat seperti tempat hiburan. Ia mulai menyerupai latar dari sebuah cerita yang sudah lama dilupakan. Dan justru dari perubahan inilah, reputasinya mulai tumbuh.",
+      "visual": "Akar pohon beringin menembus dinding; tanaman liar menutupi lantai; lorong gelap dengan cahaya matahari dari celah atap; detail tembok lapuk. Slow push-in, tanpa menampilkan hantu."
+    },
+    {
+      "scene": 5,
+      "shot": "05A",
+      "title": "KETIKA RERUNTUHAN MENJADI CERITA",
+      "kind": "ai",
+      "text": "Tempat terbengkalai sering kali memiliki satu hal yang tidak dimiliki bangunan biasa. Ruang untuk imajinasi. Ketika sebuah tempat kehilangan fungsi aslinya, orang-orang mulai memperhatikan hal-hal yang sebelumnya tidak pernah dianggap penting. Suara dari bangunan kosong. Bayangan di balik pepohonan. Ruangan yang terasa berbeda ketika malam tiba. Di sekitar Taman Festival, kemudian berkembang berbagai cerita misteri. Ada yang mengaitkannya dengan energi mistis kawasan Padang Galak. Ada pula cerita tentang sosok-sosok yang konon terlihat di antara bangunan dan pepohonan. Sebagian kisah datang dari warga, sebagian lain menyebar melalui pengunjung dan pembuat konten. Namun, kita perlu membedakan antara cerita yang beredar dan kejadian yang benar-benar dapat dibuktikan. Sebab, tidak semua cerita misteri memiliki bukti yang bisa diperiksa. Tetapi satu hal jelas: semakin lama Taman Festival terbengkalai, semakin kuat pula citranya sebagai salah satu tempat paling misterius di Bali.",
+      "visual": "Arsip foto dan video Taman Festival; siluet pengunjung di antara bangunan kosong; pohon besar dan lorong; teks kecil CERITA LOKAL / BELUM TERVERIFIKASI SECARA INDEPENDEN."
+    },
+    {
+      "scene": 6,
+      "shot": "06A",
+      "title": "TEMPAT YANG BERUBAH MENJADI DESTINASI",
+      "kind": "ai",
+      "text": "Ironisnya, tempat yang pernah gagal menjadi destinasi hiburan justru menemukan kehidupan baru dalam bentuk yang tidak pernah direncanakan. Taman Festival mulai menarik perhatian orang-orang yang penasaran dengan bangunan terbengkalai. Ada yang datang untuk mengambil foto. Ada yang ingin menjelajahi sisa-sisa bangunannya. Dan ada pula yang datang karena cerita misteri yang semakin terkenal. Reruntuhan itu menjadi daya tarik tersendiri. Bukan karena wahana yang masih beroperasi, melainkan karena suasana yang ditinggalkan oleh waktu. Di sinilah sejarah, rasa penasaran, dan cerita horor mulai bertemu. Sebuah tempat yang dahulu menjual kegembiraan, kini justru dikenal karena suasana sunyinya.",
+      "visual": "Rekonstruksi pengunjung mengambil foto di antara reruntuhan; konten eksplorasi tempat terbengkalai; pergerakan kamera pelan dan musik membangun ketegangan."
+    },
+    {
+      "scene": 7,
+      "shot": "END",
+      "title": "SEBUAH KISAH YANG BELUM SELESAI",
+      "kind": "graphic",
+      "text": "Pada 2026, kawasan bekas Taman Festival kembali memasuki babak baru. Bangunan-bangunan lama mulai dibongkar, dan kawasan ini direncanakan untuk ditata kembali dengan pembagian zona pemanfaatan. Secara fisik, wajah Taman Festival mungkin akan semakin sulit dikenali. Namun, sebuah tempat tidak selalu meninggalkan cerita bersama bangunannya. Sebagian cerita tetap hidup melalui ingatan warga, kesaksian pengunjung, dan kisah-kisah yang terus diceritakan dari satu orang ke orang lainnya. Lalu, dari sekian banyak cerita yang berkembang di kawasan ini… Ada satu kisah yang menarik perhatian. Tentang sebuah pohon besar, sosok penjaga berwarna putih, dan legenda yang membuat sebagian orang memandang kawasan ini dengan cara berbeda. Benarkah ada sesuatu yang menjaga tempat itu? Atau semuanya hanya bagian dari cerita yang tumbuh di antara reruntuhan? Kita akan membahasnya di episode berikutnya.",
+      "visual": "Transisi foto lama ke visual kawasan setelah pembongkaran pada 2026; bangunan lama memudar; akhiri dengan judul EPISODE 02 — POHON BERINGIN DAN MACAN PUTIH."
+    }
+  ],
+  "automation": {
+    "build_mode": "automatic_on_push",
+    "workflow": "build-peta-sunyi-taman-festival-bali.yml",
+    "review_required": true,
+    "youtube_publish": false
+  }
+}
