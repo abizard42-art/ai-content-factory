@@ -1,0 +1,125 @@
+{
+  "episode_id": "taman-festival-bali-ep02",
+  "title": "Pohon Beringin dan Macan Putih | Legenda Taman Festival Bali",
+  "visual_style": "balinese_gothic_documentary",
+  "fact": {
+    "heading": "LEGENDA & BATAS FAKTA",
+    "lines": [
+      "POHON BERINGIN • UNSUR CERITA LOKAL",
+      "MACAN PUTIH • SOSOK DALAM LEGENDA",
+      "ASAL-USUL • BELUM TERVERIFIKASI",
+      "BUKAN BUKTI PENAMPAKAN"
+    ],
+    "highlight": "LEGENDA BUKAN DOKUMENTASI"
+  },
+  "end": {
+    "title": "POHON BERINGIN & MACAN PUTIH",
+    "subtitle": "LEGENDA TAMAN FESTIVAL BALI",
+    "cta": "PETA SUNYI • PADANG GALAK, BALI"
+  },
+  "sources": [
+    {
+      "name": "Jurnal Destinasi Pariwisata, Universitas Udayana (2025) — Narasi Horor dengan Konsep Storynomics sebagai Bentuk Dark Tourism di Kawasan Terbengkalai Taman Festival Bali",
+      "supports": "Kompilasi narasi lokal dan cerita misteri yang dikaitkan dengan Taman Festival Bali. Dipakai sebagai sumber sekunder tentang legenda, bukan pembuktian kejadian paranormal."
+    },
+    {
+      "name": "Pemerintah Kota Denpasar (30 November 2020) — Bangunan Tua Jadi Destinasi Wisata",
+      "supports": "Konteks sejarah kawasan Taman Festival; bukan sumber pembuktian legenda macan putih."
+    },
+    {
+      "name": "Bali Post (28 April 2026) dan RRI (2 Mei 2026) — Penataan Ulang Eks Taman Festival",
+      "supports": "Konteks perubahan fisik kawasan pada 2026. Visual reruntuhan harus dianggap rekonstruksi historis."
+    }
+  ],
+  "editorial_notes": [
+    "Macan putih adalah sosok dalam legenda yang dikaitkan dengan kawasan Taman Festival; jangan menyatakan keberadaannya sebagai fakta.",
+    "Asal-usul spesifik legenda belum terverifikasi. Jangan mengarang tradisi, narasumber, kutipan, saksi mata, atau penjelasan spiritual.",
+    "Pohon beringin tidak digambarkan sebagai pohon jahat. Hindari menyamaratakan kepercayaan Bali dan jangan memakai benda sakral sebagai properti horor.",
+    "Semua visual AI merupakan ilustrasi atau rekonstruksi, bukan dokumentasi kejadian. Label REKA ADEGAN • ILUSTRASI AI harus tampil.",
+    "Reruntuhan Taman Festival sebelum pembongkaran/penataan 2026 harus diberi konteks rekonstruksi historis, bukan kondisi terkini.",
+    "Macan putih digambarkan sebagai simbol legenda secara artistik, bukan foto satwa nyata atau bukti penampakan.",
+    "Jangan menyebut lokasi pohon tertentu masih ada atau masih berada di tempat yang sama tanpa dokumentasi terbaru."
+  ],
+  "scenes": [
+    {
+      "scene": 1,
+      "shot": "01A",
+      "title": "DI BAWAH BAYANGAN BERINGIN",
+      "kind": "ai",
+      "text": "Di beberapa tempat, sebuah pohon hanyalah bagian dari alam. Namun, ada pula pohon yang perlahan mendapatkan cerita. Cerita yang diwariskan, dibicarakan, bahkan membuat sebagian orang memilih untuk tidak mendekatinya. Di kawasan Padang Galak, Bali, salah satu kisah yang pernah dikaitkan dengan Taman Festival adalah cerita tentang sebuah pohon beringin. Konon, pohon itu bukan sekadar pohon tua. Ada sosok yang dipercaya menjaganya. Seekor macan putih."
+    },
+    {
+      "scene": 2,
+      "shot": "MAP",
+      "title": "PADANG GALAK • DENPASAR, BALI",
+      "kind": "graphic",
+      "text": "Legenda pohon beringin dan macan putih dikaitkan dengan kawasan Taman Festival di Padang Galak, Denpasar. Peta ini menunjukkan kawasan yang menjadi latar cerita, bukan penanda lokasi pohon tertentu yang telah terverifikasi."
+    },
+    {
+      "scene": 3,
+      "shot": "03A",
+      "title": "LEGENDA SANG PENJAGA",
+      "kind": "ai",
+      "text": "Dalam cerita yang beredar di masyarakat, sosok macan putih digambarkan sebagai penjaga kawasan pohon beringin. Ia bukan digambarkan seperti hewan liar yang berkeliaran mencari mangsa, melainkan sebagai sosok yang memiliki hubungan dengan tempat tersebut. Sebagian kisah bahkan menggambarkannya sebagai makhluk yang tidak mudah terlihat oleh manusia biasa. Namun, sampai saat ini, tidak ada bukti terverifikasi yang memastikan keberadaan sosok tersebut. Maka, kisah macan putih ini perlu kita tempatkan sebagaimana mestinya: sebagai legenda lokal, bukan fakta zoologis ataupun bukti kejadian gaib."
+    },
+    {
+      "scene": 4,
+      "shot": "04A",
+      "title": "MENGAPA POHON BERINGIN?",
+      "kind": "ai",
+      "text": "Pohon beringin memiliki bentuk yang mudah meninggalkan kesan. Batangnya besar. Akarnya menjuntai. Cabang-cabangnya dapat membentuk ruang gelap di bawah kanopi yang lebat. Di tengah suasana seperti itu, imajinasi manusia bisa berkembang jauh. Di berbagai wilayah Indonesia, pohon-pohon besar juga kerap muncul dalam cerita rakyat dan kepercayaan lokal. Tetapi kita perlu berhati-hati untuk tidak menyamaratakan seluruh tradisi. Di Bali sendiri, hubungan masyarakat dengan alam memiliki konteks budaya dan spiritual yang tidak bisa begitu saja disederhanakan menjadi cerita horor. Karena itu, pohon beringin dalam kisah ini bukan sesuatu yang harus dianggap jahat. Yang sedang kita telusuri adalah legenda yang tumbuh di sekitarnya."
+    },
+    {
+      "scene": 5,
+      "shot": "FACT",
+      "title": "LEGENDA & BATAS FAKTA",
+      "kind": "graphic",
+      "text": "Cerita macan putih merupakan legenda yang dikaitkan dengan kawasan Taman Festival. Asal-usul detailnya belum terverifikasi. Tidak ada bukti independen yang memastikan keberadaan sosok tersebut."
+    },
+    {
+      "scene": 6,
+      "shot": "06A",
+      "title": "KETIKA TEMPAT MULAI DITINGGALKAN",
+      "kind": "ai",
+      "text": "Ketika Taman Festival berhenti beroperasi, kawasan yang sebelumnya dirancang untuk menjadi tempat hiburan perlahan berubah. Bangunan kehilangan fungsinya. Jalur pengunjung semakin sepi. Vegetasi tumbuh tanpa banyak gangguan manusia. Lingkungan yang dahulu dirancang untuk menghadirkan keramaian kini memiliki suasana yang sangat berbeda. Dan di tempat-tempat yang semakin sunyi, cerita sering kali menemukan ruang untuk berkembang. Kisah tentang pohon beringin dan macan putih menjadi bagian dari rangkaian cerita misteri yang kemudian melekat pada kawasan Taman Festival."
+    },
+    {
+      "scene": 7,
+      "shot": "07A",
+      "title": "PENJAGA ATAU CERITA YANG DIWARISKAN?",
+      "kind": "ai",
+      "text": "Tetapi ada satu pertanyaan yang menarik. Mengapa sosok penjaga dalam cerita ini digambarkan sebagai macan putih? Apakah gambaran itu berasal dari kepercayaan tertentu? Dari cerita yang berkembang dari mulut ke mulut? Atau dari imajinasi orang-orang yang pernah mendengar kisah tentang kawasan tersebut? Sayangnya, informasi yang tersedia belum cukup untuk memastikan asal-usul cerita itu. Kita tidak akan mengarang jawaban hanya untuk membuatnya terdengar lebih menyeramkan. Sebab, terkadang bagian paling menarik dari sebuah legenda justru terletak pada hal-hal yang belum berhasil kita ketahui."
+    },
+    {
+      "scene": 8,
+      "shot": "08A",
+      "title": "SEBUAH LEGENDA YANG TERTINGGAL",
+      "kind": "ai",
+      "text": "Taman Festival telah memasuki babak baru melalui penataan kembali kawasan. Bangunan-bangunan lama yang dahulu menjadi bagian dari cerita tempat ini telah mengalami perubahan. Namun, cerita tentang masa lalunya tetap menjadi bagian dari ingatan orang-orang yang mengenalnya. Legenda pohon beringin dan macan putih mungkin tidak pernah bisa dibuktikan. Tetapi kisah itu memperlihatkan bagaimana sebuah tempat dapat memiliki lebih dari satu kehidupan: sebagai ruang yang dibangun manusia, dan sebagai tempat yang kemudian hidup dalam cerita serta ingatan masyarakat."
+    },
+    {
+      "scene": 9,
+      "shot": "END",
+      "title": "KETIKA KAMERA MULAI MEREKAM",
+      "kind": "graphic",
+      "text": "Legenda macan putih bukan satu-satunya cerita yang pernah melekat pada Taman Festival Bali. Ada pula kisah tentang orang-orang yang datang untuk merekam sesuatu. Mereka membawa kamera, menyiapkan adegan, tetapi menurut cerita yang beredar, pengalaman mereka justru jauh dari apa yang direncanakan. Apa yang sebenarnya terjadi ketika kamera mulai merekam? Kita akan menelusurinya di episode berikutnya."
+    }
+  ],
+  "automation": {
+    "build_mode": "automatic_on_push",
+    "workflow": "build-peta-sunyi-taman-festival-bali-ep02.yml",
+    "review_required": true,
+    "youtube_publish": false
+  },
+  "map": {
+    "query": "Taman Festival Bali, Padang Galak, Denpasar, Bali, Indonesia",
+    "title": "TAMAN FESTIVAL BALI",
+    "subtitle": "PADANG GALAK • DENPASAR",
+    "pin_label": "KAWASAN CERITA",
+    "footer": "PETA LOKASI • PADANG GALAK, BALI",
+    "coordinates": {
+      "lat": -8.6508,
+      "lon": 115.2635
+    }
+  }
+}
