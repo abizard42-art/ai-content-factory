@@ -104,9 +104,10 @@
     }
   ],
   "automation": {
-    "build_mode": "automatic_on_push",
-    "workflow": "build-peta-sunyi-taman-festival-bali.yml",
+    "build_mode": "manual_after_review",
+    "workflow": null,
     "review_required": true,
-    "youtube_publish": false
+    "youtube_publish": false,
+    "note": "Naskah sudah disimpan. Workflow render khusus episode ini belum dibuat; buat asset-manifest dan workflow setelah naskah serta storyboard disetujui."
   }
 }
