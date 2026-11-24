@@ -1,0 +1,60 @@
+{
+  "channel": "Peta Sunyi",
+  "episode_id": "taman-festival-bali",
+  "format": "9:16",
+  "provider": "Cloudflare Workers AI",
+  "model": "@cf/black-forest-labs/flux-1-schnell",
+  "policy": "All AI visuals are illustrative reconstructions, not documentary photographs or direct archival evidence. Historical claims must remain distinct from atmosphere. Do not invent quotations, dates, documents, or supernatural entities. Renderer adds visible REKA ADEGAN • ILUSTRASI AI labels; never ask the image model to render text. Use real location/archive photographs only when separately sourced and credited. Taman Festival's former ruins were demolished/under redevelopment in 2026; depict them as clearly labeled historical reconstructions, not present-day footage.",
+  "art_direction": {
+    "name": "Balinese Gothic Documentary • Etching + Charcoal + Dark Oil Painting",
+    "palette": "charcoal black, deep volcanic stone grey, aged sepia, muted antique gold, restrained dark maroon, subtle moss green",
+    "texture": "aged archival paper, etched cross-hatching, charcoal grain, painterly oil texture, weathered stone",
+    "composition": "cinematic vertical 9:16, atmospheric Padang Galak tropical landscape, strong architectural silhouettes, deep shadows, controlled highlights, historically plausible late-1990s Bali",
+    "cultural_respect": "Balinese architecture and cultural objects must be depicted respectfully and contextually. Do not use poleng cloth, masks, offerings, shrines, or sacred figures as shorthand for evil. No invented ritual scenes or sacred iconography used as horror props.",
+    "allocation": "2 engraving/etching scenes, 2 charcoal scenes, 2 dark gothic oil painting scenes"
+  },
+  "assets": [
+    {
+      "id": "01A",
+      "scene": 1,
+      "kind": "Abandoned Taman Festival establishing scene",
+      "label_required": true,
+      "prompt": "Vertical 9:16 cinematic historical reconstruction of the former Taman Festival Bali entertainment complex at Padang Galak, Denpasar, as it appeared during its abandoned years before the 2026 demolition. Show a recognizable large tropical entertainment-park structure partly overtaken by vegetation, empty entrance approach, weathered concrete, banyan roots and humid Bali atmosphere, dusk light filtering through clouds. No identifiable real people. STYLE: classical copperplate engraving and vintage etching, dense fine cross-hatching, engraved architectural linework, aged archival paper grain. PALETTE: charcoal black, deep sepia, dark umber, muted antique gold, restrained moss green. Atmospheric documentary composition, illustrative reconstruction, not a photograph. No ghosts, no monsters, no readable text, no signage, no watermark, no logo, no photorealism, no 3D, no CGI, no anime."
+    },
+    {
+      "id": "03A",
+      "scene": 3,
+      "kind": "Taman Festival during its 1990s operating ambition",
+      "label_required": true,
+      "prompt": "Vertical 9:16 historically grounded illustrative reconstruction of Taman Festival Bali at Padang Galak, Denpasar, during its late-1990s operating era around 1997-1998. Depict a substantial family entertainment and recreation complex with theater-like building, open recreation grounds and visitors as small distant silhouettes, tropical Bali trees, plausible late-1990s architecture and atmosphere. Avoid inventing specific branded rides or inaccurate landmarks. STYLE: dark charcoal drawing with layered charcoal grain, expressive dark tonal blocks, selective chalk highlights, rough archival paper texture, dramatic chiaroscuro. PALETTE: charcoal black, deep brown, faded sepia, muted antique gold, subtle tropical green. Historical illustration only, not documentary evidence. No readable text, no modern objects, no photorealism, no 3D, no CGI, no anime, no ghosts, no watermark, no logo."
+    },
+    {
+      "id": "04A",
+      "scene": 4,
+      "kind": "Quieting entertainment park during late 1990s",
+      "label_required": true,
+      "prompt": "Vertical 9:16 cinematic historical reconstruction of an entertainment park in Bali gradually falling quiet in the late 1990s, inspired by the documented decline of Taman Festival Bali. Show empty ticketing area, unused outdoor seating and a large quiet recreation building, no dramatic disaster, no fabricated damage, no crowds. Tropical humid atmosphere, overcast late afternoon. STYLE: vintage architectural etching, precise engraved lines, intricate cross-hatching, aged archival paper, controlled composition. PALETTE: dark sepia, charcoal, antique gold highlights, brown-black shadows, restrained muted maroon. Historically plausible and restrained, illustrative reconstruction only, not a photograph. No readable signs, no text, no ghosts, no photorealism, no 3D, no CGI, no anime, no watermark, no logo."
+    },
+    {
+      "id": "06A",
+      "scene": 6,
+      "kind": "Nature reclaiming abandoned park architecture",
+      "label_required": true,
+      "prompt": "Vertical 9:16 atmospheric historical reconstruction of the abandoned former Taman Festival Bali during the years before its 2026 demolition. Tropical vegetation and banyan roots spread through weathered concrete structures, empty corridors, cracked walls, humid mist and shafts of natural light. The architecture remains plausible for a late-1990s Bali entertainment complex; do not invent a specific identifiable building. STYLE: expressive charcoal sketch with layered charcoal grain, rough gestural shadows, dramatic chiaroscuro and hand-drawn architectural contours. PALETTE: charcoal black, dark umber, smoky sepia, muted moss green, restrained antique gold. Illustrative reconstruction, not documentary photography. No ghosts, no supernatural figures, no readable text, no watermark, no logo, no photorealism, no 3D, no CGI, no anime."
+    },
+    {
+      "id": "07A",
+      "scene": 7,
+      "kind": "Folklore atmosphere around abandoned Padang Galak site",
+      "label_required": true,
+      "prompt": "Vertical 9:16 respectful cinematic folklore-inspired illustration of the former abandoned Taman Festival Bali grounds at Padang Galak, with a large banyan tree silhouette beside weathered park architecture, tropical night haze and moonlit branches. The scene should suggest the atmosphere in which local stories grew, but show no ghost, no white tiger, no supernatural being, and no invented ritual. If a small strip of black-and-white poleng cloth appears naturally tied to a tree, depict it as a culturally meaningful traditional textile, not an evil symbol or horror prop; preferably omit it unless composition requires it. STYLE: dark gothic oil painting, layered painterly brushwork, deep chiaroscuro, subtle aged canvas texture, controlled moonlight. PALETTE: charcoal black, deep brown, sepia, muted antique gold, subtle moss green. Folklore atmosphere only, not a claim of paranormal evidence. No readable text, no watermark, no logo, no photorealism, no 3D, no CGI, no anime."
+    },
+    {
+      "id": "08A",
+      "scene": 8,
+      "kind": "Abandoned park as dark tourism destination",
+      "label_required": true,
+      "prompt": "Vertical 9:16 cinematic historical reconstruction of visitors exploring and photographing the abandoned former Taman Festival Bali during the years before its 2026 demolition. Show two or three small distant adult silhouettes respectfully observing weathered architecture and tropical vegetation from a safe public viewpoint, one person holding a camera, no trespassing danger, no identifiable faces. The location feels quiet and atmospheric rather than sensational. STYLE: dark gothic oil painting with rich layered brushstrokes, dramatic chiaroscuro, aged canvas texture, warm muted light cutting through foliage. PALETTE: dark sepia, charcoal, antique gold, warm umber, restrained maroon and moss green. Historical illustration, not documentary photograph. No ghosts, no readable text, no modern smartphones in close-up, no watermark, no logo, no photorealism, no 3D, no CGI, no anime."
+    }
+  ]
+}
