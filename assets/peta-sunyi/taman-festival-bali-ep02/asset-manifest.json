@@ -1,0 +1,60 @@
+{
+  "channel": "Peta Sunyi",
+  "episode_id": "taman-festival-bali-ep02",
+  "format": "9:16",
+  "provider": "Cloudflare Workers AI",
+  "model": "@cf/black-forest-labs/flux-1-schnell",
+  "policy": "All AI visuals are illustrative reconstructions or folklore illustrations, not documentary photographs or evidence of supernatural events. The white tiger is a symbolic depiction of a local legend, not a real sighting. Do not invent cultural origins, witnesses, quotations, rituals, or historical facts. Show the banyan tree respectfully; do not portray it or Balinese traditions as evil. Do not use sacred objects, poleng cloth, masks, offerings, shrines, or sacred figures as horror props. Former Taman Festival ruins were demolished/under redevelopment in 2026; depict them only as clearly labeled historical reconstructions, not present-day footage. Renderer adds visible REKA ADEGAN • ILUSTRASI AI labels; never ask the image model to render text.",
+  "art_direction": {
+    "name": "Balinese Gothic Documentary • Etching + Charcoal + Dark Oil Painting",
+    "palette": "charcoal black, deep volcanic stone grey, aged sepia, muted antique gold, restrained dark maroon, subtle moss green",
+    "texture": "aged archival paper, etched cross-hatching, charcoal grain, painterly oil texture, weathered stone",
+    "composition": "cinematic vertical 9:16, atmospheric Padang Galak tropical landscape, large banyan silhouette, deep shadows, controlled moonlight, restrained folklore imagery",
+    "cultural_respect": "Balinese architecture and cultural objects must be depicted respectfully and contextually. Do not use poleng cloth, masks, offerings, shrines, or sacred figures as shorthand for evil. No invented ritual scenes or sacred iconography used as horror props.",
+    "allocation": "2 engraving/etching scenes, 2 charcoal scenes, 2 dark gothic oil painting scenes"
+  },
+  "assets": [
+    {
+      "id": "01A",
+      "scene": 1,
+      "kind": "Banyan tree atmosphere at Padang Galak",
+      "label_required": true,
+      "prompt": "Vertical 9:16 cinematic folklore-inspired illustration of a large old banyan tree in a humid tropical Bali landscape near Padang Galak, broad roots and hanging aerial roots, dark canopy, weathered stone and distant indistinct former entertainment-park architecture, late afternoon haze. No identifiable specific tree or claim of exact location. STYLE: classical copperplate engraving and vintage etching, dense fine cross-hatching, engraved botanical linework, aged archival paper grain. PALETTE: charcoal black, deep sepia, dark umber, muted antique gold, restrained moss green. Respectful atmospheric documentary illustration, not a photograph. No people, no ghosts, no tiger, no readable text, no signage, no watermark, no logo, no photorealism, no 3D, no CGI, no anime."
+    },
+    {
+      "id": "03A",
+      "scene": 3,
+      "kind": "Legendary white tiger as symbolic guardian",
+      "label_required": true,
+      "prompt": "Vertical 9:16 symbolic artistic depiction of a white tiger standing quietly beneath the sprawling roots of a giant banyan tree in a tropical Bali setting at dusk. The animal is presented as an illustration of a local legend, dignified and calm, not attacking, not supernatural horror monster, no glowing eyes, no magical effects, no humans. STYLE: dark charcoal drawing with layered charcoal grain, expressive tonal blocks, selective chalk highlights, rough archival paper texture, dramatic chiaroscuro. PALETTE: charcoal black, ivory white fur, deep brown, faded sepia, muted antique gold, subtle moss green. Folklore illustration only, not documentary evidence or wildlife photograph. No readable text, no watermark, no logo, no photorealism, no 3D, no CGI, no anime."
+    },
+    {
+      "id": "04A",
+      "scene": 4,
+      "kind": "Banyan roots and tropical canopy detail",
+      "label_required": true,
+      "prompt": "Vertical 9:16 close cinematic study of the trunk and hanging aerial roots of a mature banyan tree in Bali, intricate natural root patterns, dense tropical canopy, filtered light and humid atmosphere, grounded botanical detail, no sacred objects or ritual props. STYLE: vintage architectural and botanical etching, precise engraved lines, intricate cross-hatching, aged archival paper, controlled composition. PALETTE: dark sepia, charcoal, antique gold highlights, brown-black shadows, restrained muted green. Respectful nature illustration, not a claim about a specific sacred tree. No animals, no people, no readable signs, no text, no ghosts, no watermark, no logo, no photorealism, no 3D, no CGI, no anime."
+    },
+    {
+      "id": "06A",
+      "scene": 6,
+      "kind": "Abandoned park reclaimed by vegetation",
+      "label_required": true,
+      "prompt": "Vertical 9:16 atmospheric historical reconstruction of the former abandoned Taman Festival Bali during the years before its 2026 demolition. Show tropical vegetation and banyan roots near weathered concrete structures, empty corridors, cracked walls, humid mist and shafts of natural light. Architecture plausible for a late-1990s Bali entertainment complex; do not invent an identifiable building. STYLE: expressive charcoal sketch with layered charcoal grain, rough gestural shadows, dramatic chiaroscuro and hand-drawn architectural contours. PALETTE: charcoal black, dark umber, smoky sepia, muted moss green, restrained antique gold. Illustrative historical reconstruction, not documentary photography. No ghosts, no supernatural figures, no tiger, no readable text, no watermark, no logo, no photorealism, no 3D, no CGI, no anime."
+    },
+    {
+      "id": "07A",
+      "scene": 7,
+      "kind": "Folklore question and uncertainty",
+      "label_required": true,
+      "prompt": "Vertical 9:16 cinematic folklore composition: distant white tiger silhouette partially obscured by banyan aerial roots and tropical mist, the animal remains calm and natural, its identity ambiguous but clearly an artistic symbolic representation of a legend. Moonlit tropical Bali atmosphere, no glowing eyes, no magical aura, no aggression, no human figures, no ritual elements. STYLE: dark gothic oil painting, layered painterly brushwork, deep chiaroscuro, subtle aged canvas texture, controlled moonlight. PALETTE: charcoal black, ivory white, deep brown, sepia, muted antique gold, subtle moss green. Folklore illustration only, not evidence or a real sighting. No readable text, no watermark, no logo, no photorealism, no 3D, no CGI, no anime."
+    },
+    {
+      "id": "08A",
+      "scene": 8,
+      "kind": "Memory of place and legend",
+      "label_required": true,
+      "prompt": "Vertical 9:16 cinematic closing illustration of a large banyan tree beside the distant silhouette of the former Taman Festival Bali, seen at dusk with tropical foliage and a quiet empty path, suggesting memory and local storytelling rather than a haunting. A very subtle white tiger motif may appear as a faint painterly shape in the far background, clearly symbolic and not a real animal sighting. STYLE: dark gothic oil painting with rich layered brushstrokes, dramatic chiaroscuro, aged canvas texture, warm muted light cutting through foliage. PALETTE: dark sepia, charcoal, antique gold, warm umber, restrained maroon and moss green. Respectful folklore illustration, not documentary photograph. No ghosts, no sacred objects, no readable text, no watermark, no logo, no photorealism, no 3D, no CGI, no anime."
+    }
+  ]
+}
