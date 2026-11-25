@@ -1,6 +1,9 @@
 name: Render Peta Sunyi long horror review
 
 on:
+  workflow_run:
+    workflows: ["Generate Peta Sunyi long-form horror assets"]
+    types: [completed]
   workflow_dispatch:
     inputs:
       episode_id:
@@ -16,6 +19,7 @@ permissions:
 
 jobs:
   render:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
@@ -30,7 +34,7 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
-          EPISODE_ID: ${{ inputs.episode_id }}
+          EPISODE_ID: ${{ inputs.episode_id || 'taman-festival-bali-ep03' }}
         run: |
           set -euo pipefail
           config="episodes/peta-sunyi/$EPISODE_ID.json"
@@ -70,11 +74,11 @@ jobs:
           python -m unittest discover -s tests -p 'test_peta_sunyi_subtitles.py'
       - name: Render 16:9 multi-voice review video
         env:
-          EPISODE_CONFIG: episodes/peta-sunyi/${{ inputs.episode_id }}.json
+          EPISODE_CONFIG: episodes/peta-sunyi/${{ inputs.episode_id || 'taman-festival-bali-ep03' }}.json
         run: python scripts/peta-sunyi/render_long_horror.py
       - uses: actions/upload-artifact@v4
         with:
-          name: peta-sunyi-${{ inputs.episode_id }}-long-review
-          path: output/${{ inputs.episode_id }}-long-review.mp4
+          name: peta-sunyi-${{ inputs.episode_id || 'taman-festival-bali-ep03' }}-long-review
+          path: output/${{ inputs.episode_id || 'taman-festival-bali-ep03' }}-long-review.mp4
           if-no-files-found: error
           retention-days: 7
