@@ -1,0 +1,60 @@
+{
+  "channel": "Peta Sunyi",
+  "episode_id": "taman-festival-bali-ep04",
+  "format": "9:16",
+  "provider": "Cloudflare Workers AI",
+  "model": "@cf/black-forest-labs/flux-1-schnell",
+  "policy": "All AI visuals are illustrative historical reconstructions or conceptual illustrations, not documentary photographs or evidence of supernatural events. Do not depict an identifiable real traveler, witness, face, quotation, book cover, readable signage, or exact unverified event. The traveler is a generic anonymous silhouette only. Former Taman Festival is represented as a historical reconstruction before its 2026 redevelopment, not present-day footage. Renderer overlays REKA ADEGAN • ILUSTRASI AI; never ask the image model to render text. Match the EP02 Balinese Gothic Documentary master style.",
+  "art_direction": {
+    "name": "Balinese Gothic Documentary • Etching + Charcoal + Dark Oil Painting",
+    "palette": "charcoal black, deep volcanic stone grey, aged sepia, muted antique gold, restrained dark maroon, subtle moss green",
+    "texture": "aged archival paper, etched cross-hatching, charcoal grain, painterly oil texture, weathered stone",
+    "composition": "cinematic vertical 9:16, atmospheric Padang Galak tropical landscape, deep shadows, controlled late-afternoon light and highlights, documentary negative space",
+    "cultural_respect": "Balinese architecture and cultural objects must be depicted respectfully and contextually. Do not use poleng cloth, masks, offerings, shrines, or sacred figures as shorthand for evil. No invented ritual scenes or sacred iconography used as horror props.",
+    "allocation": "2 engraving/etching scenes, 2 charcoal scenes, 2 dark gothic oil painting scenes"
+  },
+  "assets": [
+    {
+      "id": "01A",
+      "scene": 1,
+      "kind": "Anonymous traveler entering an abandoned amusement park",
+      "label_required": true,
+      "prompt": "Vertical 9:16 cinematic historical reconstruction of the former Taman Festival Bali before its 2026 redevelopment, viewed from behind an entirely anonymous distant traveler silhouette entering a broad empty tropical entertainment-park pathway at around 9 AM, no identifiable face, no clothing details suggesting a real person, weathered concrete structures and dense humid foliage. STYLE: classical copperplate engraving and vintage etching, dense fine cross-hatching, engraved architectural linework, aged archival paper grain. PALETTE: charcoal black, deep sepia, dark umber, muted antique gold, restrained moss green. Atmospheric documentary illustration, not a photograph. No readable text, no signage, no ghosts, no supernatural portal, no watermark, no logo, no photorealism, no 3D, no CGI, no anime."
+    },
+    {
+      "id": "03A",
+      "scene": 3,
+      "kind": "Former Taman Festival in its abandoned historical period",
+      "label_required": true,
+      "prompt": "Vertical 9:16 cinematic historical reconstruction of the former Taman Festival Bali in its abandoned years before 2026 redevelopment, empty entertainment-park structures, a distant theater-like facade, overgrown paths, tropical trees reclaiming concrete, late afternoon haze and quiet atmosphere. Architecture plausible for a late-1990s Bali leisure complex but do not invent a recognizable landmark. STYLE: dark charcoal drawing with layered charcoal grain, expressive tonal blocks, selective chalk highlights, rough archival paper texture, dramatic chiaroscuro. PALETTE: charcoal black, deep brown, faded sepia, muted antique gold, subtle moss green. Historical documentary illustration, not present-day footage. No people, no ghosts, no readable lettering, no watermark, no photorealism, no 3D, no CGI, no anime."
+    },
+    {
+      "id": "04A",
+      "scene": 4,
+      "kind": "Anonymous figure and a clock motif",
+      "label_required": true,
+      "prompt": "Vertical 9:16 cinematic conceptual illustration of a lone anonymous traveler seen only as a small backlit silhouette standing at a fork between empty corridors in a former tropical amusement park, a simple analog wristwatch visible only as an indistinct visual motif with no readable numerals, late morning light and deep architectural shadows, visual metaphor for uncertainty about elapsed time, not a literal reconstruction of a verified event. STYLE: vintage architectural etching, precise engraved lines, intricate cross-hatching, aged archival paper, controlled composition. PALETTE: dark sepia, charcoal, antique gold highlights, brown-black shadows, restrained muted green. No identifiable face, no readable text, no supernatural portal, no ghosts, no watermark, no photorealism, no 3D, no CGI, no anime."
+    },
+    {
+      "id": "06A",
+      "scene": 6,
+      "kind": "Unanswered questions and archival research",
+      "label_required": true,
+      "prompt": "Vertical 9:16 atmospheric still life of an archival research desk with an open blank notebook, an unmarked closed book, a magnifying glass, and an old analog clock, background falling into shadow, no readable writing, no invented newspaper headlines, no recognizable logos, visual theme of unanswered questions and source verification. STYLE: expressive charcoal sketch with layered charcoal grain, rough gestural shadows, dramatic chiaroscuro and hand-drawn contours. PALETTE: charcoal black, dark umber, smoky sepia, muted moss green, restrained antique gold. Documentary illustration, not a photograph. No people, no readable text, no watermark, no photorealism, no 3D, no CGI, no anime."
+    },
+    {
+      "id": "07A",
+      "scene": 7,
+      "kind": "Disorienting empty corridors and repeated architecture",
+      "label_required": true,
+      "prompt": "Vertical 9:16 cinematic historical reconstruction of a long empty corridor inside a former tropical amusement park, repeated doorways and similar concrete passages creating a grounded sense of disorientation, filtered daylight from a distant opening, subtle overgrown foliage at the edges, no impossible geometry and no supernatural portal. STYLE: dark gothic oil painting, layered painterly brushwork, deep chiaroscuro, subtle aged canvas texture, controlled shafts of light. PALETTE: dark sepia, charcoal, antique gold, warm umber, restrained maroon and moss green. Historical illustration, not present-day footage. No people, no ghosts, no readable text, no watermark, no photorealism, no 3D, no CGI, no anime."
+    },
+    {
+      "id": "08A",
+      "scene": 8,
+      "kind": "Closing view of the former park at late afternoon",
+      "label_required": true,
+      "prompt": "Vertical 9:16 cinematic closing illustration of the former Taman Festival Bali as a historical reconstruction before its 2026 redevelopment, viewed from a quiet empty pathway toward weathered indistinct structures and tropical foliage at late afternoon, long shadows and fading warm light, atmosphere of memory and unanswered questions rather than paranormal horror, elegant negative space for title overlay. STYLE: dark gothic oil painting with rich layered brushstrokes, dramatic chiaroscuro, aged canvas texture, warm muted light cutting through darkness. PALETTE: dark sepia, charcoal, antique gold, warm umber, restrained maroon and moss green. Historical reconstruction, not a photograph. No people, no ghosts, no readable text, no watermark, no photorealism, no 3D, no CGI, no anime."
+    }
+  ]
+}
