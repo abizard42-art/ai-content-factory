@@ -1,0 +1,70 @@
+{
+  "episode_id": "taman-festival-bali-ep03",
+  "title": "Tangisan dari Ruang Genset | Misteri Taman Festival Bali",
+  "visual_style": "rough_pencil",
+  "speaker_voices": {
+    "NARATOR": "id-ID-ArdiNeural"
+  },
+  "sources": [
+    {
+      "name": "Bali Post, 10 September 2017 — laporan penemuan jasad pria tak dikenal di ruang genset bekas Taman Festival",
+      "supports": "Peristiwa penemuan pada 9 September 2017; laporan menyebut identitas dan penyebab kematian masih dalam penyelidikan saat berita diterbitkan."
+    },
+    {
+      "name": "Universitas Udayana, Jurnal Destinasi Pariwisata (2025) — Narasi Horor dengan Konsep Storynomics sebagai Bentuk Dark Tourism di Kawasan Terbengkalai Taman Festival Bali",
+      "supports": "Mencatat narasi lokal mengenai suara tangisan yang dikaitkan dengan ruang genset; tidak membuktikan fenomena paranormal."
+    }
+  ],
+  "editorial_notes": [
+    "Pisahkan fakta penemuan jasad yang diberitakan Bali Post dari cerita tangisan yang dicatat dalam penelitian Udayana.",
+    "Jangan mengarang identitas korban, penyebab kematian, saksi, kutipan, rekaman tangisan, atau kronologi paranormal.",
+    "Jangan menampilkan jasad, darah, atau detail kematian yang grafis. Perlakukan korban secara bermartabat.",
+    "Visual ruang genset dan kawasan lama adalah rekonstruksi AI, bukan dokumentasi aktual. Tampilkan label REKA ADEGAN • ILUSTRASI AI.",
+    "Jangan menyatakan ruang genset masih ada atau dapat dikunjungi saat ini tanpa bukti terbaru.",
+    "Cerita suara tangisan harus disebut sebagai kisah yang beredar dan belum terverifikasi secara independen."
+  ],
+  "scenes": [
+    {
+      "shot": "01A",
+      "title": "RUANG YANG TERLUPAKAN",
+      "speaker": "NARATOR",
+      "delivery": "suspense",
+      "text": "Di antara bangunan-bangunan yang pernah menjadi bagian dari Taman Festival Bali, ada satu ruangan yang menyimpan kisah berbeda. Bukan tentang wahana yang rusak. Bukan pula tentang pohon besar dan sosok misterius yang konon menjaganya. Ruangan itu adalah ruang genset. Taman Festival pernah dirancang sebagai tempat hiburan besar di kawasan Padang Galak, Denpasar. Namun setelah aktivitasnya berhenti, bangunan-bangunan di dalamnya perlahan kehilangan fungsi. Ruang pertunjukan menjadi kosong. Lorong-lorong tak lagi ramai. Dan ruangan yang dahulu memiliki fungsi teknis ikut menjadi bagian dari kawasan yang ditinggalkan."
+    },
+    {
+      "shot": "02A",
+      "title": "BERITA SEPTEMBER 2017",
+      "speaker": "NARATOR",
+      "delivery": "natural",
+      "text": "Pada 10 September 2017, Bali Post menerbitkan berita mengenai penemuan jasad seorang pria tak dikenal di ruang genset bekas Taman Festival. Peristiwa penemuan itu terjadi sehari sebelumnya, Sabtu, 9 September. Menurut laporan tersebut, warga sekitar mencium bau menyengat sebelum mencari sumbernya. Bau itu mengarah ke ruang genset. Di sanalah jasad pria yang identitasnya belum diketahui ditemukan. Polisi kemudian melakukan pemeriksaan di lokasi dan meminta keterangan sejumlah saksi. Pada saat berita diterbitkan, identitas korban dan penyebab kematiannya masih dalam proses penyelidikan. Itulah bagian peristiwa yang tercatat dalam pemberitaan."
+    },
+    {
+      "shot": "03A",
+      "title": "SETELAH PERISTIWA ITU",
+      "speaker": "NARATOR",
+      "delivery": "reflective",
+      "text": "Tetapi sebuah tempat tidak selalu dikenang hanya karena apa yang pernah terjadi di sana. Kadang, cerita yang muncul setelahnya justru bertahan jauh lebih lama. Dalam rangkuman kisah horor kawasan Taman Festival Bali yang dimuat dalam penelitian Universitas Udayana tahun 2025, terdapat cerita mengenai suara tangisan yang konon dikaitkan dengan ruang genset setelah penemuan jasad tersebut. Cerita itu menjadi bagian dari narasi mistis yang berkembang di sekitar bekas taman hiburan ini. Namun, ada satu hal yang perlu dipisahkan. Pemberitaan tahun 2017 mendokumentasikan penemuan jasad. Sementara cerita tentang tangisan merupakan kisah yang berkembang dan dicatat dalam penelitian tersebut. Keduanya bukan jenis bukti yang sama."
+    },
+    {
+      "shot": "04A",
+      "title": "SUARA YANG TAK PERNAH TERBUKTI",
+      "speaker": "NARATOR",
+      "delivery": "suspense",
+      "text": "Bayangkan sebuah ruangan yang lama tidak digunakan. Dindingnya menyimpan gema. Udara bergerak melewati celah bangunan. Dan suara dari luar bisa terdengar berbeda ketika sampai ke lorong yang kosong. Dalam suasana seperti itu, pengalaman seseorang dapat berubah menjadi cerita yang terus disampaikan. Apakah benar ada suara tangisan dari ruang tersebut? Sejauh sumber yang berhasil ditelusuri, belum ada bukti independen yang memastikan asal suara itu, apalagi membuktikan bahwa suara tersebut berasal dari sesuatu yang tidak dapat dijelaskan. Kita tidak tahu siapa yang pertama kali mendengarnya. Kita juga tidak memiliki rekaman yang dapat mengonfirmasi cerita tersebut. Yang tersisa adalah sebuah kisah yang terus dikaitkan dengan ruangan itu."
+    },
+    {
+      "shot": "05A",
+      "title": "KETIKA TEMPAT MENJADI LEGENDA",
+      "speaker": "NARATOR",
+      "delivery": "paced",
+      "text": "Taman Festival Bali memiliki banyak cerita yang tumbuh dari masa terbengkalainya. Ada kisah tentang pohon beringin dan macan putih. Ada cerita wisatawan yang konon kehilangan waktu. Dan ada pula cerita tentang suara tangisan dari ruang genset. Masing-masing memiliki asal-usul dan tingkat kepastian yang berbeda. Tetapi semuanya memperlihatkan bagaimana sebuah tempat dapat berubah dalam ingatan orang-orang yang mengenalnya. Dari taman hiburan, menjadi bangunan kosong. Dari bangunan kosong, menjadi lokasi eksplorasi. Lalu dari pengalaman dan cerita yang beredar, lahirlah legenda."
+    },
+    {
+      "shot": "06A",
+      "title": "APA YANG TERSISA?",
+      "speaker": "NARATOR",
+      "delivery": "reflective",
+      "text": "Mungkin ruang genset itu hanya sebuah ruangan teknis yang pernah menjadi lokasi peristiwa tragis. Mungkin cerita tangisan muncul dari pengalaman seseorang yang tidak pernah tercatat secara lengkap. Atau mungkin, ada bagian dari kisah ini yang memang belum pernah berhasil kita temukan. Namun, sampai ada bukti yang lebih kuat, cerita tentang tangisan itu tetap berada di tempatnya: sebagai legenda lokal, bukan fakta paranormal. Sebab di Taman Festival Bali, terkadang yang paling menarik bukan hanya cerita tentang apa yang konon terdengar. Tetapi bagaimana sebuah cerita bisa bertahan, bahkan setelah tempat asalnya perlahan menghilang. Peta Sunyi. Karena setiap tempat menyimpan cerita. Tetapi tidak semua cerita adalah fakta."
+    }
+  ]
+}
