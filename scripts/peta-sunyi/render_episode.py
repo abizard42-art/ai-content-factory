@@ -85,15 +85,21 @@ def make_map(path):
     osm_req = urllib.request.Request("https://overpass-api.de/api/interpreter", data=body,
         headers={"User-Agent": "PetaSunyiReviewRenderer/2.0", "Content-Type": "application/x-www-form-urlencoded"})
     osm = None
+    osm_error = None
     for attempt in range(3):
         try:
             with urllib.request.urlopen(osm_req, timeout=55) as response:
                 osm = json.loads(response.read().decode("utf-8"))
             break
         except Exception as exc:
-            if attempt == 2:
-                raise RuntimeError(f"Could not retrieve OpenStreetMap road data: {exc}") from exc
-            time.sleep(3 * (attempt + 1))
+            osm_error = exc
+            if attempt < 2:
+                time.sleep(3 * (attempt + 1))
+    if osm is None:
+        # Network access to public map services is not guaranteed on hosted runners.
+        # Fall back to an explicitly schematic coordinate locator; never invent roads.
+        print(f"WARN: OpenStreetMap unavailable; using schematic coordinate map: {osm_error}", flush=True)
+        osm = {"elements": []}
     im = Image.new("RGB", (W,H), (239,237,228))
     d = ImageDraw.Draw(im, "RGBA")
     d.rectangle((0,0,W,210), fill=(24,43,48,255))
@@ -116,7 +122,19 @@ def make_map(path):
         if any(left <= x <= right and top <= y <= bottom for x,y in pts):
             roads.append((tags.get("highway","residential"), tags.get("name",""), pts))
     if not roads:
-        raise RuntimeError("OpenStreetMap returned no roads around " + query)
+        # Neutral cartographic grid as a locator only; no road geometry is implied.
+        for gx in range(left + 90, right, 110):
+            d.line((gx, top + 20, gx, bottom - 20), fill=(219,216,204,170), width=2)
+        for gy in range(top + 90, bottom, 110):
+            d.line((left + 20, gy, right - 20, gy), fill=(219,216,204,170), width=2)
+        d.ellipse((left + 95, top + 95, right - 95, bottom - 95),
+                  outline=(193,187,169,180), width=3)
+        d.ellipse((left + 230, top + 230, right - 230, bottom - 230),
+                  outline=(205,199,182,160), width=2)
+        d.rounded_rectangle((left + 28, top + 28, left + 350, top + 82),
+                            radius=10, fill=(31,57,58,235))
+        d.text((left + 45, top + 40), "PETA SKEMATIK • TITIK KOORDINAT",
+               font=font(19,True), fill=(255,250,235,255))
     widths = {"primary":7,"secondary":6,"tertiary":5,"residential":3,"service":2}
     for highway,name,pts in roads:
         color = (255,255,255,255) if highway in ("primary","secondary","tertiary") else (210,207,194,255)
@@ -140,7 +158,10 @@ def make_map(path):
     d.text((tx,ty-2),label,font=pf,fill=(255,250,235,255))
     d.rectangle((0,1730,W,H),fill=(24,43,48,255))
     d.text((62,1760),cfg.get("footer","PETA JALAN"),font=font(25,True),fill=(248,244,229,255))
-    d.text((62,1810),"Data peta: © OpenStreetMap contributors",font=font(21),fill=(214,220,204,255))
+    if roads:
+        d.text((62,1810),"Data peta: © OpenStreetMap contributors",font=font(21),fill=(214,220,204,255))
+    else:
+        d.text((62,1810),"Peta skematik berdasarkan koordinat episode",font=font(21),fill=(214,220,204,255))
     d.text((62,1855),"Penanda lokasi bersifat indikatif",font=font(18),fill=(185,199,188,255))
     im.save(path,quality=95)
 
