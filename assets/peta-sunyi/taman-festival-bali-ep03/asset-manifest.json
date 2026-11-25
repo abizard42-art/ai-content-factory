@@ -1,59 +1,60 @@
 {
   "channel": "Peta Sunyi",
   "episode_id": "taman-festival-bali-ep03",
-  "format": "16:9",
+  "format": "9:16",
   "provider": "Cloudflare Workers AI",
   "model": "@cf/black-forest-labs/flux-1-schnell",
-  "policy": "All images are AI illustrative historical reconstructions, not documentary photographs. Do not depict a body, injury, blood, violence, identifiable victim, real witness, ghost, or supernatural evidence. Do not invent readable headlines, newspaper text, logos, signage, or exact architectural details. The former site is represented as a historical reconstruction, not present-day footage. Preserve a respectful, investigative documentary tone. Renderer overlays REKA ADEGAN • ILUSTRASI AI.",
+  "policy": "All AI visuals are illustrative historical reconstructions or folklore illustrations, not documentary photographs or evidence of supernatural events. Do not depict a body, injury, blood, violence, identifiable victim, real witness, ghost, or supernatural evidence. Do not invent readable headlines, newspaper text, logos, signage, or exact architectural details. Former Taman Festival is represented as a historical reconstruction, not present-day footage. Preserve a respectful, investigative documentary tone. Renderer overlays REKA ADEGAN • ILUSTRASI AI. Match the EP02 Balinese Gothic Documentary master style.",
   "art_direction": {
-    "name": "Peta Sunyi Long-form • Rough Graphite Documentary",
-    "palette": "monochrome charcoal, graphite grey, aged paper ivory, restrained sepia",
-    "texture": "rough pencil grain, charcoal shading, scratchy cross-hatching, imperfect hand-drawn contours, visible paper grain",
-    "composition": "cinematic wide 16:9 landscape, 1920x1080 framing, documentary negative space, restrained atmospheric lighting",
-    "allocation": "six distinct wide storyboard illustrations; vary establishing, medium, detail and closing compositions"
+    "name": "Balinese Gothic Documentary • Etching + Charcoal + Dark Oil Painting",
+    "palette": "charcoal black, deep volcanic stone grey, aged sepia, muted antique gold, restrained dark maroon, subtle moss green",
+    "texture": "aged archival paper, etched cross-hatching, charcoal grain, painterly oil texture, weathered stone",
+    "composition": "cinematic vertical 9:16, atmospheric Padang Galak tropical landscape, deep shadows, controlled moonlight and highlights, documentary negative space",
+    "cultural_respect": "Balinese architecture and cultural objects must be depicted respectfully and contextually. Do not use poleng cloth, masks, offerings, shrines, or sacred figures as shorthand for evil. No invented ritual scenes or sacred iconography used as horror props.",
+    "allocation": "2 engraving/etching scenes, 2 charcoal scenes, 2 dark gothic oil painting scenes"
   },
   "assets": [
     {
       "id": "01A",
       "scene": 1,
-      "kind": "Abandoned amusement park corridor and generator-room door",
+      "kind": "Generator-room corridor at the former amusement park",
       "label_required": true,
-      "prompt": "Wide 16:9 cinematic rough graphite pencil storyboard illustration, a deserted corridor inside a late-1990s tropical Bali amusement park, a plain industrial generator-room door at the far end, weathered concrete, humid vegetation creeping at edges, quiet empty space, no readable signs. Rough graphite pencil storyboard illustration, charcoal shading, scratchy cross-hatching, imperfect hand-drawn linework, visible paper grain, high-contrast monochrome, unsettling negative space, cinematic wide composition, no text, no watermark. Historical reconstruction, not a photograph. No people, no body, no ghost, no blood, no supernatural figure."
-    },
-    {
-      "id": "02A",
-      "scene": 2,
-      "kind": "Exterior of old technical room, factual reporting context",
-      "label_required": true,
-      "prompt": "Wide 16:9 cinematic documentary storyboard illustration of the exterior entrance to a modest industrial generator room in an abandoned tropical entertainment complex in Bali, a closed utilitarian metal door, rough concrete wall, overgrown edges, subdued daylight, investigative restrained mood, leave negative space for editorial title overlay, no newspaper, no readable lettering, no logos. Rough graphite pencil storyboard illustration, charcoal shading, scratchy cross-hatching, imperfect hand-drawn linework, visible paper grain, high-contrast monochrome, cinematic wide composition, no text, no watermark. Historical reconstruction, not a photograph. No people, no body, no blood, no ghosts."
+      "prompt": "Vertical 9:16 cinematic historical reconstruction of a deserted corridor inside the former Taman Festival Bali, Padang Galak, with a plain industrial generator-room door at the far end, weathered concrete and tropical vegetation at the edges, humid dusk atmosphere. No identifiable exact building or signage. STYLE: classical copperplate engraving and vintage etching, dense fine cross-hatching, engraved architectural linework, aged archival paper grain. PALETTE: charcoal black, deep sepia, dark umber, muted antique gold, restrained moss green. Atmospheric documentary illustration, not a photograph. No people, no body, no ghost, no blood, no readable text, no watermark, no photorealism, no 3D, no CGI, no anime."
     },
     {
       "id": "03A",
       "scene": 3,
-      "kind": "Empty generator room after the event, no human remains",
+      "kind": "Exterior of generator room in historical context",
       "label_required": true,
-      "prompt": "Wide 16:9 interior illustration of an empty old generator room, industrial electrical cabinet silhouettes, pipes, dusty concrete floor, a single shaft of natural light, no readable labels, no identifiable machinery branding, atmosphere of absence and memory, respectful non-graphic documentary reconstruction. Rough graphite pencil storyboard illustration, charcoal shading, scratchy cross-hatching, imperfect hand-drawn linework, visible paper grain, high-contrast monochrome, cinematic wide composition, no text, no watermark. No person, no body, no blood, no ghost, no supernatural evidence."
+      "prompt": "Vertical 9:16 cinematic historical reconstruction of a modest industrial generator-room entrance in the abandoned former Taman Festival Bali before its 2026 redevelopment, closed utilitarian metal door, rough concrete wall, tropical overgrowth and subdued daylight. Leave negative space for editorial overlay. STYLE: dark charcoal drawing with layered charcoal grain, expressive tonal blocks, selective chalk highlights, rough archival paper texture, dramatic chiaroscuro. PALETTE: charcoal black, deep brown, faded sepia, muted antique gold, subtle moss green. Respectful non-graphic documentary illustration. No people, no body, no blood, no ghosts, no readable lettering, no watermark, no photorealism, no 3D, no CGI, no anime."
     },
     {
       "id": "04A",
       "scene": 4,
-      "kind": "Ventilation gap and silent corridor acoustic atmosphere",
+      "kind": "Empty generator room and the story that followed",
       "label_required": true,
-      "prompt": "Wide 16:9 close documentary composition of an old ventilation opening, worn door frame and long empty corridor, dust in a thin beam of light, subtle visual suggestion of echo through repeated architectural lines only, no visible sound waves or ghostly shapes, grounded physical environment. Rough graphite pencil storyboard illustration, charcoal shading, scratchy cross-hatching, imperfect hand-drawn linework, visible paper grain, high-contrast monochrome, cinematic wide composition, no text, no watermark. No people, no body, no blood, no ghost."
-    },
-    {
-      "id": "05A",
-      "scene": 5,
-      "kind": "Former amusement park reclaimed by vegetation",
-      "label_required": true,
-      "prompt": "Wide 16:9 cinematic historical reconstruction of the former abandoned Taman Festival Bali before its 2026 redevelopment, empty pathways and weathered indistinct entertainment-park structures gradually overtaken by tropical vegetation, no invented landmark or readable signage, quiet documentary montage atmosphere. Rough graphite pencil storyboard illustration, charcoal shading, scratchy cross-hatching, imperfect hand-drawn linework, visible paper grain, high-contrast monochrome, cinematic wide composition, no text, no watermark. Historical reconstruction, not present-day footage. No people, no ghosts."
+      "prompt": "Vertical 9:16 interior illustration of an empty old generator room, industrial electrical cabinet silhouettes, pipes, dusty concrete floor, one narrow shaft of light, a quiet sense of absence and memory. No readable labels or identifiable machinery branding. STYLE: vintage architectural etching, precise engraved lines, intricate cross-hatching, aged archival paper, controlled composition. PALETTE: dark sepia, charcoal, antique gold highlights, brown-black shadows, restrained muted green. Historical reconstruction, not a photograph. No person, no body, no blood, no ghost, no supernatural evidence, no readable text, no watermark, no photorealism, no 3D, no CGI, no anime."
     },
     {
       "id": "06A",
       "scene": 6,
-      "kind": "Closing image of a doorway fading into darkness",
+      "kind": "Ventilation opening and silent corridor",
       "label_required": true,
-      "prompt": "Wide 16:9 cinematic closing illustration of a quiet abandoned industrial doorway within a tropical former amusement park, camera positioned far back down an empty corridor, a faint strip of daylight beyond the doorway, visual theme of memory and unanswered questions rather than paranormal horror, elegant negative space for closing title overlay. Rough graphite pencil storyboard illustration, charcoal shading, scratchy cross-hatching, imperfect hand-drawn linework, visible paper grain, high-contrast monochrome, cinematic wide composition, no text, no watermark. Historical reconstruction, not a photograph. No people, no body, no blood, no ghosts."
+      "prompt": "Vertical 9:16 close cinematic study of an old ventilation opening, worn door frame and long empty corridor inside a former tropical entertainment complex, dust in a thin beam of light, repeated architectural lines subtly suggesting echo without visible sound waves or ghostly shapes. STYLE: expressive charcoal sketch with layered charcoal grain, rough gestural shadows, dramatic chiaroscuro and hand-drawn contours. PALETTE: charcoal black, dark umber, smoky sepia, muted moss green, restrained antique gold. Grounded atmospheric illustration, not documentary photography. No people, no body, no blood, no ghost, no readable text, no watermark, no photorealism, no 3D, no CGI, no anime."
+    },
+    {
+      "id": "07A",
+      "scene": 7,
+      "kind": "Former amusement park reclaimed by vegetation",
+      "label_required": true,
+      "prompt": "Vertical 9:16 cinematic historical reconstruction of the former abandoned Taman Festival Bali before its 2026 redevelopment, empty pathways and weathered indistinct entertainment-park structures gradually overtaken by tropical vegetation, humid haze, no invented landmark or readable signage. STYLE: dark gothic oil painting, layered painterly brushwork, deep chiaroscuro, subtle aged canvas texture, controlled moonlight. PALETTE: dark sepia, charcoal, antique gold, warm umber, restrained maroon and moss green. Historical illustration, not present-day footage. No people, no ghosts, no readable text, no watermark, no photorealism, no 3D, no CGI, no anime."
+    },
+    {
+      "id": "08A",
+      "scene": 8,
+      "kind": "Closing doorway fading into darkness",
+      "label_required": true,
+      "prompt": "Vertical 9:16 cinematic closing illustration of a quiet abandoned industrial doorway within a tropical former amusement park, camera positioned far back down an empty corridor, faint strip of daylight beyond the doorway, visual theme of memory and unanswered questions rather than paranormal horror, elegant negative space for title overlay. STYLE: dark gothic oil painting with rich layered brushstrokes, dramatic chiaroscuro, aged canvas texture, warm muted light cutting through darkness. PALETTE: dark sepia, charcoal, antique gold, warm umber, restrained maroon and moss green. Historical reconstruction, not a photograph. No people, no body, no blood, no ghosts, no readable text, no watermark, no photorealism, no 3D, no CGI, no anime."
     }
   ]
 }
