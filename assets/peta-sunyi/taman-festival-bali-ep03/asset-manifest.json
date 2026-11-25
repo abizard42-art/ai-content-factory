@@ -1,0 +1,59 @@
+{
+  "channel": "Peta Sunyi",
+  "episode_id": "taman-festival-bali-ep03",
+  "format": "16:9",
+  "provider": "Cloudflare Workers AI",
+  "model": "@cf/black-forest-labs/flux-1-schnell",
+  "policy": "All images are AI illustrative historical reconstructions, not documentary photographs. Do not depict a body, injury, blood, violence, identifiable victim, real witness, ghost, or supernatural evidence. Do not invent readable headlines, newspaper text, logos, signage, or exact architectural details. The former site is represented as a historical reconstruction, not present-day footage. Preserve a respectful, investigative documentary tone. Renderer overlays REKA ADEGAN • ILUSTRASI AI.",
+  "art_direction": {
+    "name": "Peta Sunyi Long-form • Rough Graphite Documentary",
+    "palette": "monochrome charcoal, graphite grey, aged paper ivory, restrained sepia",
+    "texture": "rough pencil grain, charcoal shading, scratchy cross-hatching, imperfect hand-drawn contours, visible paper grain",
+    "composition": "cinematic wide 16:9 landscape, 1920x1080 framing, documentary negative space, restrained atmospheric lighting",
+    "allocation": "six distinct wide storyboard illustrations; vary establishing, medium, detail and closing compositions"
+  },
+  "assets": [
+    {
+      "id": "01A",
+      "scene": 1,
+      "kind": "Abandoned amusement park corridor and generator-room door",
+      "label_required": true,
+      "prompt": "Wide 16:9 cinematic rough graphite pencil storyboard illustration, a deserted corridor inside a late-1990s tropical Bali amusement park, a plain industrial generator-room door at the far end, weathered concrete, humid vegetation creeping at edges, quiet empty space, no readable signs. Rough graphite pencil storyboard illustration, charcoal shading, scratchy cross-hatching, imperfect hand-drawn linework, visible paper grain, high-contrast monochrome, unsettling negative space, cinematic wide composition, no text, no watermark. Historical reconstruction, not a photograph. No people, no body, no ghost, no blood, no supernatural figure."
+    },
+    {
+      "id": "02A",
+      "scene": 2,
+      "kind": "Exterior of old technical room, factual reporting context",
+      "label_required": true,
+      "prompt": "Wide 16:9 cinematic documentary storyboard illustration of the exterior entrance to a modest industrial generator room in an abandoned tropical entertainment complex in Bali, a closed utilitarian metal door, rough concrete wall, overgrown edges, subdued daylight, investigative restrained mood, leave negative space for editorial title overlay, no newspaper, no readable lettering, no logos. Rough graphite pencil storyboard illustration, charcoal shading, scratchy cross-hatching, imperfect hand-drawn linework, visible paper grain, high-contrast monochrome, cinematic wide composition, no text, no watermark. Historical reconstruction, not a photograph. No people, no body, no blood, no ghosts."
+    },
+    {
+      "id": "03A",
+      "scene": 3,
+      "kind": "Empty generator room after the event, no human remains",
+      "label_required": true,
+      "prompt": "Wide 16:9 interior illustration of an empty old generator room, industrial electrical cabinet silhouettes, pipes, dusty concrete floor, a single shaft of natural light, no readable labels, no identifiable machinery branding, atmosphere of absence and memory, respectful non-graphic documentary reconstruction. Rough graphite pencil storyboard illustration, charcoal shading, scratchy cross-hatching, imperfect hand-drawn linework, visible paper grain, high-contrast monochrome, cinematic wide composition, no text, no watermark. No person, no body, no blood, no ghost, no supernatural evidence."
+    },
+    {
+      "id": "04A",
+      "scene": 4,
+      "kind": "Ventilation gap and silent corridor acoustic atmosphere",
+      "label_required": true,
+      "prompt": "Wide 16:9 close documentary composition of an old ventilation opening, worn door frame and long empty corridor, dust in a thin beam of light, subtle visual suggestion of echo through repeated architectural lines only, no visible sound waves or ghostly shapes, grounded physical environment. Rough graphite pencil storyboard illustration, charcoal shading, scratchy cross-hatching, imperfect hand-drawn linework, visible paper grain, high-contrast monochrome, cinematic wide composition, no text, no watermark. No people, no body, no blood, no ghost."
+    },
+    {
+      "id": "05A",
+      "scene": 5,
+      "kind": "Former amusement park reclaimed by vegetation",
+      "label_required": true,
+      "prompt": "Wide 16:9 cinematic historical reconstruction of the former abandoned Taman Festival Bali before its 2026 redevelopment, empty pathways and weathered indistinct entertainment-park structures gradually overtaken by tropical vegetation, no invented landmark or readable signage, quiet documentary montage atmosphere. Rough graphite pencil storyboard illustration, charcoal shading, scratchy cross-hatching, imperfect hand-drawn linework, visible paper grain, high-contrast monochrome, cinematic wide composition, no text, no watermark. Historical reconstruction, not present-day footage. No people, no ghosts."
+    },
+    {
+      "id": "06A",
+      "scene": 6,
+      "kind": "Closing image of a doorway fading into darkness",
+      "label_required": true,
+      "prompt": "Wide 16:9 cinematic closing illustration of a quiet abandoned industrial doorway within a tropical former amusement park, camera positioned far back down an empty corridor, a faint strip of daylight beyond the doorway, visual theme of memory and unanswered questions rather than paranormal horror, elegant negative space for closing title overlay. Rough graphite pencil storyboard illustration, charcoal shading, scratchy cross-hatching, imperfect hand-drawn linework, visible paper grain, high-contrast monochrome, cinematic wide composition, no text, no watermark. Historical reconstruction, not a photograph. No people, no body, no blood, no ghosts."
+    }
+  ]
+}
