@@ -1,0 +1,244 @@
+name: Build Peta Sunyi Taman Festival Bali EP04 automatically
+
+on:
+  push:
+    paths:
+      - "episodes/peta-sunyi/taman-festival-bali-ep04.json"
+      - "assets/peta-sunyi/taman-festival-bali-ep04/asset-manifest.json"
+      - "scripts/peta-sunyi/render_episode.py"
+      - "scripts/peta-sunyi/humanize_narration.py"
+      - ".github/workflows/build-peta-sunyi-taman-festival-bali-ep04.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: peta-sunyi-taman-festival-bali-ep04-build
+  cancel-in-progress: false
+
+jobs:
+  build-taman-festival-bali-ep04:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate Taman Festival Bali EP04 config and visual manifest
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          config = json.loads(Path("episodes/peta-sunyi/taman-festival-bali-ep04.json").read_text(encoding="utf-8"))
+          manifest = json.loads(Path("assets/peta-sunyi/taman-festival-bali-ep04/asset-manifest.json").read_text(encoding="utf-8"))
+          assert config.get("episode_id") == "taman-festival-bali-ep04", "episode_id tidak sesuai"
+          scenes = config.get("scenes", [])
+          assets = manifest.get("assets", [])
+          scene_ids = [s.get("shot") for s in scenes if s.get("kind") == "ai"]
+          asset_ids = [a.get("id") for a in assets]
+          assert len(scenes) == 9, f"Episode harus memiliki 9 scene, ditemukan {len(scenes)}"
+          assert len(scene_ids) == 6 and len(set(scene_ids)) == 6, "Shot AI harus unik dan berjumlah 6"
+          assert set(scene_ids) == set(asset_ids), f"Shot config {scene_ids} tidak cocok dengan manifest {asset_ids}"
+          assert scenes[1].get("shot") == "MAP", "Scene 2 harus menggunakan peta"
+          assert any(s.get("shot") == "FACT" for s in scenes), "Episode harus memiliki grafis fakta"
+          assert scenes[-1].get("shot") == "END", "Scene terakhir harus menggunakan end card"
+          assert all(s.get("text") and s.get("title") for s in scenes), "Setiap scene wajib punya text dan title"
+          print("TAMAN_FESTIVAL_BALI_EP04_CONFIG_OK=9 scenes; 6 matching visual prompts")
+          PY
+
+      - name: Generate all Taman Festival Bali EP04 visuals with Cloudflare FLUX and save to Supabase
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: |
+          set -euo pipefail
+          for name in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID SUPABASE_URL SUPABASE_SECRET_KEY; do
+            [ -n "${!name:-}" ] || { echo "ERROR: GitHub Secret $name belum diisi."; exit 1; }
+          done
+          manifest="assets/peta-sunyi/taman-festival-bali-ep04/asset-manifest.json"
+          mkdir -p output/peta-sunyi work/assets
+          mapfile -t shot_ids < <(jq -r '.assets[].id' "$manifest")
+          generated=0
+          for shot_id in "${shot_ids[@]}"; do
+            prompt="$(jq -r --arg id "$shot_id" '.assets[] | select(.id == $id) | .prompt' "$manifest")"
+            [ -n "$prompt" ] || { echo "ERROR: Prompt $shot_id kosong."; exit 1; }
+            image_file="peta-sunyi-$shot_id.jpg"
+            object_path="peta-sunyi/taman-festival-bali-ep04/$image_file"
+            existing_status="$(curl --silent --show-error --output /tmp/isola-existing.json --write-out "%{http_code}" \
+              "${SUPABASE_URL}/storage/v1/object/visual-assets/$object_path" \
+              -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+              --output "output/peta-sunyi/$image_file" || true)"
+            if [ "$existing_status" = "200" ] && [ -s "output/peta-sunyi/$image_file" ]; then
+              echo "SUPABASE_ASSET_REUSED=visual-assets/$object_path"
+            else
+              echo "GENERATING=taman-festival-bali-ep04/$shot_id"
+              request="$(jq -n --arg prompt "$prompt" '{prompt:$prompt,steps:4}')"
+              status=""
+              for attempt in 1 2 3 4; do
+                status="$(curl --silent --show-error --output "output/peta-sunyi/response-$shot_id.json" --write-out "%{http_code}" \
+                  "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/black-forest-labs/flux-1-schnell" \
+                  -X POST -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" -d "$request" || true)"
+                if [ "$status" = "200" ]; then
+                  break
+                fi
+                echo "WARN: Cloudflare HTTP $status untuk $shot_id (percobaan $attempt/4)."
+                cat "output/peta-sunyi/response-$shot_id.json"
+                if grep -qE '"code"[[:space:]]*:[[:space:]]*4006|used up your daily free allocation' "output/peta-sunyi/response-$shot_id.json"; then
+                  echo "ERROR: Kuota gratis Cloudflare Workers AI harian habis. Retry tidak akan membantu; hentikan generator agar tidak membuang percobaan."
+                  echo "ACTION: Tunggu reset kuota atau ganti provider/plan, lalu jalankan workflow_dispatch."
+                  exit 1
+                fi
+                if [ "$attempt" -lt 4 ]; then sleep $((attempt * 10)); fi
+              done
+              if [ "$status" != "200" ]; then
+                echo "ERROR: Gagal membuat visual $shot_id setelah 4 percobaan."
+                exit 1
+              fi
+              image_base64="$(jq -r '.result.image // .image // empty' "output/peta-sunyi/response-$shot_id.json")"
+              [ -n "$image_base64" ] || { echo "ERROR: Respons tidak berisi gambar untuk $shot_id."; exit 1; }
+              printf '%s' "$image_base64" | base64 --decode > "output/peta-sunyi/$image_file"
+              test -s "output/peta-sunyi/$image_file"
+              upload_status=""
+              for upload_attempt in 1 2 3 4 5; do
+                upload_status="$(curl --silent --show-error --output "/tmp/supabase-upload-$shot_id.json" --write-out "%{http_code}" -X POST \
+                  "${SUPABASE_URL}/storage/v1/object/visual-assets/$object_path" \
+                  -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+                  -H "Content-Type: image/jpeg" -H "x-upsert: true" --data-binary @"output/peta-sunyi/$image_file" || true)"
+                if [ "$upload_status" = "200" ] || [ "$upload_status" = "201" ]; then
+                  break
+                fi
+                echo "WARN: Supabase upload HTTP $upload_status untuk $shot_id (percobaan $upload_attempt/5)."
+                cat "/tmp/supabase-upload-$shot_id.json" || true
+                if [ "$upload_attempt" -lt 5 ]; then sleep $((upload_attempt * 8)); fi
+              done
+              if [ "$upload_status" != "200" ] && [ "$upload_status" != "201" ]; then
+                echo "ERROR: Gagal menyimpan visual $shot_id ke Supabase setelah 5 percobaan."
+                exit 1
+              fi
+              echo "SUPABASE_ASSET_OK=visual-assets/$object_path"
+            fi
+            cp "output/peta-sunyi/$image_file" "work/assets/$image_file"
+            generated=$((generated+1))
+          done
+          [ "$generated" -eq 6 ] || { echo "ERROR: Seharusnya 6 visual, berhasil $generated."; exit 1; }
+          echo "ASSETS_GENERATED=$generated"
+
+      - name: Install video rendering dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-dejavu-core
+          python -m pip install --upgrade pip
+          python -m pip install pillow edge-tts
+      - name: Humanize Taman Festival Bali EP04 narration with pinned Humanizer
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          set -euo pipefail
+          [ -n "${GEMINI_API_KEY:-}" ] || { echo "ERROR: GitHub Secret GEMINI_API_KEY belum diisi."; exit 1; }
+          python -m py_compile scripts/peta-sunyi/humanize_narration.py
+          humanizer_log="work/taman-festival-bali-ep04-humanizer.log"
+          mkdir -p work
+          if python scripts/peta-sunyi/humanize_narration.py \
+            --input episodes/peta-sunyi/taman-festival-bali-ep04.json \
+            --output work/taman-festival-bali-ep04-humanized.json 2>&1 | tee "$humanizer_log"; then
+            echo "HUMANIZER_PATH=gemini_success"
+          else
+            fallback_status=""
+            fallback_note=""
+            if grep -q "Gemini Humanizer HTTP 503" "$humanizer_log"; then
+              fallback_status="skipped_provider_unavailable"
+              fallback_note="Gemini returned HTTP 503 after retries; original narration retained unchanged for human review."
+            elif grep -Eq "TimeoutError:|The read operation timed out|timed out" "$humanizer_log"; then
+              fallback_status="skipped_provider_timeout"
+              fallback_note="Gemini response timed out; original narration retained unchanged for human review."
+            else
+              echo "ERROR: Humanizer gagal bukan karena HTTP 503 atau timeout Gemini; hentikan build."
+              exit 1
+            fi
+            echo "WARN: $fallback_status; lanjut memakai narasi asli tanpa rewrite."
+            cp episodes/peta-sunyi/taman-festival-bali-ep04.json work/taman-festival-bali-ep04-humanized.json
+            HUMANIZER_FALLBACK_STATUS="$fallback_status" HUMANIZER_FALLBACK_NOTE="$fallback_note" python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          path = Path("work/taman-festival-bali-ep04-humanized.json")
+          data = json.loads(path.read_text(encoding="utf-8"))
+          data["humanizer"] = {
+              "engine": "blader/humanizer",
+              "skill_version": "3.1.0",
+              "status": os.environ["HUMANIZER_FALLBACK_STATUS"],
+              "scope": "narration_only",
+              "fields_processed": 0,
+              "note": os.environ["HUMANIZER_FALLBACK_NOTE"]
+          }
+          path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+          print("HUMANIZER_FALLBACK=original_narration_retained; HUMAN_REVIEW_REQUIRED=true")
+          PY
+          fi
+
+      - name: Render Taman Festival Bali EP04 using the shared Peta Sunyi Shorts renderer
+        env:
+          EPISODE_CONFIG: work/taman-festival-bali-ep04-humanized.json
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/peta-sunyi/render_episode.py
+          python scripts/peta-sunyi/render_episode.py
+          test -s output/taman-festival-bali-ep04-review.mp4
+          echo "TAMAN_FESTIVAL_BALI_EP04_RENDER_OK=output/taman-festival-bali-ep04-review.mp4"
+          echo "REVIEW_ONLY=true; NO YOUTUBE PUBLISHING"
+
+      - name: Upload review MP4 to private Supabase bucket
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: |
+          set -euo pipefail
+          for name in SUPABASE_URL SUPABASE_SECRET_KEY; do
+            [ -n "${!name:-}" ] || { echo "ERROR: GitHub Secret $name belum diisi."; exit 1; }
+          done
+          bucket_status="$(curl --silent --show-error --output /tmp/bucket.json --write-out "%{http_code}" \
+            "${SUPABASE_URL}/storage/v1/bucket/rendered-videos" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}")"
+          if [ "$bucket_status" = "404" ] || grep -q 'NoSuchBucket' /tmp/bucket.json; then
+            create_status="$(curl --silent --show-error --output /tmp/create-bucket.json --write-out "%{http_code}" \
+              -X POST "${SUPABASE_URL}/storage/v1/bucket" \
+              -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+              -H "Content-Type: application/json" \
+              -d '{"id":"rendered-videos","name":"rendered-videos","public":false}')"
+            if [ "$create_status" != "200" ] && [ "$create_status" != "201" ]; then
+              echo "ERROR: Gagal membuat bucket rendered-videos (HTTP $create_status)"
+              cat /tmp/create-bucket.json
+              exit 1
+            fi
+          elif [ "$bucket_status" != "200" ]; then
+            echo "ERROR: Gagal memeriksa bucket rendered-videos (HTTP $bucket_status)"
+            cat /tmp/bucket.json
+            exit 1
+          fi
+          object_path="peta-sunyi/taman-festival-bali-ep04/taman-festival-bali-ep04-review.mp4"
+          upload_status="$(curl --silent --show-error --output /tmp/upload.json --write-out "%{http_code}" \
+            -X POST "${SUPABASE_URL}/storage/v1/object/rendered-videos/$object_path" \
+            -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+            -H "Content-Type: video/mp4" -H "x-upsert: true" --data-binary "@output/taman-festival-bali-ep04-review.mp4")"
+          if [ "$upload_status" != "200" ] && [ "$upload_status" != "201" ]; then
+            echo "ERROR: Upload MP4 gagal (HTTP $upload_status)"
+            cat /tmp/upload.json
+            exit 1
+          fi
+          echo "SUPABASE_VIDEO_OK=rendered-videos/$object_path"
+
+      - name: Upload Taman Festival Bali EP04 review artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: peta-sunyi-taman-festival-bali-ep04-review
+          path: |
+            output/taman-festival-bali-ep04-review.mp4
+            output/peta-sunyi/
+          if-no-files-found: error
+          retention-days: 7
