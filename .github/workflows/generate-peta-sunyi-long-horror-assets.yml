@@ -37,8 +37,8 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
-          EPISODE_ID: ${{ inputs.episode_id }}
-          SHOT_IDS: ${{ inputs.shot_ids }}
+          EPISODE_ID: ${{ inputs.episode_id || 'taman-festival-bali-ep03' }}
+          SHOT_IDS: ${{ inputs.shot_ids || 'ALL' }}
         run: |
           set -euo pipefail
           for name in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID SUPABASE_URL SUPABASE_SECRET_KEY; do
