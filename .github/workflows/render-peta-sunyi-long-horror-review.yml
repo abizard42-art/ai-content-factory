@@ -9,6 +9,7 @@ on:
         type: choice
         options:
           - long-horror-lembang-camping
+          - taman-festival-bali-ep03
 
 permissions:
   contents: read
