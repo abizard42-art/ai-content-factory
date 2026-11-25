@@ -1,12 +1,6 @@
 name: Generate Peta Sunyi long-form horror assets
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'episodes/peta-sunyi/taman-festival-bali-ep03.json'
-      - 'assets/peta-sunyi/taman-festival-bali-ep03/asset-manifest.json'
-      - '.github/workflows/generate-peta-sunyi-long-horror-assets.yml'
   workflow_dispatch:
     inputs:
       episode_id:
