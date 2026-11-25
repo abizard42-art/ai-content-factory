@@ -1,0 +1,130 @@
+{
+  "episode_id": "taman-festival-bali-ep04",
+  "title": "Wisatawan yang Kehilangan Waktu | Misteri Taman Festival Bali",
+  "visual_style": "balinese_gothic_documentary",
+  "fact": {
+    "heading": "CERITA & BATAS FAKTA",
+    "lines": [
+      "WISATAWAN • KISAH YANG BEREDAR",
+      "09.00–16.00 • WAKTU DALAM NARASI",
+      "DIMENSI LAIN • KLAIM BELUM TERBUKTI",
+      "IDENTITAS & BUKU • BELUM TERVERIFIKASI"
+    ],
+    "highlight": "CERITA BUKAN BUKTI"
+  },
+  "end": {
+    "title": "WISATAWAN YANG KEHILANGAN WAKTU",
+    "subtitle": "MISTERI TAMAN FESTIVAL BALI",
+    "cta": "PETA SUNYI • PADANG GALAK, BALI"
+  },
+  "sources": [
+    {
+      "name": "Universitas Udayana, Jurnal Destinasi Pariwisata (2025) — Narasi Horor dengan Konsep Storynomics sebagai Bentuk Dark Tourism di Kawasan Terbengkalai Taman Festival Bali",
+      "supports": "Mencatat kisah wisatawan yang konon masuk sekitar pukul 09.00 dan ditemukan kembali sekitar pukul 16.00; penelitian merujuk cerita Aji Atu dalam Tribun Bali (2020), bukan verifikasi independen atas kejadian supernatural."
+    },
+    {
+      "name": "Aji Atu dalam Tribun Bali (2020), sebagaimana dirujuk penelitian Universitas Udayana (2025)",
+      "supports": "Rujukan sekunder bagi narasi wisatawan dan klaim pengalaman dimensi lain. Identitas wisatawan dan buku yang disebut belum diverifikasi secara independen."
+    },
+    {
+      "name": "Pemerintah Kota Denpasar (30 November 2020) — Bangunan Tua Jadi Destinasi Wisata",
+      "supports": "Konteks sejarah pembangunan dan penutupan Taman Festival Bali."
+    },
+    {
+      "name": "Bali Post (28 April 2026) dan RRI (2 Mei 2026) — Penataan Ulang Eks Taman Festival",
+      "supports": "Konteks perubahan fisik kawasan pada 2026; reruntuhan lama hanya boleh ditampilkan sebagai rekonstruksi historis."
+    }
+  ],
+  "editorial_notes": [
+    "Kisah wisatawan pukul 09.00–16.00 dicatat dalam penelitian Udayana 2025 sebagai narasi yang merujuk Aji Atu/Tribun Bali 2020; jangan menyatakannya sebagai fakta terverifikasi.",
+    "Jangan mengarang identitas wisatawan, kewarganegaraan spesifik, kutipan langsung, saksi, judul buku, isi buku, atau detail perjalanan yang tidak tersedia.",
+    "Klaim memasuki dimensi lain harus selalu disebut sebagai klaim dalam cerita, bukan kejadian terbukti.",
+    "Penjelasan disorientasi dan persepsi waktu hanya kemungkinan umum, bukan diagnosis atau penjelasan pasti atas cerita.",
+    "Visual wisatawan dan perjalanan di dalam taman adalah rekonstruksi AI. Jangan membuat wajah yang seolah-olah identitas orang nyata.",
+    "Reruntuhan Taman Festival sebelum pembongkaran/penataan 2026 harus diberi konteks rekonstruksi historis, bukan kondisi terkini.",
+    "Gunakan pipeline visual dan renderer yang sama dengan EP01, EP02, dan EP03; jangan memakai renderer long-form/rough pencil.",
+    "Gaya visual wajib Balinese Gothic Documentary dengan kombinasi etching, charcoal, dan dark gothic oil painting seperti master EP02."
+  ],
+  "scenes": [
+    {
+      "scene": 1,
+      "shot": "01A",
+      "title": "TUJUH JAM YANG HILANG",
+      "kind": "ai",
+      "text": "Bayangkan sebuah tempat yang begitu luas dan sunyi. Kamu masuk ketika matahari baru mulai meninggi. Pukul sembilan pagi. Tidak ada yang terasa aneh. Tidak ada tanda bahaya. Hanya bangunan-bangunan kosong, pepohonan liar, dan sisa-sisa sebuah taman hiburan yang pernah ramai dikunjungi. Namun, ketika kamu kembali, waktu sudah menunjukkan pukul empat sore. Tujuh jam berlalu. Dan menurut sebuah cerita yang beredar, seseorang yang memasuki kawasan ini mengaku mengalami sesuatu yang jauh lebih aneh daripada sekadar tersesat. Ia mengaku telah memasuki dunia lain. Inilah kisah tentang seorang wisatawan yang konon kehilangan waktu di Taman Festival Bali."
+    },
+    {
+      "scene": 2,
+      "shot": "MAP",
+      "title": "PADANG GALAK • DENPASAR, BALI",
+      "kind": "graphic",
+      "text": "Kisah wisatawan yang kehilangan waktu dikaitkan dengan kawasan Taman Festival di Padang Galak, Denpasar. Peta menunjukkan kawasan cerita, bukan titik pasti perjalanan wisatawan yang belum terverifikasi."
+    },
+    {
+      "scene": 3,
+      "shot": "03A",
+      "title": "TAMAN YANG DITINGGALKAN WAKTU",
+      "kind": "ai",
+      "text": "Untuk memahami kisah ini, kita perlu kembali ke masa ketika Taman Festival Bali belum menjadi tempat yang identik dengan cerita misteri. Pada tahun 1997, kawasan ini dibangun sebagai destinasi hiburan besar di Padang Galak, Denpasar. Berbagai fasilitas disediakan di dalamnya, mulai dari teater hingga bioskop tiga dimensi. Namun, masa kejayaannya tidak berlangsung lama. Krisis ekonomi pada akhir dekade sembilan puluhan ikut memengaruhi keberlangsungan taman ini. Pada tahun 1999, Taman Festival akhirnya berhenti beroperasi. Tempat yang dahulu dipenuhi suara pengunjung perlahan berubah menjadi kawasan kosong. Bangunan mulai rusak. Tumbuhan liar mengambil alih ruang-ruang yang sebelumnya dipenuhi aktivitas manusia. Dan ketika sebuah tempat terlalu lama ditinggalkan, terkadang yang tertinggal bukan hanya bangunannya, tetapi juga cerita-cerita yang tumbuh di sekelilingnya."
+    },
+    {
+      "scene": 4,
+      "shot": "04A",
+      "title": "CERITA PUKUL SEMBILAN PAGI",
+      "kind": "ai",
+      "text": "Di antara berbagai cerita yang berkembang tentang Taman Festival Bali, ada satu kisah yang cukup menarik perhatian. Kisah mengenai seorang wisatawan. Menurut cerita yang dicatat dalam penelitian Universitas Udayana tahun 2025, wisatawan tersebut memasuki kawasan Taman Festival sekitar pukul sembilan pagi. Namun, ia baru ditemukan kembali sekitar pukul empat sore. Tujuh jam. Dalam cerita itu, wisatawan tersebut mengaku sempat masuk ke sebuah dimensi lain. Ia disebut tidak menemukan jalan untuk kembali seperti semula. Bahkan, menurut narasi yang sama, pengalaman tersebut kemudian ditulis menjadi sebuah buku. Cerita itu berkembang dan menjadi salah satu bagian dari reputasi mistis Taman Festival Bali."
+    },
+    {
+      "scene": 5,
+      "shot": "FACT",
+      "title": "CERITA & BATAS FAKTA",
+      "kind": "graphic",
+      "text": "Penelitian Universitas Udayana (2025) mencatat narasi wisatawan pukul 09.00–16.00 dengan rujukan Aji Atu/Tribun Bali (2020). Identitas wisatawan, buku, dan klaim dimensi lain belum terverifikasi secara independen."
+    },
+    {
+      "scene": 6,
+      "shot": "06A",
+      "title": "MENCARI JEJAK CERITA",
+      "kind": "ai",
+      "text": "Tetapi ada sesuatu yang perlu kita pertanyakan. Siapa wisatawan tersebut? Apa nama bukunya? Dan apakah benar ada catatan yang dapat membuktikan kejadian itu? Kami menelusuri kembali asal-usul cerita ini. Salah satu sumber yang mencatatnya adalah penelitian berjudul Narasi Horor dengan Konsep Storynomics sebagai Bentuk Dark Tourism di Kawasan Terbengkalai Taman Festival Bali, yang diterbitkan dalam Jurnal Destinasi Pariwisata Universitas Udayana pada tahun 2025. Dalam penelitian itu, kisah wisatawan tersebut dicatat dengan merujuk pada Aji Atu dalam Tribun Bali tahun 2020. Namun, dokumentasi terhadap sebuah cerita tidak otomatis membuktikan bahwa seluruh peristiwa di dalamnya benar-benar terjadi. Kami belum menemukan identitas wisatawan yang dimaksud. Belum menemukan judul buku yang disebutkan. Dan belum memperoleh dokumentasi independen yang memastikan bahwa seseorang benar-benar mengalami kejadian tersebut."
+    },
+    {
+      "scene": 7,
+      "shot": "07A",
+      "title": "KETIKA WAKTU TERASA BERUBAH",
+      "kind": "ai",
+      "text": "Namun, ada satu hal yang membuat cerita ini tetap menarik. Tempat seperti Taman Festival Bali memiliki kondisi yang dapat mengubah cara seseorang merasakan lingkungannya. Bangunan yang berulang kali terlihat serupa. Lorong yang tidak memiliki penanda jelas. Vegetasi yang menutupi jalur. Dan suasana sunyi yang membuat seseorang kehilangan orientasi. Dalam kondisi tertentu, seseorang bisa kesulitan memperkirakan jarak maupun lamanya waktu yang telah berlalu. Terlebih ketika ia berada di kawasan asing tanpa petunjuk arah yang jelas. Tentu saja, penjelasan tersebut bukan bukti bahwa itulah yang dialami wisatawan dalam cerita tadi. Ini hanya salah satu kemungkinan yang masuk akal untuk dipertimbangkan."
+    },
+    {
+      "scene": 8,
+      "shot": "08A",
+      "title": "TUJUH JAM YANG TAK TERJELASKAN",
+      "kind": "ai",
+      "text": "Pada akhirnya, kisah wisatawan yang kehilangan waktu di Taman Festival Bali masih menyisakan banyak pertanyaan. Benarkah seseorang pernah masuk pukul sembilan pagi dan baru ditemukan kembali tujuh jam kemudian? Apakah ia benar-benar mengalami sesuatu yang tidak dapat dijelaskan? Ataukah kisah ini merupakan cerita yang tumbuh semakin besar seiring waktu? Kita belum memiliki cukup bukti untuk menyimpulkannya. Namun, mungkin itulah bagian paling menarik dari tempat ini. Sebuah taman hiburan yang dahulu dibangun untuk menghadirkan kegembiraan, kini justru dikenal melalui cerita-cerita yang mengundang rasa takut dan penasaran. Dan di antara semua cerita tersebut, ada satu pertanyaan yang masih tertinggal. Jika seseorang benar-benar kehilangan tujuh jam di tempat ini, apa yang sebenarnya terjadi selama waktu itu?"
+    },
+    {
+      "scene": 9,
+      "shot": "END",
+      "title": "KETIKA KAMERA MULAI MEREKAM",
+      "kind": "graphic",
+      "text": "Kisah wisatawan yang kehilangan waktu bukan satu-satunya cerita yang melekat pada Taman Festival Bali. Di episode berikutnya, kita menelusuri cerita orang-orang yang datang membawa kamera dan pengalaman yang konon tidak berjalan sesuai rencana."
+    }
+  ],
+  "automation": {
+    "build_mode": "automatic_on_push",
+    "workflow": "build-peta-sunyi-taman-festival-bali-ep04.yml",
+    "review_required": true,
+    "youtube_publish": false
+  },
+  "map": {
+    "query": "Taman Festival Bali, Padang Galak, Denpasar, Bali, Indonesia",
+    "title": "TAMAN FESTIVAL BALI",
+    "subtitle": "PADANG GALAK • DENPASAR",
+    "pin_label": "KAWASAN CERITA",
+    "footer": "PETA LOKASI • PADANG GALAK, BALI",
+    "coordinates": {
+      "lat": -8.6508,
+      "lon": 115.2635
+    }
+  }
+}
