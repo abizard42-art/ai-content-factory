@@ -50,6 +50,8 @@ jobs:
           python-version: "3.11"
       - name: Install provider clients
         run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
           python -m pip install --upgrade pip
           python -m pip install requests huggingface_hub gradio_client
       - name: Generate and upload at most three clips
