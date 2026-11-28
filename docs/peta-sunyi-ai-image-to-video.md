@@ -23,7 +23,7 @@ The review workflow downloads that file automatically. If the property is absent
 
 ## Generation provider
 
-This repository intentionally does not hard-code a paid image-to-video vendor or silently spend credits. Generate clips with the provider/account selected by the channel owner, review them, then upload the approved MP4 to the path above. Provider API automation can be added once a vendor, model, pricing limit, and credentials are explicitly selected.
+The free-first adapter is configured for the public ZeroGPU Space `zerogpu-aoti/wan2-2-fp8da-aoti-faster`, endpoint `/generate_video`. Its current app code accepts `input_image`, `prompt`, `steps`, `negative_prompt`, `duration_seconds`, `guidance_scale`, `guidance_scale_2`, `seed` and `randomize_seed`, and returns an MP4 path plus seed. The workflow uses 4 steps and 2.0 seconds as a conservative initial setting. The Space calculates requested GPU duration dynamically; the app formula estimates about 21 GPU-seconds for this setting at common aspect ratios, while our budget reserves 60 seconds per clip. Public Space availability and queue stability are not guaranteed.
 
 ## Editorial safeguards
 
@@ -76,11 +76,12 @@ Source images are downloaded from `visual-assets/peta-sunyi/<episode_id>/<image_
 ### Quota and spending safeguards
 
 - The quota manager reads the authenticated account's live ZeroGPU quota using `huggingface_hub.get_zero_gpu_quota()`; it does not assume a fixed daily allowance.
-- Maximum three clips per episode and 240 estimated GPU-seconds per workflow run.
+- Maximum three clips per episode, 240 estimated GPU-seconds per run, and a persistent 240-second internal cap per UTC day stored in Supabase.
 - A 60-second reserve is required beyond the estimated run total, and quota is rechecked immediately before each submission.
+- The daily ledger reserves the estimate before submission; if a job fails after reservation, the reservation is intentionally retained for safety.
 - If the API reports prior over-quota usage, the workflow fails closed.
 - No automatic generation retries, no Inference Providers, no paid fallback, no credit purchase, and no automatic publishing.
-- The 240-second cap is a per-run internal guardrail, not a provider-enforced daily cap. Do not dispatch multiple episodes in a day unless the remaining quota has been checked and the operator accepts that use.
+- The 240-second UTC-day cap is an internal guardrail stored in the existing Supabase `visual-assets` bucket; the provider's live quota is an additional independent gate.
 - Generation remains disabled until the Space ID, API endpoint, parameter mapping and episode motion plan have been verified.
 
 The adapter has not yet been connected to a specific model Space or used to generate a clip. A successful plan/test run does not prove that a provider is available or that generation will succeed.
