@@ -44,7 +44,7 @@ jobs:
           mkdir -p work/assets output
           mapfile -t shot_ids < <(jq -r '.scenes[].shot' "$config" | sort -u)
           mapfile -t audio_assets < <(jq -r '.scenes[] | [.ambience_asset // "", .music_asset // "", .sfx_asset // ""][] | select(length > 0)' "$config" | sort -u)
-          mapfile -t motion_videos < <(jq -r '.scenes[].motion_video_asset // empty' "$config" | sort -u)
+          mapfile -t motion_videos < <(jq -r '([.scenes[]?.motion_video_asset // empty] + [.motion_generation.scenes[]?.output // empty])[]' "$config" | sort -u)
           mkdir -p work/assets/audio work/assets/video
           for video in "${motion_videos[@]}"; do
             object_path="peta-sunyi/$EPISODE_ID/video/$video"
