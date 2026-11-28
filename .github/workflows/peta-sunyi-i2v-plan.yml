@@ -1,0 +1,50 @@
+name: Peta Sunyi - I2V Plan (Bali)
+
+on:
+  workflow_dispatch:
+    inputs:
+      episode_id:
+        description: "Episode config filename without .json"
+        required: true
+        default: "taman-festival-bali"
+        type: string
+      source_ref:
+        description: "Branch containing the I2V engine"
+        required: true
+        default: "peta-sunyi/longform-motion-engine-v1"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: peta-sunyi-i2v-plan
+  cancel-in-progress: false
+
+jobs:
+  plan-only:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout selected source branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.source_ref }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Validate episode and print I2V plan (NO GPU)
+        env:
+          EPISODE_ID: ${{ inputs.episode_id }}
+        run: |
+          set -euo pipefail
+          [[ "$EPISODE_ID" =~ ^[a-zA-Z0-9][a-zA-Z0-9_-]{1,79}$ ]] || { echo "Invalid episode_id"; exit 1; }
+          config="episodes/peta-sunyi/$EPISODE_ID.json"
+          test -s "$config" || { echo "Episode config not found: $config"; exit 1; }
+          python -m pip install --upgrade pip
+          python -m pip install requests
+          python scripts/peta-sunyi/generate_i2v.py --episode-config "$config" --plan-only
+          python -m py_compile scripts/peta-sunyi/generate_i2v.py scripts/peta-sunyi/hf_i2v_provider.py
+          python -m unittest discover -s tests -p 'test_peta_sunyi_i2v_guardrails.py'
