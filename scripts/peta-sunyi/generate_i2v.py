@@ -250,7 +250,17 @@ def main():
         raise RuntimeError("Missing HF_TOKEN, HF_I2V_SPACE_ID, HF_I2V_API_NAME or Supabase secrets.")
     image_param = os.getenv("HF_I2V_IMAGE_PARAM", "image")
     prompt_param = os.getenv("HF_I2V_PROMPT_PARAM", "prompt")
-    negative_param = os.getenv("HF_I2V_NEGATIVE_PROMPT_PARAM", "")
+    negative_param = os.getenv("HF_I2V_NEGATIVE_PROMPT_PARAM", "negative_prompt")
+    default_negative = os.getenv(
+        "HF_I2V_DEFAULT_NEGATIVE_PROMPT",
+        "no text, no watermark, no flicker, no camera cuts, no new people or objects, preserve original composition"
+    )
+    extra_inputs = json.loads(os.getenv(
+        "HF_I2V_EXTRA_INPUTS",
+        '{"steps":4,"duration_seconds":2.0,"guidance_scale":1.0,"guidance_scale_2":1.0,"seed":42,"randomize_seed":false}'
+    ))
+    if not isinstance(extra_inputs, dict):
+        raise RuntimeError("HF_I2V_EXTRA_INPUTS must be a JSON object.")
     reserve = int(os.getenv("HF_I2V_RESERVE_GPU_SECONDS", DEFAULT_RESERVE_GPU_SECONDS))
     estimated_total = plan["estimated_gpu_seconds"]
 
@@ -262,7 +272,8 @@ def main():
     print(f"HF_DAILY_INTERNAL_BUDGET={ledger.get('used_seconds', 0)}s used + "
           f"{ledger.get('reserved_seconds', 0)}s reserved; cap={DAILY_GPU_SECONDS_CAP}s UTC")
     provider = GradioImageToVideoProvider(
-        space_id, api_name, token, image_param, prompt_param, negative_param
+        space_id, api_name, token, image_param, prompt_param, negative_param,
+        default_negative, extra_inputs
     )
     assets_dir = pathlib.Path(args.assets_dir)
     output_dir = pathlib.Path(args.output_dir)
