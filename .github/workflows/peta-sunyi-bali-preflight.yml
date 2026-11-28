@@ -1,0 +1,105 @@
+name: Peta Sunyi - Bali Preflight (Plan + Quota, Read Only)
+
+on:
+  workflow_dispatch:
+    inputs:
+      episode_id:
+        description: "Episode config filename without .json"
+        required: true
+        default: "taman-festival-bali"
+        type: string
+      source_ref:
+        description: "Branch containing the I2V engine and episode config"
+        required: true
+        default: "peta-sunyi/longform-motion-engine-v1"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: peta-sunyi-bali-preflight
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout selected source branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.source_ref }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install read-only preflight dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install requests huggingface_hub
+
+      - name: Validate I2V plan and guardrail tests (NO GPU)
+        id: plan
+        env:
+          EPISODE_ID: ${{ inputs.episode_id }}
+        run: |
+          set -euo pipefail
+          [[ "$EPISODE_ID" =~ ^[a-zA-Z0-9][a-zA-Z0-9_-]{1,79}$ ]] || { echo "Invalid episode_id"; exit 1; }
+          CONFIG="episodes/peta-sunyi/$EPISODE_ID.json"
+          test -s "$CONFIG" || { echo "Episode config not found: $CONFIG"; exit 1; }
+          python scripts/peta-sunyi/generate_i2v.py --episode-config "$CONFIG" --plan-only
+          python -m py_compile scripts/peta-sunyi/generate_i2v.py scripts/peta-sunyi/hf_i2v_provider.py
+          python -m unittest discover -s tests -p 'test_peta_sunyi_i2v_guardrails.py'
+          echo "CONFIG=$CONFIG" >> "$GITHUB_OUTPUT"
+
+      - name: Check live Hugging Face ZeroGPU quota (READ ONLY)
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          CONFIG: ${{ steps.plan.outputs.CONFIG }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          import os
+          import sys
+          from pathlib import Path
+          from huggingface_hub import get_zero_gpu_quota
+
+          token = os.environ.get("HF_TOKEN", "")
+          if not token:
+              print("PREFLIGHT=BLOCKED; repository secret HF_TOKEN is missing.")
+              sys.exit(1)
+
+          config = json.loads(Path(os.environ["CONFIG"]).read_text(encoding="utf-8"))
+          scenes = config.get("motion_generation", {}).get("scenes", [])
+          estimated = sum(int(scene.get("estimated_gpu_seconds", 60)) for scene in scenes)
+          reserve = 60
+          required = estimated + reserve
+
+          quota = get_zero_gpu_quota(token=token)
+          snapshot = {
+              "episode_id": config.get("episode_id"),
+              "clip_count": len(scenes),
+              "estimated_gpu_seconds": estimated,
+              "reserve_gpu_seconds": reserve,
+              "required_gpu_seconds": required,
+              "base_gpu_seconds": float(quota.base),
+              "remaining_gpu_seconds": float(quota.remaining),
+              "overquota_used_gpu_seconds": float(quota.overquota_used or 0),
+              "resets_at": quota.resets_at.isoformat() if quota.resets_at else None,
+          }
+          safe = (
+              len(scenes) <= 3
+              and estimated > 0
+              and required <= 240
+              and snapshot["remaining_gpu_seconds"] >= required
+              and snapshot["overquota_used_gpu_seconds"] == 0
+          )
+          snapshot["preflight_gate"] = "PASS_READ_ONLY" if safe else "BLOCKED"
+          print("PETA_SUNYI_PREFLIGHT=" + json.dumps(snapshot))
+          print("READ_ONLY=true; NO_SPACE_REQUEST; NO_GPU_GENERATION; NO_UPLOAD; NO_PAID_FALLBACK")
+          if not safe:
+              sys.exit("Preflight blocked. No generation was submitted.")
+          PY
