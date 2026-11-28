@@ -2,6 +2,7 @@
 """Peta Sunyi long-form horror renderer: 16:9, multi-speaker TTS, subtitles, pencil stills."""
 import json, os, pathlib, re, subprocess, textwrap, html, math, time
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageOps
+from animated_overlays import create_overlay
 
 ROOT = pathlib.Path("work")
 ASSETS = ROOT / "assets"
@@ -287,6 +288,9 @@ def main():
             "fontcolor=white:fontsize=23:x=(w-text_w)/2:y=108,"
             f"ass={ass}")
         clip=OUT/f"long-{i:02d}.mp4"
+        overlay=OUT/f"long-{i:02d}-motion.gif"
+        create_overlay(overlay, length, motion=scene.get("motion_profile", "atmosphere"),
+                       graphic=scene.get("graphic"), seed=i * 97)
         cmd=["ffmpeg","-y","-loop","1","-i",str(src),"-i",str(audio)]
         audio_filters=["[1:a]volume=1.0[voice]"]
         mix_labels=["[voice]"]
@@ -312,12 +316,20 @@ def main():
             delay=int(scene.get("sfx_delay_ms",900))
             audio_filters.append(f"[{input_index}:a]volume=0.30,adelay={delay}|{delay}[{label}]")
             mix_labels.append(f"[{label}]")
+        overlay_index=input_index
+        cmd += ["-ignore_loop","1","-i",str(overlay)]
+        complex_filters=[]
         if len(mix_labels)>1:
-            audio_filters.append("".join(mix_labels)+f"amix=inputs={len(mix_labels)}:duration=first:dropout_transition=2:normalize=0[aout]")
-            cmd += ["-filter_complex",";".join(audio_filters),"-map","0:v:0","-map","[aout]"]
+            complex_filters.append("".join(mix_labels)+f"amix=inputs={len(mix_labels)}:duration=first:dropout_transition=2:normalize=0[aout]")
+        complex_filters.append(f"[0:v]{vf}[basev]")
+        complex_filters.append(f"[{overlay_index}:v]scale={W}:{H}:flags=bicubic[ov]")
+        complex_filters.append("[basev][ov]overlay=0:0:format=auto:shortest=1[vout]")
+        cmd += ["-filter_complex",";".join(complex_filters),"-map","[vout]"]
+        if len(mix_labels)>1:
+            cmd += ["-map","[aout]"]
         else:
-            cmd += ["-map","0:v:0","-map","1:a:0"]
-        cmd += ["-t",f"{length:.3f}","-vf",vf,"-r",str(FPS),"-c:v","libx264",
+            cmd += ["-map","1:a:0"]
+        cmd += ["-t",f"{length:.3f}","-r",str(FPS),"-c:v","libx264",
                 "-preset","veryfast","-crf","20","-pix_fmt","yuv420p",
                 "-c:a","aac","-b:a","192k","-shortest",str(clip)]
         run(cmd)
