@@ -272,16 +272,26 @@ def main():
         )
         length=duration(audio)+0.45
         print(f"TTS_DIRECTION={speaker}; delivery={delivery}; rate={rate}; pitch={scene.get('tts_pitch', '+0Hz')}")
+        motion_video = scene.get("motion_video_asset")
         src=ASSETS/f"peta-sunyi-{scene['shot']}.jpg"
-        if not src.exists(): raise FileNotFoundError(f"Aset visual tidak ditemukan: {src}")
-        if style=="rough_pencil":
+        video_src = ASSETS/"video"/motion_video if motion_video else None
+        if video_src and not video_src.exists():
+            raise FileNotFoundError(f"AI motion video tidak ditemukan: {video_src}")
+        if not video_src and not src.exists():
+            raise FileNotFoundError(f"Aset visual tidak ditemukan: {src}")
+        if not video_src and style=="rough_pencil":
             styled=OUT/f"long-{i:02d}-pencil.jpg"; pencil(src,styled); src=styled
         ass=subtitles(vtt,OUT/f"long-{i:02d}.ass",speaker,scene["text"],duration(audio))
         title=scene.get("title","").replace("\\","\\\\").replace("'","\\'")
-        vf=(f"scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},"
-            f"zoompan=z='min(zoom+0.00018,1.035)':d={max(1,math.ceil(length*FPS))}:"
-            f"x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s={W}x{H}:fps={FPS},"
-            "drawbox=x=0:y=0:w=iw:h=100:color=black@0.55:t=fill,"
+        if video_src:
+            # AI image-to-video clip: preserve subject motion; only normalize framing/FPS.
+            vf=(f"trim=duration={length:.3f},setpts=PTS-STARTPTS,fps={FPS},"
+                f"scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},")
+        else:
+            vf=(f"scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},"
+                f"zoompan=z='min(zoom+0.00018,1.035)':d={max(1,math.ceil(length*FPS))}:"
+                f"x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s={W}x{H}:fps={FPS},")
+        vf += ("drawbox=x=0:y=0:w=iw:h=100:color=black@0.55:t=fill,"
             f"drawtext=text='{title}':fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:"
             "fontcolor=white:fontsize=38:x=(w-text_w)/2:y=29,"
             "drawbox=x=0:y=100:w=iw:h=42:color=black@0.58:t=fill,"
@@ -292,7 +302,10 @@ def main():
         overlay=OUT/f"long-{i:02d}-motion.gif"
         create_overlay(overlay, length, motion=scene.get("motion_profile", "atmosphere"),
                        graphic=scene.get("graphic"), seed=i * 97)
-        cmd=["ffmpeg","-y","-loop","1","-i",str(src),"-i",str(audio)]
+        if video_src:
+            cmd=["ffmpeg","-y","-stream_loop","-1","-i",str(video_src),"-i",str(audio)]
+        else:
+            cmd=["ffmpeg","-y","-loop","1","-i",str(src),"-i",str(audio)]
         audio_filters=["[1:a]volume=1.0[voice]"]
         mix_labels=["[voice]"]
         input_index=2
@@ -336,7 +349,7 @@ def main():
                 "-c:a","aac","-b:a","192k","-shortest",str(clip)]
         run(cmd)
         clips.append(clip)
-        print(f"LONG_SCENE_OK={i}; speaker={speaker}; seconds={length:.1f}")
+        print(f"LONG_SCENE_OK={i}; speaker={speaker}; seconds={length:.1f}; visual={'AI_IMAGE_TO_VIDEO' if video_src else 'STILL_WITH_MOTION_OVERLAY'}")
     concat=OUT/"long-concat.txt"
     concat.write_text("".join(f"file '{p.resolve()}'\n" for p in clips),encoding="utf-8")
     final=OUT/f"{eid}-long-review.mp4"
