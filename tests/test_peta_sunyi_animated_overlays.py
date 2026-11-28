@@ -2,7 +2,12 @@ import pathlib
 import tempfile
 import unittest
 from PIL import Image
-from scripts.peta_sunyi.animated_overlays import create_overlay
+import importlib.util
+MODULE_PATH = pathlib.Path(__file__).resolve().parents[1] / "scripts" / "peta-sunyi" / "animated_overlays.py"
+SPEC = importlib.util.spec_from_file_location("animated_overlays", MODULE_PATH)
+MODULE = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(MODULE)
+create_overlay = MODULE.create_overlay
 
 class AnimatedOverlayTests(unittest.TestCase):
     def test_motion_overlay_has_multiple_frames_and_transparency(self):
