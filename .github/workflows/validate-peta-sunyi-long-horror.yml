@@ -16,7 +16,10 @@ on:
     paths:
       - "scripts/peta-sunyi/render_long_horror.py"
       - "scripts/peta-sunyi/animated_overlays.py"
+      - "scripts/peta-sunyi/generate_i2v.py"
+      - "scripts/peta-sunyi/hf_i2v_provider.py"
       - "tests/test_peta_sunyi_animated_overlays.py"
+      - "tests/test_peta_sunyi_i2v_guardrails.py"
       - "tests/test_peta_sunyi_subtitles.py"
       - "episodes/peta-sunyi/*.json"
       - ".github/workflows/validate-peta-sunyi-long-horror.yml"
@@ -33,9 +36,10 @@ jobs:
         run: python -m pip install pillow requests
       - name: Validate Python syntax and narration tests
         run: |
-          python -m py_compile scripts/peta-sunyi/render_long_horror.py scripts/peta-sunyi/animated_overlays.py
+          python -m py_compile scripts/peta-sunyi/render_long_horror.py scripts/peta-sunyi/animated_overlays.py scripts/peta-sunyi/generate_i2v.py scripts/peta-sunyi/hf_i2v_provider.py
           python -m unittest discover -s tests -p 'test_peta_sunyi_subtitles.py'
           python -m unittest discover -s tests -p 'test_peta_sunyi_animated_overlays.py'
+          python -m unittest discover -s tests -p 'test_peta_sunyi_i2v_guardrails.py'
       - name: Validate long-form episode JSON
         run: |
           python - <<'PY'
