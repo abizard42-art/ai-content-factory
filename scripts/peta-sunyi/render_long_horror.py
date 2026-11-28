@@ -254,6 +254,8 @@ def main():
     eid=cfg["episode_id"]
     voices=cfg.get("speaker_voices",{})
     style=cfg.get("visual_style","rough_pencil")
+    motion_jobs = cfg.get("motion_generation", {}).get("scenes", [])
+    motion_by_shot = {job["shot"]: job["output"] for job in motion_jobs if job.get("shot") and job.get("output")}
     clips=[]
     for i,scene in enumerate(cfg["scenes"],1):
         speaker=scene.get("speaker","NARATOR")
@@ -272,7 +274,7 @@ def main():
         )
         length=duration(audio)+0.45
         print(f"TTS_DIRECTION={speaker}; delivery={delivery}; rate={rate}; pitch={scene.get('tts_pitch', '+0Hz')}")
-        motion_video = scene.get("motion_video_asset")
+        motion_video = scene.get("motion_video_asset") or motion_by_shot.get(scene.get("shot"))
         src=ASSETS/f"peta-sunyi-{scene['shot']}.jpg"
         video_src = ASSETS/"video"/motion_video if motion_video else None
         if video_src and not video_src.exists():
