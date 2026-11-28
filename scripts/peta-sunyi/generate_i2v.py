@@ -297,6 +297,8 @@ def main():
         after_snapshot = quota_snapshot(quota_after)
         actual_delta = max(0, round(current["remaining"] - after_snapshot["remaining"]))
         settle_daily_budget(supabase_url, supabase_key, ledger, job, actual_delta)
+        if after_snapshot["overquota_used"] > current["overquota_used"]:
+            raise RuntimeError("ZeroGPU over-quota usage increased; stopping immediately. No further jobs will be submitted.")
         target = output_dir / job["output"]
         normalize_provider_video(video_path, target)
         object_path = upload_video(supabase_url, supabase_key, config["episode_id"],
