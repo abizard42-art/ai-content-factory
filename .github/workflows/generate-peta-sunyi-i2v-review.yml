@@ -29,12 +29,16 @@ jobs:
         with:
           python-version: "3.11"
       - name: Validate plan and guardrails (no GPU calls)
+        env:
+          EPISODE_ID: ${{ inputs.episode_id }}
         run: |
+          set -euo pipefail
+          [[ "$EPISODE_ID" =~ ^[a-zA-Z0-9][a-zA-Z0-9_-]{1,79}$ ]] || { echo "Invalid episode_id"; exit 1; }
+          config="episodes/peta-sunyi/$EPISODE_ID.json"
+          test -s "$config" || { echo "Episode config not found"; exit 1; }
           python -m pip install --upgrade pip
           python -m pip install requests
-          python scripts/peta-sunyi/generate_i2v.py \
-            --episode-config "episodes/peta-sunyi/${{ inputs.episode_id }}.json" \
-            --plan-only
+          python scripts/peta-sunyi/generate_i2v.py --episode-config "$config" --plan-only
           python -m py_compile scripts/peta-sunyi/generate_i2v.py scripts/peta-sunyi/hf_i2v_provider.py
           python -m unittest discover -s tests -p 'test_peta_sunyi_i2v_guardrails.py'
 
@@ -56,6 +60,7 @@ jobs:
           python -m pip install requests huggingface_hub gradio_client
       - name: Generate and upload at most three clips
         env:
+          EPISODE_ID: ${{ inputs.episode_id }}
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
           HF_I2V_SPACE_ID: "zerogpu-aoti/wan2-2-fp8da-aoti-faster"
           HF_I2V_API_NAME: "/generate_video"
@@ -71,7 +76,8 @@ jobs:
           set -euo pipefail
           test -n "$HF_TOKEN" || { echo "HF_TOKEN secret missing"; exit 1; }
           test -n "$HF_I2V_SPACE_ID" || { echo "HF I2V Space configuration missing"; exit 1; }
+          [[ "$EPISODE_ID" =~ ^[a-zA-Z0-9][a-zA-Z0-9_-]{1,79}$ ]] || { echo "Invalid episode_id"; exit 1; }
           test -n "$HF_I2V_API_NAME" || { echo "HF I2V API endpoint missing"; exit 1; }
-          python scripts/peta-sunyi/generate_i2v.py \
-            --episode-config "episodes/peta-sunyi/${{ inputs.episode_id }}.json" \
-            --execute
+          config="episodes/peta-sunyi/$EPISODE_ID.json"
+          test -s "$config" || { echo "Episode config not found"; exit 1; }
+          python scripts/peta-sunyi/generate_i2v.py --episode-config "$config" --execute
