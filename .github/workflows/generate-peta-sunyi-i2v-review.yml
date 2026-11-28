@@ -1,0 +1,83 @@
+name: Generate Peta Sunyi image-to-video clips (review only)
+
+on:
+  workflow_dispatch:
+    inputs:
+      episode_id:
+        description: "Episode config filename without .json"
+        required: true
+        type: string
+      confirm_generation:
+        description: "Must be true to submit jobs and consume free ZeroGPU quota"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: peta-sunyi-hf-i2v
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validate plan and guardrails (no GPU calls)
+        env:
+          EPISODE_ID: ${{ inputs.episode_id }}
+        run: |
+          set -euo pipefail
+          [[ "$EPISODE_ID" =~ ^[a-zA-Z0-9][a-zA-Z0-9_-]{1,79}$ ]] || { echo "Invalid episode_id"; exit 1; }
+          config="episodes/peta-sunyi/$EPISODE_ID.json"
+          test -s "$config" || { echo "Episode config not found"; exit 1; }
+          python -m pip install --upgrade pip
+          python -m pip install requests
+          python scripts/peta-sunyi/generate_i2v.py --episode-config "$config" --plan-only
+          python -m py_compile scripts/peta-sunyi/generate_i2v.py scripts/peta-sunyi/hf_i2v_provider.py
+          python -m unittest discover -s tests -p 'test_peta_sunyi_i2v_guardrails.py'
+
+  generate:
+    if: ${{ inputs.confirm_generation == true }}
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install provider clients
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+          python -m pip install --upgrade pip
+          python -m pip install requests huggingface_hub gradio_client
+      - name: Generate and upload at most three clips
+        env:
+          EPISODE_ID: ${{ inputs.episode_id }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_I2V_SPACE_ID: "zerogpu-aoti/wan2-2-fp8da-aoti-faster"
+          HF_I2V_API_NAME: "/generate_video"
+          HF_I2V_IMAGE_PARAM: "input_image"
+          HF_I2V_PROMPT_PARAM: "prompt"
+          HF_I2V_NEGATIVE_PROMPT_PARAM: "negative_prompt"
+          HF_I2V_DEFAULT_NEGATIVE_PROMPT: "no text, no watermark, no flicker, no camera cuts, no new people or objects, preserve original composition"
+          HF_I2V_EXTRA_INPUTS: '{"steps":4,"duration_seconds":2.0,"guidance_scale":1.0,"guidance_scale_2":1.0,"seed":42,"randomize_seed":false}'
+          HF_I2V_RESERVE_GPU_SECONDS: "60"
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: |
+          set -euo pipefail
+          test -n "$HF_TOKEN" || { echo "HF_TOKEN secret missing"; exit 1; }
+          test -n "$HF_I2V_SPACE_ID" || { echo "HF I2V Space configuration missing"; exit 1; }
+          [[ "$EPISODE_ID" =~ ^[a-zA-Z0-9][a-zA-Z0-9_-]{1,79}$ ]] || { echo "Invalid episode_id"; exit 1; }
+          test -n "$HF_I2V_API_NAME" || { echo "HF I2V API endpoint missing"; exit 1; }
+          config="episodes/peta-sunyi/$EPISODE_ID.json"
+          test -s "$config" || { echo "Episode config not found"; exit 1; }
+          python scripts/peta-sunyi/generate_i2v.py --episode-config "$config" --execute

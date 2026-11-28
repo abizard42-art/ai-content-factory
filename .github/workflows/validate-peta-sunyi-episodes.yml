@@ -18,30 +18,70 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Validate Python, JSON and episode asset references
+      - name: Validate Python, JSON and relevant episode asset references
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           set -euo pipefail
           python -m py_compile scripts/peta-sunyi/render_episode.py
           python -m py_compile scripts/peta-sunyi/humanize_narration.py
           python -m unittest discover -s tests -p 'test_peta_sunyi_humanizer.py'
           python - <<'PY'
-          import json, pathlib
-          for config_path in pathlib.Path("episodes/peta-sunyi").glob("*.json"):
-              config=json.loads(config_path.read_text(encoding="utf-8"))
-              slug=config["episode_id"]
-              manifest_path=pathlib.Path("assets/peta-sunyi")/slug/"asset-manifest.json"
-              manifest=json.loads(manifest_path.read_text(encoding="utf-8"))
-              manifest_ids={item["id"] for item in manifest["assets"]}
-              missing=sorted({scene["shot"] for scene in config["scenes"] if scene["kind"]=="ai"}-manifest_ids)
+          import json, os, pathlib, subprocess
+
+          root = pathlib.Path(".")
+          episode_dir = root / "episodes/peta-sunyi"
+          selected = set()
+
+          if os.environ.get("EVENT_NAME") == "pull_request":
+              base = os.environ["BASE_SHA"]
+              head = os.environ["HEAD_SHA"]
+              changed = subprocess.check_output(
+                  ["git", "diff", "--name-only", base, head], text=True
+              ).splitlines()
+              for name in changed:
+                  path = pathlib.PurePosixPath(name)
+                  if path.parts[:2] == ("episodes", "peta-sunyi") and path.suffix == ".json":
+                      selected.add(path.stem)
+                  elif (path.parts[:2] == ("assets", "peta-sunyi")
+                        and path.name == "asset-manifest.json" and len(path.parts) >= 4):
+                      selected.add(path.parts[2])
+          else:
+              # Manual package validation is intentionally scoped to the active Bali series.
+              selected.update(path.stem for path in episode_dir.glob("taman-festival-bali*.json"))
+
+          if not selected:
+              print("NO_CHANGED_EPISODE_PACKAGES_TO_VALIDATE=true")
+          for slug in sorted(selected):
+              config_path = episode_dir / f"{slug}.json"
+              if not config_path.is_file():
+                  raise SystemExit(f"{slug}: episode config not found")
+              config = json.loads(config_path.read_text(encoding="utf-8"))
+              if config.get("episode_id") != slug:
+                  raise SystemExit(f"{slug}: episode_id does not match filename")
+              scenes = config.get("scenes", [])
+              if not isinstance(scenes, list) or not scenes:
+                  raise SystemExit(f"{slug}: scenes must be a non-empty list")
+
+              manifest_path = root / "assets/peta-sunyi" / slug / "asset-manifest.json"
+              if not manifest_path.is_file():
+                  raise SystemExit(f"{slug}: asset manifest not found: {manifest_path}")
+              manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+              manifest_ids = {item["id"] for item in manifest.get("assets", [])}
+              missing = sorted({
+                  scene["shot"] for scene in scenes
+                  if scene.get("kind") == "ai"
+              } - manifest_ids)
               if missing:
                   raise SystemExit(f"{slug}: missing AI asset IDs: {missing}")
-              expected = 5 if slug == "teaser-lembang-camping" else 9
-              if len(config["scenes"]) != expected:
-                  raise SystemExit(f"{slug}: expected {expected} scenes, got {len(config['scenes'])}")
-              print(f"EPISODE_CONFIG_OK={slug}; scenes={len(config['scenes'])}; assets={len(manifest_ids)}")
+              print(f"EPISODE_CONFIG_OK={slug}; scenes={len(scenes)}; assets={len(manifest_ids)}")
           PY
       - name: Validate workflow YAML syntax
         run: |

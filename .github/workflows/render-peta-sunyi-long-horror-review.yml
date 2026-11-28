@@ -44,7 +44,20 @@ jobs:
           mkdir -p work/assets output
           mapfile -t shot_ids < <(jq -r '.scenes[].shot' "$config" | sort -u)
           mapfile -t audio_assets < <(jq -r '.scenes[] | [.ambience_asset // "", .music_asset // "", .sfx_asset // ""][] | select(length > 0)' "$config" | sort -u)
-          mkdir -p work/assets/audio
+          mapfile -t motion_videos < <(jq -r '([.scenes[]?.motion_video_asset // empty] + [.motion_generation.scenes[]?.output // empty])[]' "$config" | sort -u)
+          mkdir -p work/assets/audio work/assets/video
+          for video in "${motion_videos[@]}"; do
+            object_path="peta-sunyi/$EPISODE_ID/video/$video"
+            status="$(curl --silent --show-error --output "work/assets/video/$video" --write-out "%{http_code}" \\
+              "${SUPABASE_URL}/storage/v1/object/visual-assets/$object_path" \\
+              -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" || true)"
+            if [ "$status" != "200" ]; then
+              echo "ERROR: AI motion video $object_path belum ada (HTTP $status)."
+              exit 1
+            fi
+            test -s "work/assets/video/$video"
+            echo "AI_MOTION_VIDEO_OK=$object_path"
+          done
           for audio in "${audio_assets[@]}"; do
             object_path="peta-sunyi/$EPISODE_ID/audio/$audio"
             status="$(curl --silent --show-error --output "work/assets/audio/$audio" --write-out "%{http_code}" \

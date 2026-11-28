@@ -110,6 +110,36 @@
       "text": "Pada 2026, kawasan bekas Taman Festival kembali memasuki babak baru. Bangunan-bangunan lama mulai dibongkar, dan kawasan ini direncanakan untuk ditata kembali dengan pembagian zona pemanfaatan. Secara fisik, wajah Taman Festival mungkin akan semakin sulit dikenali. Namun, sebuah tempat tidak selalu meninggalkan cerita bersama bangunannya. Sebagian cerita tetap hidup melalui ingatan warga, kesaksian pengunjung, dan kisah-kisah yang terus diceritakan dari satu orang ke orang lainnya. Lalu, dari sekian banyak cerita yang berkembang di kawasan ini… Ada satu kisah yang menarik perhatian. Tentang sebuah pohon besar, sosok penjaga berwarna putih, dan legenda yang membuat sebagian orang memandang kawasan ini dengan cara berbeda. Benarkah ada sesuatu yang menjaga tempat itu? Atau semuanya hanya bagian dari cerita yang tumbuh di antara reruntuhan? Kita akan membahasnya di episode berikutnya."
     }
   ],
+  "motion_generation": {
+    "status": "planned",
+    "output_format": "9:16",
+    "scenes": [
+      {
+        "shot": "01A",
+        "image_asset": "peta-sunyi-01A.jpg",
+        "output": "motion-01A.mp4",
+        "prompt": "Create a restrained 2-second image-to-video animation from this vertical 9:16 historical reconstruction of the abandoned former Taman Festival Bali. Preserve the exact architecture, framing, lighting, vegetation placement and overall composition. Add only gentle natural movement: a light breeze moving a few leaves and thin branches, faint humid tropical haze drifting slowly, and a very subtle cinematic forward camera creep. Keep all buildings and roots structurally stable. Documentary atmosphere, not a new scene. No new people, no ghosts, no creatures, no added objects, no text, no cuts, no morphing, no flicker.",
+        "negative_prompt": "No new people or objects, no ghosts, no supernatural figures, no architectural deformation, no melting, no morphing, no scene cuts, no camera shake, no flicker, no text, no watermark, preserve original composition.",
+        "estimated_gpu_seconds": 60
+      },
+      {
+        "shot": "06A",
+        "image_asset": "peta-sunyi-06A.jpg",
+        "output": "motion-06A.mp4",
+        "prompt": "Animate this vertical 9:16 charcoal illustration of tropical vegetation reclaiming the abandoned former Taman Festival Bali. Preserve the exact framing, building geometry, roots and composition. Show only subtle wind-driven movement in small leaves and hanging foliage, with a thin layer of mist drifting slowly through the corridor. Keep concrete, roots and architecture fixed. Very slow cinematic camera drift, restrained documentary mood. No new people, no supernatural entities, no transformation of the scene.",
+        "negative_prompt": "No new people or objects, no ghosts, no monsters, no architectural changes, no root movement, no melting, no morphing, no cuts, no camera shake, no flicker, no text, no watermark, preserve original composition.",
+        "estimated_gpu_seconds": 60
+      },
+      {
+        "shot": "07A",
+        "image_asset": "peta-sunyi-07A.jpg",
+        "output": "motion-07A.mp4",
+        "prompt": "Create a restrained 2-second motion pass for this vertical 9:16 folklore-atmosphere illustration of the former Taman Festival Bali grounds. Preserve the banyan tree silhouette, architecture, cultural context, lighting and composition exactly. Add gentle movement only to a few outer leaves and fine branches, with very subtle night haze drifting across the background and a slow cinematic camera push. Do not reveal or invent any supernatural being; this is atmosphere only, not evidence of paranormal activity.",
+        "negative_prompt": "No ghosts, no white figures, no monsters, no new people, no ritual scene, no invented cultural symbols, no architecture changes, no morphing, no cuts, no camera shake, no flicker, no text, no watermark, preserve original composition.",
+        "estimated_gpu_seconds": 60
+      }
+    ]
+  },
   "automation": {
     "build_mode": "automatic_on_push",
     "workflow": "build-peta-sunyi-taman-festival-bali.yml",

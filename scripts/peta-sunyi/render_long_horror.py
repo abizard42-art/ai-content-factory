@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Peta Sunyi long-form horror renderer: 16:9, multi-speaker TTS, subtitles, pencil stills."""
-import json, os, pathlib, re, subprocess, textwrap, html, math, time
+import json, os, pathlib, re, subprocess, textwrap, html, math, time, sys
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageOps
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+from animated_overlays import create_overlay
 
 ROOT = pathlib.Path("work")
 ASSETS = ROOT / "assets"
@@ -252,6 +254,8 @@ def main():
     eid=cfg["episode_id"]
     voices=cfg.get("speaker_voices",{})
     style=cfg.get("visual_style","rough_pencil")
+    motion_jobs = cfg.get("motion_generation", {}).get("scenes", [])
+    motion_by_shot = {job["shot"]: job["output"] for job in motion_jobs if job.get("shot") and job.get("output")}
     clips=[]
     for i,scene in enumerate(cfg["scenes"],1):
         speaker=scene.get("speaker","NARATOR")
@@ -270,16 +274,26 @@ def main():
         )
         length=duration(audio)+0.45
         print(f"TTS_DIRECTION={speaker}; delivery={delivery}; rate={rate}; pitch={scene.get('tts_pitch', '+0Hz')}")
+        motion_video = scene.get("motion_video_asset") or motion_by_shot.get(scene.get("shot"))
         src=ASSETS/f"peta-sunyi-{scene['shot']}.jpg"
-        if not src.exists(): raise FileNotFoundError(f"Aset visual tidak ditemukan: {src}")
-        if style=="rough_pencil":
+        video_src = ASSETS/"video"/motion_video if motion_video else None
+        if video_src and not video_src.exists():
+            raise FileNotFoundError(f"AI motion video tidak ditemukan: {video_src}")
+        if not video_src and not src.exists():
+            raise FileNotFoundError(f"Aset visual tidak ditemukan: {src}")
+        if not video_src and style=="rough_pencil":
             styled=OUT/f"long-{i:02d}-pencil.jpg"; pencil(src,styled); src=styled
         ass=subtitles(vtt,OUT/f"long-{i:02d}.ass",speaker,scene["text"],duration(audio))
         title=scene.get("title","").replace("\\","\\\\").replace("'","\\'")
-        vf=(f"scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},"
-            f"zoompan=z='min(zoom+0.00018,1.035)':d={max(1,math.ceil(length*FPS))}:"
-            f"x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s={W}x{H}:fps={FPS},"
-            "drawbox=x=0:y=0:w=iw:h=100:color=black@0.55:t=fill,"
+        if video_src:
+            # AI image-to-video clip: preserve subject motion; only normalize framing/FPS.
+            vf=(f"trim=duration={length:.3f},setpts=PTS-STARTPTS,fps={FPS},"
+                f"scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},")
+        else:
+            vf=(f"scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},"
+                f"zoompan=z='min(zoom+0.00018,1.035)':d={max(1,math.ceil(length*FPS))}:"
+                f"x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s={W}x{H}:fps={FPS},")
+        vf += ("drawbox=x=0:y=0:w=iw:h=100:color=black@0.55:t=fill,"
             f"drawtext=text='{title}':fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:"
             "fontcolor=white:fontsize=38:x=(w-text_w)/2:y=29,"
             "drawbox=x=0:y=100:w=iw:h=42:color=black@0.58:t=fill,"
@@ -287,7 +301,13 @@ def main():
             "fontcolor=white:fontsize=23:x=(w-text_w)/2:y=108,"
             f"ass={ass}")
         clip=OUT/f"long-{i:02d}.mp4"
-        cmd=["ffmpeg","-y","-loop","1","-i",str(src),"-i",str(audio)]
+        overlay=OUT/f"long-{i:02d}-motion.gif"
+        create_overlay(overlay, length, motion=scene.get("motion_profile", "atmosphere"),
+                       graphic=scene.get("graphic"), seed=i * 97)
+        if video_src:
+            cmd=["ffmpeg","-y","-stream_loop","-1","-i",str(video_src),"-i",str(audio)]
+        else:
+            cmd=["ffmpeg","-y","-loop","1","-i",str(src),"-i",str(audio)]
         audio_filters=["[1:a]volume=1.0[voice]"]
         mix_labels=["[voice]"]
         input_index=2
@@ -312,17 +332,26 @@ def main():
             delay=int(scene.get("sfx_delay_ms",900))
             audio_filters.append(f"[{input_index}:a]volume=0.30,adelay={delay}|{delay}[{label}]")
             mix_labels.append(f"[{label}]")
+            input_index+=1
+        overlay_index=input_index
+        cmd += ["-ignore_loop","1","-i",str(overlay)]
+        complex_filters=[]
         if len(mix_labels)>1:
-            audio_filters.append("".join(mix_labels)+f"amix=inputs={len(mix_labels)}:duration=first:dropout_transition=2:normalize=0[aout]")
-            cmd += ["-filter_complex",";".join(audio_filters),"-map","0:v:0","-map","[aout]"]
+            complex_filters.append("".join(mix_labels)+f"amix=inputs={len(mix_labels)}:duration=first:dropout_transition=2:normalize=0[aout]")
+        complex_filters.append(f"[0:v]{vf}[basev]")
+        complex_filters.append(f"[{overlay_index}:v]scale={W}:{H}:flags=bicubic[ov]")
+        complex_filters.append("[basev][ov]overlay=0:0:format=auto:shortest=1[vout]")
+        cmd += ["-filter_complex",";".join(complex_filters),"-map","[vout]"]
+        if len(mix_labels)>1:
+            cmd += ["-map","[aout]"]
         else:
-            cmd += ["-map","0:v:0","-map","1:a:0"]
-        cmd += ["-t",f"{length:.3f}","-vf",vf,"-r",str(FPS),"-c:v","libx264",
+            cmd += ["-map","1:a:0"]
+        cmd += ["-t",f"{length:.3f}","-r",str(FPS),"-c:v","libx264",
                 "-preset","veryfast","-crf","20","-pix_fmt","yuv420p",
                 "-c:a","aac","-b:a","192k","-shortest",str(clip)]
         run(cmd)
         clips.append(clip)
-        print(f"LONG_SCENE_OK={i}; speaker={speaker}; seconds={length:.1f}")
+        print(f"LONG_SCENE_OK={i}; speaker={speaker}; seconds={length:.1f}; visual={'AI_IMAGE_TO_VIDEO' if video_src else 'STILL_WITH_MOTION_OVERLAY'}")
     concat=OUT/"long-concat.txt"
     concat.write_text("".join(f"file '{p.resolve()}'\n" for p in clips),encoding="utf-8")
     final=OUT/f"{eid}-long-review.mp4"
