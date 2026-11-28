@@ -5,7 +5,10 @@ on:
     paths:
       - "scripts/peta-sunyi/render_long_horror.py"
       - "scripts/peta-sunyi/animated_overlays.py"
+      - "scripts/peta-sunyi/generate_i2v.py"
+      - "scripts/peta-sunyi/hf_i2v_provider.py"
       - "tests/test_peta_sunyi_animated_overlays.py"
+      - "tests/test_peta_sunyi_i2v_guardrails.py"
       - "tests/test_peta_sunyi_subtitles.py"
       - "episodes/peta-sunyi/*.json"
       - ".github/workflows/validate-peta-sunyi-long-horror.yml"
@@ -26,8 +29,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install renderer test dependency
-        run: python -m pip install pillow
+      - name: Install renderer and I2V test dependencies
+        run: python -m pip install pillow requests
       - name: Validate Python syntax and narration tests
         run: |
           python -m py_compile scripts/peta-sunyi/render_long_horror.py scripts/peta-sunyi/animated_overlays.py
