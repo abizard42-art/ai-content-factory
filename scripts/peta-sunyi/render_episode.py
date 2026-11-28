@@ -338,7 +338,8 @@ def main():
     CONFIG = json.loads(config_path.read_text(encoding="utf-8"))
     episode_id = CONFIG["episode_id"]
     SCENES = [(s["shot"], s["text"], s["title"], s["kind"], s.get("speaker", "NARATOR")) for s in CONFIG["scenes"]]
-    motion_jobs = CONFIG.get("motion_generation", {}).get("scenes", [])
+    motion_section = CONFIG.get("motion_generation", {})
+    motion_jobs = motion_section.get("scenes", []) if motion_section.get("status") == "ready" else []
     motion_by_shot = {job["shot"]: job["output"] for job in motion_jobs if job.get("shot") and job.get("output")}
     SPEAKER_VOICES.update(CONFIG.get("speaker_voices", {}))
     global VISUAL_STYLE
