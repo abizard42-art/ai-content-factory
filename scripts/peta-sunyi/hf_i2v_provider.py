@@ -15,7 +15,8 @@ class GradioImageToVideoProvider:
 
     def __init__(self, space_id: str, api_name: str, token: str,
                  image_param: str = "image", prompt_param: str = "prompt",
-                 negative_prompt_param: str = ""):
+                 negative_prompt_param: str = "", default_negative_prompt: str = "",
+                 extra_inputs: dict | None = None):
         if not space_id or "/" not in space_id:
             raise ValueError("HF_I2V_SPACE_ID must be a Hugging Face Space id (owner/name).")
         if not api_name or not api_name.startswith("/"):
@@ -25,6 +26,8 @@ class GradioImageToVideoProvider:
         self.image_param = image_param
         self.prompt_param = prompt_param
         self.negative_prompt_param = negative_prompt_param
+        self.default_negative_prompt = default_negative_prompt
+        self.extra_inputs = dict(extra_inputs or {})
         try:
             from gradio_client import Client
         except ImportError as exc:
@@ -39,8 +42,9 @@ class GradioImageToVideoProvider:
             self.image_param: handle_file(str(image_path)),
             self.prompt_param: prompt,
         }
-        if self.negative_prompt_param and negative_prompt:
-            kwargs[self.negative_prompt_param] = negative_prompt
+        if self.negative_prompt_param:
+            kwargs[self.negative_prompt_param] = negative_prompt or self.default_negative_prompt
+        kwargs.update(self.extra_inputs)
 
         # Deliberately one submission only: no automatic retry can consume extra quota.
         result = self.client.predict(api_name=self.api_name, **kwargs)
