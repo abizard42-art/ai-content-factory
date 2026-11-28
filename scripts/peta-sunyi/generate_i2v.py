@@ -198,10 +198,22 @@ def settle_daily_budget(base_url: str, key: str, ledger: dict,
     save_daily_ledger(base_url, key, ledger)
 
 
-def normalize_provider_video(source: pathlib.Path, target: pathlib.Path):
+def output_dimensions(config: dict) -> tuple[int, int]:
+    output_format = config.get("motion_generation", {}).get("output_format", "16:9")
+    dimensions = {"16:9": (1920, 1080), "9:16": (1080, 1920)}
+    if output_format not in dimensions:
+        raise ValueError("motion_generation.output_format must be 16:9 or 9:16.")
+    return dimensions[output_format]
+
+
+def normalize_provider_video(source: pathlib.Path, target: pathlib.Path, width: int, height: int):
+    scale_pad = (
+        f"scale={width}:{height}:force_original_aspect_ratio=decrease,"
+        f"pad={width}:{height}:(ow-iw)/2:(oh-ih)/2"
+    )
     subprocess.run([
         "ffmpeg", "-y", "-i", str(source), "-an",
-        "-vf", "scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2",
+        "-vf", scale_pad,
         "-r", "25", "-c:v", "libx264", "-preset", "veryfast", "-crf", "20",
         "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(target),
     ], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)
@@ -231,6 +243,8 @@ def main():
         "max_clips_per_episode": MAX_CLIPS_PER_EPISODE,
         "clip_count": len(jobs),
         "estimated_gpu_seconds": sum(j["estimated_gpu_seconds"] for j in jobs),
+        "output_format": config.get("motion_generation", {}).get("output_format", "16:9"),
+        "output_dimensions": list(output_dimensions(config)),
         "per_run_gpu_cap_seconds": MAX_ESTIMATED_GPU_SECONDS_PER_RUN,
         "jobs": [{"shot": j["shot"], "image_asset": j["image_asset"],
                   "output": j["output"], "estimated_gpu_seconds": j["estimated_gpu_seconds"]}
@@ -300,7 +314,8 @@ def main():
         if after_snapshot["overquota_used"] > current["overquota_used"]:
             raise RuntimeError("ZeroGPU over-quota usage increased; stopping immediately. No further jobs will be submitted.")
         target = output_dir / job["output"]
-        normalize_provider_video(video_path, target)
+        width, height = output_dimensions(config)
+        normalize_provider_video(video_path, target, width, height)
         object_path = upload_video(supabase_url, supabase_key, config["episode_id"],
                                    job["output"], target)
         completed.append({"shot": job["shot"], "motion_video_asset": job["output"],
