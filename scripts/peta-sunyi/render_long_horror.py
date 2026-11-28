@@ -316,6 +316,7 @@ def main():
             delay=int(scene.get("sfx_delay_ms",900))
             audio_filters.append(f"[{input_index}:a]volume=0.30,adelay={delay}|{delay}[{label}]")
             mix_labels.append(f"[{label}]")
+            input_index+=1
         overlay_index=input_index
         cmd += ["-ignore_loop","1","-i",str(overlay)]
         complex_filters=[]
