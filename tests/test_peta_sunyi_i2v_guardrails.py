@@ -29,6 +29,14 @@ class PetaSunyiI2VGuardrailTests(unittest.TestCase):
             }
         }
 
+    def test_output_dimensions_follow_episode_format(self):
+        self.assertEqual(module.output_dimensions({"motion_generation": {"output_format": "9:16"}}), (1080, 1920))
+        self.assertEqual(module.output_dimensions({"motion_generation": {"output_format": "16:9"}}), (1920, 1080))
+
+    def test_rejects_unknown_output_format(self):
+        with self.assertRaises(ValueError):
+            module.output_dimensions({"motion_generation": {"output_format": "4:3"}})
+
     def test_valid_plan(self):
         jobs = module.validate_plan(self.base_config())
         self.assertEqual(len(jobs), 1)
