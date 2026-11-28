@@ -32,3 +32,55 @@ This repository intentionally does not hard-code a paid image-to-video vendor or
 - Avoid asking the model to invent documentary evidence. Clearly label AI reconstructions as `REKA ADEGAN • ILUSTRASI AI`.
 - Prefer short 4–6 second clips; the renderer loops/holds to fit the narration duration.
 - The workflow remains review-only and does not publish automatically.
+
+
+## Free-first automated generation (manual dispatch, review only)
+
+The repository now includes a configurable Gradio Space adapter and a manual GitHub Actions workflow:
+`.github/workflows/generate-peta-sunyi-i2v-review.yml`.
+
+The workflow has two stages:
+1. Plan/validation always runs without contacting a GPU.
+2. Generation runs only when the operator explicitly sets `confirm_generation=true`.
+
+It requires these GitHub settings:
+- Secret `HF_TOKEN`: the fine-grained Hugging Face token. The token needs `Billing > Read billing usage and payment method status` for ZeroGPU quota reads.
+- Variables `HF_I2V_SPACE_ID` and `HF_I2V_API_NAME`: must be filled only after inspecting the selected Space's actual API.
+- Optional variables `HF_I2V_IMAGE_PARAM` (default `image`), `HF_I2V_PROMPT_PARAM` (default `prompt`) and `HF_I2V_NEGATIVE_PROMPT_PARAM`.
+
+Do not guess a Space ID, endpoint name, or input parameter names. Inspect the Space's “Use via API” page / `view_api()` first. The adapter submits exactly once per scene; it has no generation retry and no Inference Provider or paid fallback.
+
+### Episode motion plan
+
+Add an optional `motion_generation` block to a long-form episode JSON. Choose no more than three scenes:
+
+```json
+{
+  "motion_generation": {
+    "scenes": [
+      {
+        "shot": "03A",
+        "image_asset": "peta-sunyi-03A.jpg",
+        "output": "scene-03.mp4",
+        "prompt": "Subtle natural movement in the scene; preserve the original subject and composition.",
+        "negative_prompt": "No new people, no extra objects, no text, no scene cuts.",
+        "estimated_gpu_seconds": 60
+      }
+    ]
+  }
+}
+```
+
+Source images are downloaded from `visual-assets/peta-sunyi/<episode_id>/<image_asset>`; generated MP4s are uploaded to `visual-assets/peta-sunyi/<episode_id>/video/<output>`. The long-form renderer maps each generated clip to the scene with the matching `shot`.
+
+### Quota and spending safeguards
+
+- The quota manager reads the authenticated account's live ZeroGPU quota using `huggingface_hub.get_zero_gpu_quota()`; it does not assume a fixed daily allowance.
+- Maximum three clips per episode and 240 estimated GPU-seconds per workflow run.
+- A 60-second reserve is required beyond the estimated run total, and quota is rechecked immediately before each submission.
+- If the API reports prior over-quota usage, the workflow fails closed.
+- No automatic generation retries, no Inference Providers, no paid fallback, no credit purchase, and no automatic publishing.
+- The 240-second cap is a per-run internal guardrail, not a provider-enforced daily cap. Do not dispatch multiple episodes in a day unless the remaining quota has been checked and the operator accepts that use.
+- Generation remains disabled until the Space ID, API endpoint, parameter mapping and episode motion plan have been verified.
+
+The adapter has not yet been connected to a specific model Space or used to generate a clip. A successful plan/test run does not prove that a provider is available or that generation will succeed.
