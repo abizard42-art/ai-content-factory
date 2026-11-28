@@ -16,6 +16,9 @@ on:
           - observatorium-bosscha-lembang
           - teaser-lembang-camping
           - villa-isola-bandung
+          - rumah-iblis-bogor-ep1
+          - rumah-iblis-bogor-ep2
+          - rumah-iblis-bogor-ep3
 
 permissions:
   contents: read
@@ -45,7 +48,8 @@ jobs:
           mapfile -t shot_ids < <(jq -r '.scenes[] | select(.kind == "ai") | .shot' "$config" | sort -u)
           for id in "${shot_ids[@]}"; do
             file="peta-sunyi-$id.jpg"
-            object_path="peta-sunyi/$EPISODE_ID/$file"
+            stored_file="${EPISODE_ID}-peta-sunyi-$id.jpg"
+            object_path="peta-sunyi/$EPISODE_ID/$stored_file"
             status="$(curl --silent --show-error --output "work/assets/$file" --write-out "%{http_code}" \
               "${SUPABASE_URL}/storage/v1/object/visual-assets/$object_path" \
               -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" || true)"

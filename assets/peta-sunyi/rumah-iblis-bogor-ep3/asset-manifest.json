@@ -1,0 +1,45 @@
+{
+  "channel": "Peta Sunyi",
+  "episode_id": "rumah-iblis-bogor-ep3",
+  "format": "9:16",
+  "provider": "Cloudflare Workers AI",
+  "model": "@cf/black-forest-labs/flux-1-schnell",
+  "policy": "All visuals are fictional AI composite reconstructions, not documentary photographs or evidence. The real property is intentionally anonymized; do not depict an identifiable address, owner, resident, or exact facade. Keep the same fictional composite house across all episodes. Do not invent witness events, quotations, dates, tragedy details, or supernatural claims. Renderer adds REKA ADEGAN • ILUSTRASI AI labels; never ask the image model to render text. Peta Sunyi visual standard: Level 3 Psychological Disturbing; vintage engraving 50%, charcoal sketch 30%, dark gothic oil painting 20%.",
+  "assets": [
+    {
+      "id": "01A",
+      "scene": 1,
+      "kind": "anonymized composite psychological horror reconstruction",
+      "label_required": true,
+      "prompt": "A long view down the same narrow central hallway at night. At the far end, two very faint irregular human-like shadows stand apart, one slightly taller and one smaller, but their bodies, faces, clothing and features are not readable; they could be ordinary darkness and perspective. No explicit apparition. Frame through a partly obstructing doorway, with a tiny strip of weak dirty-yellow light and vast black negative space. Same anonymized fictional Indonesian house throughout the Peta Sunyi series: modest two-storey colonial-era tropical house, weathered pale cream plaster, dark green wooden shutters, broad veranda, rusty black iron gate, overgrown tropical garden, narrow central hallway and wooden doors. Never reproduce a real address, owner, resident, or identifiable facade. Vertical 9:16. Peta Sunyi Level 3 Psychological Disturbing: 50% vintage engraving, 30% rough charcoal sketch, 20% dark gothic oil painting. Extreme chiaroscuro, crushed deep shadows, oppressive slightly asymmetric perspective, rough charcoal marks, dust, damp stains, desaturated grey, dirty brown, sickly olive, muted dirty yellow, strong negative space. Key subject remains readable. Fictional AI composite reconstruction, not a documentary photograph or evidence. No text, no logo, no watermark, no photorealism, no 3D, no anime, no gore, no blood, no glowing eyes."
+    },
+    {
+      "id": "02A",
+      "scene": 2,
+      "kind": "anonymized composite psychological horror reconstruction",
+      "label_required": true,
+      "prompt": "Three anonymous workers represented only as distant back-facing silhouettes near the veranda, separated in time and space rather than shown witnessing a supernatural event. One carries a plain toolbox, another holds a rolled plan, another stands beside stacked stone samples; no faces, uniforms, logos, or identifiable details. The dark hallway remains visible behind them, empty and ambiguous. Do not depict ghosts or claim this is documentary evidence. Same anonymized fictional Indonesian house throughout the Peta Sunyi series: modest two-storey colonial-era tropical house, weathered pale cream plaster, dark green wooden shutters, broad veranda, rusty black iron gate, overgrown tropical garden, narrow central hallway and wooden doors. Never reproduce a real address, owner, resident, or identifiable facade. Vertical 9:16. Peta Sunyi Level 3 Psychological Disturbing: 50% vintage engraving, 30% rough charcoal sketch, 20% dark gothic oil painting. Extreme chiaroscuro, crushed deep shadows, oppressive slightly asymmetric perspective, rough charcoal marks, dust, damp stains, desaturated grey, dirty brown, sickly olive, muted dirty yellow, strong negative space. Key subject remains readable. Fictional AI composite reconstruction, not a documentary photograph or evidence. No text, no logo, no watermark, no photorealism, no 3D, no anime, no gore, no blood, no glowing eyes."
+    },
+    {
+      "id": "03A",
+      "scene": 3,
+      "kind": "anonymized composite psychological horror reconstruction",
+      "label_required": true,
+      "prompt": "Close composition of an old wooden doorway and dusty wall inside the same abandoned house. Two overlapping patches of shadow fall across the wall from an unseen light source, ambiguous enough to be ordinary shadows; no human figures or entities. Uncomfortable perspective, doorframe partly blocks the view, deep dark space beyond the threshold. Same anonymized fictional Indonesian house throughout the Peta Sunyi series: modest two-storey colonial-era tropical house, weathered pale cream plaster, dark green wooden shutters, broad veranda, rusty black iron gate, overgrown tropical garden, narrow central hallway and wooden doors. Never reproduce a real address, owner, resident, or identifiable facade. Vertical 9:16. Peta Sunyi Level 3 Psychological Disturbing: 50% vintage engraving, 30% rough charcoal sketch, 20% dark gothic oil painting. Extreme chiaroscuro, crushed deep shadows, oppressive slightly asymmetric perspective, rough charcoal marks, dust, damp stains, desaturated grey, dirty brown, sickly olive, muted dirty yellow, strong negative space. Key subject remains readable. Fictional AI composite reconstruction, not a documentary photograph or evidence. No text, no logo, no watermark, no photorealism, no 3D, no anime, no gore, no blood, no glowing eyes."
+    },
+    {
+      "id": "04A",
+      "scene": 4,
+      "kind": "anonymized composite psychological horror reconstruction",
+      "label_required": true,
+      "prompt": "Exterior of the same fictional abandoned house seen through its rusty black iron gate at night. A single dim upstairs window, overgrown garden, damp path, and heavy darkness behind the shutters. No visible people, no crime scene, no damage suggesting a specific tragedy, no symbols or supernatural imagery. The composition should suggest unanswered history without inventing an event. Same anonymized fictional Indonesian house throughout the Peta Sunyi series: modest two-storey colonial-era tropical house, weathered pale cream plaster, dark green wooden shutters, broad veranda, rusty black iron gate, overgrown tropical garden, narrow central hallway and wooden doors. Never reproduce a real address, owner, resident, or identifiable facade. Vertical 9:16. Peta Sunyi Level 3 Psychological Disturbing: 50% vintage engraving, 30% rough charcoal sketch, 20% dark gothic oil painting. Extreme chiaroscuro, crushed deep shadows, oppressive slightly asymmetric perspective, rough charcoal marks, dust, damp stains, desaturated grey, dirty brown, sickly olive, muted dirty yellow, strong negative space. Key subject remains readable. Fictional AI composite reconstruction, not a documentary photograph or evidence. No text, no logo, no watermark, no photorealism, no 3D, no anime, no gore, no blood, no glowing eyes."
+    },
+    {
+      "id": "05A",
+      "scene": 5,
+      "kind": "anonymized composite psychological horror reconstruction",
+      "label_required": true,
+      "prompt": "Final wide exterior of the same abandoned house just before dawn. The overgrown garden and rusty gate are still, the veranda and dark windows recede into misty grey darkness, with one faint dirty-yellow reflection in an upstairs window that could simply be reflected light. No people, no ghosts, no visible explanation. Quiet, oppressive, unresolved ending with strong negative space. Same anonymized fictional Indonesian house throughout the Peta Sunyi series: modest two-storey colonial-era tropical house, weathered pale cream plaster, dark green wooden shutters, broad veranda, rusty black iron gate, overgrown tropical garden, narrow central hallway and wooden doors. Never reproduce a real address, owner, resident, or identifiable facade. Vertical 9:16. Peta Sunyi Level 3 Psychological Disturbing: 50% vintage engraving, 30% rough charcoal sketch, 20% dark gothic oil painting. Extreme chiaroscuro, crushed deep shadows, oppressive slightly asymmetric perspective, rough charcoal marks, dust, damp stains, desaturated grey, dirty brown, sickly olive, muted dirty yellow, strong negative space. Key subject remains readable. Fictional AI composite reconstruction, not a documentary photograph or evidence. No text, no logo, no watermark, no photorealism, no 3D, no anime, no gore, no blood, no glowing eyes."
+    }
+  ]
+}

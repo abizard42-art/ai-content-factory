@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       episode_id:
-        description: "Episode slug (folder under assets/peta-sunyi)"
+        description: "Pilih satu episode atau generate seluruh mini-series Rumah Iblis Bogor"
         required: true
         type: choice
         options:
@@ -16,8 +16,12 @@ on:
           - observatorium-bosscha-lembang
           - teaser-lembang-camping
           - villa-isola-bandung
+          - rumah-iblis-bogor-ep1
+          - rumah-iblis-bogor-ep2
+          - rumah-iblis-bogor-ep3
+          - all-rumah-iblis-bogor
       shot_ids:
-        description: "Comma-separated shot IDs; default: all assets for selected episode"
+        description: "Comma-separated shot IDs; default ALL assets per episode"
         required: false
         default: "ALL"
         type: string
@@ -28,7 +32,7 @@ permissions:
 jobs:
   generate:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
       - name: Generate selected episode images
@@ -44,46 +48,63 @@ jobs:
           for name in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID SUPABASE_URL SUPABASE_SECRET_KEY; do
             [ -n "${!name:-}" ] || { echo "ERROR: GitHub Secret $name belum diisi."; exit 1; }
           done
-          manifest="assets/peta-sunyi/$EPISODE_ID/asset-manifest.json"
-          [ -s "$manifest" ] || { echo "ERROR: Manifest tidak ditemukan: $manifest"; exit 1; }
-          mkdir -p output/peta-sunyi
-          if [ "$SHOT_IDS" = "ALL" ] || [ -z "$SHOT_IDS" ]; then
-            mapfile -t requested_ids < <(jq -r '.assets[].id' "$manifest")
+
+          if [ "$EPISODE_ID" = "all-rumah-iblis-bogor" ]; then
+            episodes=(rumah-iblis-bogor-ep1 rumah-iblis-bogor-ep2 rumah-iblis-bogor-ep3)
           else
-            IFS=',' read -ra requested_ids <<< "$SHOT_IDS"
+            episodes=("$EPISODE_ID")
           fi
-          generated=0
-          for raw_id in "${requested_ids[@]}"; do
-            shot_id="$(printf '%s' "$raw_id" | tr -d '[:space:]')"
-            [ -n "$shot_id" ] || continue
-            asset="$(jq -c --arg id "$shot_id" '.assets[] | select(.id == $id)' "$manifest")"
-            [ -n "$asset" ] || { echo "ERROR: Shot $shot_id tidak ada di manifest."; exit 1; }
-            prompt="$(printf '%s' "$asset" | jq -r '.prompt')"
-            echo "GENERATING=$EPISODE_ID/$shot_id"
-            request="$(jq -n --arg prompt "$prompt" '{prompt:$prompt,steps:4}')"
-            status="$(curl --silent --show-error --output "output/peta-sunyi/response-$shot_id.json" --write-out "%{http_code}" \
-              "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/black-forest-labs/flux-1-schnell" \
-              -X POST -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" -d "$request" || true)"
-            if [ "$status" != "200" ]; then
-              echo "ERROR: Cloudflare HTTP $status untuk $shot_id."
-              cat "output/peta-sunyi/response-$shot_id.json"
-              exit 1
+
+          mkdir -p output/peta-sunyi
+          total_generated=0
+          for current_episode in "${episodes[@]}"; do
+            manifest="assets/peta-sunyi/$current_episode/asset-manifest.json"
+            [ -s "$manifest" ] || { echo "ERROR: Manifest tidak ditemukan: $manifest"; exit 1; }
+            echo "=== START EPISODE: $current_episode ==="
+
+            if [ "$SHOT_IDS" = "ALL" ] || [ -z "$SHOT_IDS" ]; then
+              mapfile -t requested_ids < <(jq -r '.assets[].id' "$manifest")
+            else
+              IFS=',' read -ra requested_ids <<< "$SHOT_IDS"
             fi
-            image_base64="$(jq -r '.result.image // .image // empty' "output/peta-sunyi/response-$shot_id.json")"
-            [ -n "$image_base64" ] || { echo "ERROR: Respons tidak berisi gambar untuk $shot_id."; exit 1; }
-            image_file="peta-sunyi-$shot_id.jpg"
-            printf '%s' "$image_base64" | base64 --decode > "output/peta-sunyi/$image_file"
-            [ -s "output/peta-sunyi/$image_file" ] || { echo "ERROR: Gambar kosong."; exit 1; }
-            object_path="peta-sunyi/$EPISODE_ID/$image_file"
-            curl --fail-with-body --silent --show-error -X POST \
-              "${SUPABASE_URL}/storage/v1/object/visual-assets/$object_path" \
-              -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
-              -H "Content-Type: image/jpeg" -H "x-upsert: true" --data-binary @"output/peta-sunyi/$image_file" >/dev/null
-            echo "SUPABASE_ASSET_OK=visual-assets/$object_path"
-            generated=$((generated+1))
+
+            episode_generated=0
+            for raw_id in "${requested_ids[@]}"; do
+              shot_id="$(printf '%s' "$raw_id" | tr -d '[:space:]')"
+              [ -n "$shot_id" ] || continue
+              asset="$(jq -c --arg id "$shot_id" '.assets[] | select(.id == $id)' "$manifest")"
+              [ -n "$asset" ] || { echo "ERROR: Shot $shot_id tidak ada di manifest $current_episode."; exit 1; }
+              prompt="$(printf '%s' "$asset" | jq -r '.prompt')"
+              echo "GENERATING=$current_episode/$shot_id"
+              request="$(jq -n --arg prompt "$prompt" '{prompt:$prompt,steps:4}')"
+              response_file="output/peta-sunyi/response-$current_episode-$shot_id.json"
+              status="$(curl --silent --show-error --output "$response_file" --write-out "%{http_code}" \
+                "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/black-forest-labs/flux-1-schnell" \
+                -X POST -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" -d "$request" || true)"
+              if [ "$status" != "200" ]; then
+                echo "ERROR: Cloudflare HTTP $status untuk $current_episode/$shot_id."
+                cat "$response_file"
+                exit 1
+              fi
+              image_base64="$(jq -r '.result.image // .image // empty' "$response_file")"
+              [ -n "$image_base64" ] || { echo "ERROR: Respons tidak berisi gambar untuk $current_episode/$shot_id."; exit 1; }
+              image_file="$current_episode-peta-sunyi-$shot_id.jpg"
+              printf '%s' "$image_base64" | base64 --decode > "output/peta-sunyi/$image_file"
+              [ -s "output/peta-sunyi/$image_file" ] || { echo "ERROR: Gambar kosong."; exit 1; }
+              object_path="peta-sunyi/$current_episode/$image_file"
+              curl --fail-with-body --silent --show-error -X POST \
+                "${SUPABASE_URL}/storage/v1/object/visual-assets/$object_path" \
+                -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" \
+                -H "Content-Type: image/jpeg" -H "x-upsert: true" --data-binary @"output/peta-sunyi/$image_file" >/dev/null
+              echo "SUPABASE_ASSET_OK=visual-assets/$object_path"
+              episode_generated=$((episode_generated+1))
+              total_generated=$((total_generated+1))
+            done
+            [ "$episode_generated" -gt 0 ] || { echo "ERROR: Tidak ada aset dibuat untuk $current_episode."; exit 1; }
+            echo "EPISODE_ASSETS_GENERATED=$current_episode:$episode_generated"
+            echo "=== DONE EPISODE: $current_episode ==="
           done
-          [ "$generated" -gt 0 ] || { echo "ERROR: Tidak ada aset dibuat."; exit 1; }
-          echo "ASSETS_GENERATED=$generated"
+          echo "TOTAL_ASSETS_GENERATED=$total_generated"
           echo "NO_RENDER_OR_PUBLISH=true"
       - uses: actions/upload-artifact@v4
         with:

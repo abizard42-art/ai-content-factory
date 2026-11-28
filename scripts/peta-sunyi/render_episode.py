@@ -366,6 +366,11 @@ def main():
         if kind=="ai":
             vf+=",drawbox=x=0:y=122:w=iw:h=62:color=black@0.62:t=fill"
             vf+=",drawtext=text='REKA ADEGAN  •  ILUSTRASI AI':fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:fontcolor=white:fontsize=25:x=(w-text_w)/2:y=139"
+        episode_label = CONFIG.get("episode_label")
+        if episode_label:
+            safe_label = str(episode_label).replace("'", "\\'")
+            vf += ",drawbox=x=910:y=194:w=140:h=48:color=black@0.62:t=fill"
+            vf += f",drawtext=text='{safe_label}':fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:fontcolor=white:fontsize=23:x=930:y=205"
         ass=convert_vtt_to_ass(vtt,speaker=speaker,source_text=text,audio_duration=probe_duration(audio))
         vf+=f",ass={ass}"
         run(["ffmpeg","-y","-loop","1","-i",str(src),"-i",str(audio),"-t",f"{duration:.3f}",

@@ -1,0 +1,66 @@
+{
+  "channel": "Peta Sunyi",
+  "episode_id": "rumah-iblis-bogor-ep1",
+  "format": "9:16",
+  "provider": "Cloudflare Workers AI",
+  "model": "@cf/black-forest-labs/flux-1-schnell",
+  "policy": "All visuals are illustrative AI composite reconstructions, not documentary photographs or evidence. The real property is intentionally anonymized; do not depict an identifiable address, owner, resident, or exact facade. Keep the same fictional composite house across all episodes. Do not invent witness events, quotations, dates, or supernatural claims. Renderer adds REKA ADEGAN • ILUSTRASI AI labels; never ask the image model to render text.",
+  "assets": [
+    {
+      "id": "01A",
+      "scene": 1,
+      "kind": "anonymized composite horror reconstruction",
+      "label_required": true,
+      "prompt": "Wide establishing view from outside the same abandoned house at blue hour. The rusty black gate is partly swallowed by tall tropical grass; the veranda and windows recede into near-black shadow. Camera sits unusually low and slightly off-axis, making the gate feel oppressive. A tiny weak dirty-yellow light barely touches one patch of the veranda; most of the facade disappears into darkness. No people. Same fictional composite abandoned Indonesian house across every shot: modest two-storey colonial-era tropical house, weathered pale cream plaster, dark green wooden shutters, broad front veranda, rusty black iron gate, dense overgrown tropical garden, narrow central hallway and several wooden doors. Vertical 9:16. PETA SUNYI LEVEL 3 — PSYCHOLOGICAL DISTURBING. Visual mix: 50% vintage engraving, 30% rough charcoal sketch, 20% dark gothic oil painting. Strong engraved cross-hatching and scratchy charcoal marks must be clearly visible, with restrained painterly shadow masses. Extreme chiaroscuro, crushed deep-black shadows, one weak isolated light source, oppressive asymmetric composition, subtly uncomfortable low/off-axis perspective, distressed damp plaster, dust, peeling paint, aged scratched surfaces. Desaturated cold grey, dirty brown, sickly olive and muted dirty yellow; minimal warm light. Preserve large intentional negative spaces and dark unreadable corners while keeping the central clue legible. One subtle ambiguous environmental irregularity at most; psychological unease, not a literal monster. This is an illustrative fictional AI composite reconstruction, not a documentary photograph or evidence. No photorealism, no 3D, no CGI, no clean polished cartoon, no cute or cozy atmosphere, no bright inviting lighting, no smooth glossy surfaces, no gore, no ghost, no spirit, no human silhouette, no face in darkness, no readable text, no watermark, no logo."
+    },
+    {
+      "id": "02A",
+      "scene": 2,
+      "kind": "anonymized composite horror reconstruction",
+      "label_required": true,
+      "prompt": "Floor-level interior view across the dusty floor toward the same narrow hallway of the established fictional abandoned Indonesian colonial-era house: weathered pale plaster, dark wooden doors, deep neglected interior. Show exactly ONE extremely faint barefoot tiptoe-like imprint made only by disturbed dust. It is incomplete and barely perceptible: perhaps a hint of toes and ball of foot, never a clear outline. The viewer should need a moment to notice it. No other tracks, no physical foot, shoe, sole, object or stain. Severe underexposure, near-zero ambient fill. One very weak, narrow, cold grazing light touches only a tiny patch of floor; the room, walls, hallway and doorway mostly disappear into crushed black. The imprint is partly swallowed by dust and shadow, visible only as a tiny texture change. Large oppressive negative space, subtly off-axis composition, no visible person or entity. Vertical 9:16. PETA SUNYI LEVEL 3 psychological horror: 50% vintage engraving, 30% rough charcoal sketch, 20% dark gothic oil painting; strong scratchy cross-hatching, distressed damp surfaces, desaturated cold grey, dirty brown, sickly olive, muted dirty yellow. Fictional illustrative reconstruction, not documentary evidence. No photorealism, 3D, CGI, cute style, bright lighting, crisp footprint, ghost, spirit, silhouette, face, gore, text, watermark or logo."
+    },
+    {
+      "id": "03A",
+      "scene": 3,
+      "kind": "anonymized composite horror reconstruction",
+      "label_required": true,
+      "prompt": "Closer oblique view of the exact same single dusty imprint from 02A, still exactly ONE and no other tracks. It is partly outside the weak light and almost lost in dust; only a tiny fragment of disturbed dust hints at its shape. Do not sharpen or clarify it into a readable footprint. The nearly black empty hallway and a partly open dark wooden doorway dominate the frame; pressure comes from darkness and negative space, not a visible threat. Same established fictional abandoned Indonesian colonial-era house, with weathered pale plaster and aged wooden doors. Severe underexposure, near-zero ambient fill. One very weak, narrow, cold grazing light touches only a small patch of floor; most of the room, walls, hallway and doorway vanish into crushed black. No visible person, entity or additional clue. Vertical 9:16. PETA SUNYI LEVEL 3 psychological horror: 50% vintage engraving, 30% rough charcoal sketch, 20% dark gothic oil painting; strong scratchy cross-hatching, distressed damp surfaces, desaturated cold grey, dirty brown, sickly olive, muted dirty yellow. Fictional illustrative reconstruction, not documentary evidence. No photorealism, 3D, CGI, cute style, bright lighting, crisp footprint, extra tracks, ghost, spirit, silhouette, face, gore, text, watermark or logo."
+    },
+    {
+      "id": "04A",
+      "scene": 4,
+      "kind": "anonymized composite horror reconstruction",
+      "label_required": true,
+      "prompt": "A generic smartphone held low in the foreground inside the same dim house; its screen emits two small abstract notification-like glows only, with no legible interface, no recognizable app layout, no Grab branding, no map, no addresses, no names, and no readable text. The phone is not presented as documentary evidence. Behind it, the same hallway and doorframe sink into deep shadow; the hand and phone are only partly illuminated. Same fictional composite abandoned Indonesian house across every shot: modest two-storey colonial-era tropical house, weathered pale cream plaster, dark green wooden shutters, broad front veranda, rusty black iron gate, dense overgrown tropical garden, narrow central hallway and several wooden doors. Vertical 9:16. PETA SUNYI LEVEL 3 — PSYCHOLOGICAL DISTURBING. Visual mix: 50% vintage engraving, 30% rough charcoal sketch, 20% dark gothic oil painting. Strong engraved cross-hatching and scratchy charcoal marks must be clearly visible, with restrained painterly shadow masses. Extreme chiaroscuro, crushed deep-black shadows, one weak isolated light source, oppressive asymmetric composition, subtly uncomfortable low/off-axis perspective, distressed damp plaster, dust, peeling paint, aged scratched surfaces. Desaturated cold grey, dirty brown, sickly olive and muted dirty yellow; minimal warm light. Preserve large intentional negative spaces and dark unreadable corners while keeping the central clue legible. One subtle ambiguous environmental irregularity at most; psychological unease, not a literal monster. This is an illustrative fictional AI composite reconstruction, not a documentary photograph or evidence. No photorealism, no 3D, no CGI, no clean polished cartoon, no cute or cozy atmosphere, no bright inviting lighting, no smooth glossy surfaces, no gore, no ghost, no spirit, no human silhouette, no face in darkness, no readable text, no watermark, no logo."
+    },
+    {
+      "id": "05A",
+      "scene": 5,
+      "kind": "anonymized composite horror reconstruction",
+      "label_required": true,
+      "prompt": "View from the shadowed backyard/veranda toward the same house and the same dark wooden room door. In the near foreground, a small traditional charcoal brazier holds a tiny piece of terasi being heated for sambal, with a thin thread of smoke catching weak dirty-yellow light; this is a separate cooking moment, not rubbish burning. The room door remains empty and unoccupied, with no figure or supernatural shape. Compose the doorway as a large oppressive black void, with distressed charcoal textures and an uncomfortable off-axis perspective. Same fictional composite abandoned Indonesian house across every shot: modest two-storey colonial-era tropical house, weathered pale cream plaster, dark green wooden shutters, broad front veranda, rusty black iron gate, dense overgrown tropical garden, narrow central hallway and several wooden doors. Vertical 9:16. PETA SUNYI LEVEL 3 — PSYCHOLOGICAL DISTURBING. Visual mix: 50% vintage engraving, 30% rough charcoal sketch, 20% dark gothic oil painting. Strong engraved cross-hatching and scratchy charcoal marks must be clearly visible, with restrained painterly shadow masses. Extreme chiaroscuro, crushed deep-black shadows, one weak isolated light source, oppressive asymmetric composition, subtly uncomfortable low/off-axis perspective, distressed damp plaster, dust, peeling paint, aged scratched surfaces. Desaturated cold grey, dirty brown, sickly olive and muted dirty yellow; minimal warm light. Preserve large intentional negative spaces and dark unreadable corners while keeping the central clue legible. One subtle ambiguous environmental irregularity at most; psychological unease, not a literal monster. This is an illustrative fictional AI composite reconstruction, not a documentary photograph or evidence. No photorealism, no 3D, no CGI, no clean polished cartoon, no cute or cozy atmosphere, no bright inviting lighting, no smooth glossy surfaces, no gore, no ghost, no spirit, no human silhouette, no face in darkness, no readable text, no watermark, no logo."
+    }
+  ],
+  "visual_direction": {
+    "standard": "PETA SUNYI — LEVEL 3: PSYCHOLOGICAL DISTURBING",
+    "base_style_mix": "50% vintage engraving, 30% charcoal sketch, 20% dark gothic oil painting",
+    "lighting": "extreme chiaroscuro, deep crushed blacks, near-zero ambient fill in interior rooms, one isolated very weak practical light source with narrow falloff; most walls, corners, hallway and doorway remain unreadable, while only a small clue area is faintly revealed",
+    "perspective": "subtly oppressive asymmetric framing, low or off-axis camera, corridor feels slightly too long, doorframes create visual pressure; retain believable architecture",
+    "texture": "rough engraved linework, visibly dry charcoal strokes, damp stains, peeling plaster, dust suspended in air, aged scratched surfaces",
+    "palette": "desaturated cold grey, dirty brown, sickly olive, muted dirty yellow; very limited warm light",
+    "negative_space": "large deliberate areas of darkness, empty doorway and corridor, no decorative clutter; interior rooms must not be evenly lit",
+    "anomaly": "only subtle ambiguous irregularities in shadow, framing, or environmental detail; never a visible supernatural entity",
+    "continuity": "one fictional composite house across all shots: modest two-storey colonial-era tropical house, weathered pale cream plaster, dark green wooden shutters, broad front veranda, rusty black iron gate, dense overgrown tropical garden, narrow central hallway and several wooden doors",
+    "boundaries": [
+      "No ghosts, spirits, silhouettes, faces in darkness, or supernatural entities.",
+      "No gore, explicit violence, or fabricated paranormal evidence.",
+      "Do not add extra footprints; the footprint scenes show exactly one isolated barefoot tiptoe-like imprint in dust.",
+      "Keep the key subject readable despite deep shadows.",
+      "All images are fictional AI composite reconstructions, not documentary photographs or evidence.",
+      "Do not depict identifiable real property details, address, owner, or residents.",
+      "Do not render text, logos, or realistic app interfaces."
+    ],
+    "footprint_treatment": "in 02A and 03A, show exactly one very faint partial dusty imprint, deliberately easy to miss at first glance and revealed only by a weak grazing light; never render a crisp, complete, high-contrast footprint or additional tracks"
+  }
+}
