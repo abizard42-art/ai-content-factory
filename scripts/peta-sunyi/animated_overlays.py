@@ -10,12 +10,26 @@ BOLD = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 def _font(size, bold=False):
     return ImageFont.truetype(BOLD if bold else FONT, size)
 
+def _gif_frame(rgba, palette=None):
+    rgb = rgba.convert("RGB")
+    indexed = rgb.quantize(colors=255, method=Image.Quantize.MEDIANCUT) if palette is None else rgb.quantize(palette=palette, dither=Image.Dither.NONE)
+    alpha = rgba.getchannel("A")
+    px, ap = indexed.load(), alpha.load()
+    for y in range(H):
+        for x in range(W):
+            if ap[x, y] < 12:
+                px[x, y] = 255
+    colors = indexed.getpalette() or []
+    indexed.putpalette(colors[:765] + [0, 0, 0])
+    return indexed
+
 def create_overlay(path, duration, motion="atmosphere", graphic=None, seed=17):
     frames = max(16, min(480, int(math.ceil(max(2.0, duration) * FPS))))
     rng = random.Random(seed)
     particles = [(rng.randrange(W), rng.randrange(H), rng.uniform(0, 6.28), rng.uniform(.5, 1.8)) for _ in range(34)]
     fogs = [(rng.randrange(-W, W), rng.randrange(210, 490), rng.randrange(90, 230), rng.randrange(24, 75), rng.uniform(.15,.45)) for _ in range(5)]
     rendered = []
+    palette = None
     for i in range(frames):
         t = i / max(1, frames - 1)
         sec = i / FPS
@@ -103,6 +117,9 @@ def create_overlay(path, duration, motion="atmosphere", graphic=None, seed=17):
                         g.rounded_rectangle((x0+34, yy, x0+gw-34, yy+35), radius=8, fill=(42, 68, 66, int(225*reveal)))
                         g.text((x0+52, yy+7), txt, font=_font(16, True), fill=(249, 243, 226, int(255*reveal)))
             im = Image.alpha_composite(im, panel)
-        rendered.append(im)
-    rendered[0].save(path, save_all=True, append_images=rendered[1:], duration=int(1000/FPS), loop=0, disposal=2, optimize=True)
+        indexed = _gif_frame(im, palette)
+        if palette is None:
+            palette = indexed
+        rendered.append(indexed)
+    rendered[0].save(path, save_all=True, append_images=rendered[1:], duration=int(1000/FPS), loop=0, transparency=255, disposal=2, optimize=True)
     print(f"ANIMATED_OVERLAY_OK={path}; frames={frames}; motion={motion}; graphic={graphic.get('type') if graphic else 'none'}")
