@@ -338,6 +338,8 @@ def main():
     CONFIG = json.loads(config_path.read_text(encoding="utf-8"))
     episode_id = CONFIG["episode_id"]
     SCENES = [(s["shot"], s["text"], s["title"], s["kind"], s.get("speaker", "NARATOR")) for s in CONFIG["scenes"]]
+    motion_jobs = CONFIG.get("motion_generation", {}).get("scenes", [])
+    motion_by_shot = {job["shot"]: job["output"] for job in motion_jobs if job.get("shot") and job.get("output")}
     SPEAKER_VOICES.update(CONFIG.get("speaker_voices", {}))
     global VISUAL_STYLE
     VISUAL_STYLE = CONFIG.get("visual_style", "cinematic")
@@ -351,8 +353,12 @@ def main():
         generate_tts(text,audio,vtt,voice=voice)
         duration=probe_duration(audio)+0.35
         src=generated[shot] if shot in generated else ASSETS/f"peta-sunyi-{shot}.jpg"
-        if not src.exists(): raise FileNotFoundError(f"Missing visual asset: {src}")
-        if kind == "ai" and VISUAL_STYLE == "rough_pencil":
+        motion_name = motion_by_shot.get(shot)
+        motion_src = ASSETS/"video"/motion_name if motion_name else None
+        if motion_src and not motion_src.is_file():
+            raise FileNotFoundError(f"Missing I2V motion asset: {motion_src}")
+        if not motion_src and not src.exists(): raise FileNotFoundError(f"Missing visual asset: {src}")
+        if not motion_src and kind == "ai" and VISUAL_STYLE == "rough_pencil":
             styled = OUT/f"scene-{i:02d}-pencil.jpg"
             make_rough_pencil(src, styled)
             src = styled
@@ -368,7 +374,16 @@ def main():
             vf+=",drawtext=text='REKA ADEGAN  •  ILUSTRASI AI':fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:fontcolor=white:fontsize=25:x=(w-text_w)/2:y=139"
         ass=convert_vtt_to_ass(vtt,speaker=speaker,source_text=text,audio_duration=probe_duration(audio))
         vf+=f",ass={ass}"
-        run(["ffmpeg","-y","-loop","1","-i",str(src),"-i",str(audio),"-t",f"{duration:.3f}",
+        if motion_src:
+            vf=(f"scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},"
+                f"drawbox=x=0:y=0:w=iw:h=116:color=black@0.48:t=fill,"
+                f"drawtext=text='{title}':fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:"
+                f"fontcolor=white:fontsize=34:box=0:x=(w-text_w)/2:y=42,"
+                f"drawbox=x=0:y=122:w=iw:h=62:color=black@0.62:t=fill,"
+                f"drawtext=text='REKA ADEGAN  •  ILUSTRASI AI':fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:fontcolor=white:fontsize=25:x=(w-text_w)/2:y=139,"
+                f"ass={ass}")
+        video_input = ["-stream_loop","-1","-i",str(motion_src)] if motion_src else ["-loop","1","-i",str(src)]
+        run(["ffmpeg","-y",*video_input,"-i",str(audio),"-t",f"{duration:.3f}",
              "-vf",vf,"-r",str(FPS),"-c:v","libx264","-preset","veryfast","-crf","20",
              "-pix_fmt","yuv420p","-c:a","aac","-b:a","160k","-shortest",str(clip)])
         clips.append(clip)
