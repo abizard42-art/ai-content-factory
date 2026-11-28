@@ -1,0 +1,51 @@
+name: Peta Sunyi - Hugging Face Quota Check (Read Only)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  quota-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install quota client
+        run: python -m pip install --upgrade huggingface_hub
+
+      - name: Read ZeroGPU quota (NO GENERATION)
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import sys
+          from huggingface_hub import get_zero_gpu_quota
+
+          token = os.environ.get("HF_TOKEN", "")
+          if not token:
+              print("QUOTA_CHECK=BLOCKED; repository secret HF_TOKEN is missing.")
+              sys.exit(1)
+
+          quota = get_zero_gpu_quota(token=token)
+          snapshot = {
+              "base_gpu_seconds": float(quota.base),
+              "remaining_gpu_seconds": float(quota.remaining),
+              "overquota_used_gpu_seconds": float(quota.overquota_used or 0),
+              "resets_at": quota.resets_at.isoformat() if quota.resets_at else None,
+              "required_for_bali_plan_gpu_seconds": 240,
+          }
+          safe = (
+              snapshot["remaining_gpu_seconds"] >= 240
+              and snapshot["overquota_used_gpu_seconds"] == 0
+          )
+          snapshot["bali_plan_gate"] = "PASS_READ_ONLY" if safe else "BLOCKED"
+          print("HF_ZERO_GPU_QUOTA=" + json.dumps(snapshot))
+          print("READ_ONLY=true; NO_SPACE_REQUEST; NO_GPU_GENERATION; NO_UPLOAD; NO_PAID_FALLBACK")
+          PY
