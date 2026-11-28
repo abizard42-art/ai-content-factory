@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Peta Sunyi long-form horror renderer: 16:9, multi-speaker TTS, subtitles, pencil stills."""
-import json, os, pathlib, re, subprocess, textwrap, html, math, time
+import json, os, pathlib, re, subprocess, textwrap, html, math, time, sys
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageOps
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 from animated_overlays import create_overlay
 
 ROOT = pathlib.Path("work")
