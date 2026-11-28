@@ -57,19 +57,21 @@ jobs:
       - name: Generate and upload at most three clips
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
-          HF_I2V_SPACE_ID: ${{ vars.HF_I2V_SPACE_ID }}
-          HF_I2V_API_NAME: ${{ vars.HF_I2V_API_NAME }}
-          HF_I2V_IMAGE_PARAM: ${{ vars.HF_I2V_IMAGE_PARAM }}
-          HF_I2V_PROMPT_PARAM: ${{ vars.HF_I2V_PROMPT_PARAM }}
-          HF_I2V_NEGATIVE_PROMPT_PARAM: ${{ vars.HF_I2V_NEGATIVE_PROMPT_PARAM }}
+          HF_I2V_SPACE_ID: "zerogpu-aoti/wan2-2-fp8da-aoti-faster"
+          HF_I2V_API_NAME: "/generate_video"
+          HF_I2V_IMAGE_PARAM: "input_image"
+          HF_I2V_PROMPT_PARAM: "prompt"
+          HF_I2V_NEGATIVE_PROMPT_PARAM: "negative_prompt"
+          HF_I2V_DEFAULT_NEGATIVE_PROMPT: "no text, no watermark, no flicker, no camera cuts, no new people or objects, preserve original composition"
+          HF_I2V_EXTRA_INPUTS: '{"steps":4,"duration_seconds":2.0,"guidance_scale":1.0,"guidance_scale_2":1.0,"seed":42,"randomize_seed":false}'
           HF_I2V_RESERVE_GPU_SECONDS: "60"
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
         run: |
           set -euo pipefail
           test -n "$HF_TOKEN" || { echo "HF_TOKEN secret missing"; exit 1; }
-          test -n "$HF_I2V_SPACE_ID" || { echo "HF_I2V_SPACE_ID variable missing; provider not configured"; exit 1; }
-          test -n "$HF_I2V_API_NAME" || { echo "HF_I2V_API_NAME variable missing; inspect the Space API first"; exit 1; }
+          test -n "$HF_I2V_SPACE_ID" || { echo "HF I2V Space configuration missing"; exit 1; }
+          test -n "$HF_I2V_API_NAME" || { echo "HF I2V API endpoint missing"; exit 1; }
           python scripts/peta-sunyi/generate_i2v.py \
             --episode-config "episodes/peta-sunyi/${{ inputs.episode_id }}.json" \
             --execute
