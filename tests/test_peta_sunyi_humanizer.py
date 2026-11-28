@@ -1,6 +1,14 @@
 import copy
+import importlib.util
+import pathlib
 import unittest
-from scripts.peta_sunyi.humanize_narration import collect_targets, apply_rewrites
+
+MODULE_PATH = pathlib.Path(__file__).resolve().parents[1] / "scripts" / "peta-sunyi" / "humanize_narration.py"
+SPEC = importlib.util.spec_from_file_location("peta_sunyi_humanize_narration", MODULE_PATH)
+MODULE = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(MODULE)
+collect_targets = MODULE.collect_targets
+apply_rewrites = MODULE.apply_rewrites
 
 class HumanizerShapeTests(unittest.TestCase):
     def test_episode_only_changes_scene_text(self):
