@@ -57,6 +57,15 @@ class PetaSunyiI2VGuardrailTests(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             module.assert_quota_safe(FakeQuota(remaining=239), 180, 60)
 
+    def test_daily_internal_cap_is_enforced(self):
+        module.assert_daily_budget_available(
+            {"used_seconds": 120, "reserved_seconds": 0, "jobs": []}, 120
+        )
+        with self.assertRaises(RuntimeError):
+            module.assert_daily_budget_available(
+                {"used_seconds": 180, "reserved_seconds": 0, "jobs": []}, 61
+            )
+
     def test_paid_overquota_usage_fails_closed(self):
         with self.assertRaises(RuntimeError):
             module.assert_quota_safe(FakeQuota(remaining=1000, overquota_used=1), 60, 60)
