@@ -128,6 +128,31 @@ jobs:
           [ "$generated" -eq 6 ] || { echo "ERROR: Seharusnya 6 visual, berhasil $generated."; exit 1; }
           echo "ASSETS_GENERATED=$generated"
 
+      - name: Download approved I2V motion clips for vertical Shorts renderer
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: |
+          set -euo pipefail
+          mkdir -p work/assets/video
+          mapfile -t motion_outputs < <(jq -r '.motion_generation.scenes[]?.output // empty' episodes/peta-sunyi/taman-festival-bali.json)
+          if [ "${#motion_outputs[@]}" -eq 0 ]; then
+            echo "I2V_MOTION_ASSETS=none; keeping existing still-image render path"
+            exit 0
+          fi
+          for filename in "${motion_outputs[@]}"; do
+            [[ "$filename" =~ ^[A-Za-z0-9._-]+\.mp4$ ]] || { echo "Unsafe motion output filename: $filename"; exit 1; }
+            object_path="peta-sunyi/taman-festival-bali/video/$filename"
+            status="$(curl --silent --show-error --output "work/assets/video/$filename" --write-out "%{http_code}" \
+              "${SUPABASE_URL}/storage/v1/object/visual-assets/$object_path" \
+              -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" || true)"
+            if [ "$status" != "200" ] || [ ! -s "work/assets/video/$filename" ]; then
+              echo "ERROR: Motion clip missing from Supabase (HTTP $status): $object_path"
+              exit 1
+            fi
+            echo "I2V_MOTION_ASSET_READY=$object_path"
+          done
+
       - name: Install video rendering dependencies
         run: |
           set -euo pipefail
