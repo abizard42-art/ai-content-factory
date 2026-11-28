@@ -1,0 +1,200 @@
+{
+  "episode_id": "taman-festival-bali-ep05",
+  "title": "Kru Film dan Kisah Kesurupan | Misteri Taman Festival Bali",
+  "visual_style": "balinese_gothic_documentary",
+  "fact": {
+    "heading": "JEJAK PRODUKSI • BATAS BUKTI",
+    "lines": [
+      "ANOMALY (2022) • SYUTING DI TAMAN FESTIVAL TERLAPOR",
+      "KRU KERASUKAN • KLAIM DALAM SUMBER SEKUNDER",
+      "RUMAH BEKAS KUBURAN (2012) • LOKASI DIPERDEBATKAN",
+      "REKAMAN INSIDEN • BELUM DITEMUKAN"
+    ],
+    "highlight": "CERITA DIUJI • BUKAN DIANGGAP BUKTI"
+  },
+  "end": {
+    "title": "KRU FILM DAN KISAH KESURUPAN",
+    "subtitle": "MISTERI TAMAN FESTIVAL BALI",
+    "cta": "PETA SUNYI • PADANG GALAK, BALI"
+  },
+  "sources": [
+    {
+      "name": "Universitas Udayana, Jurnal Destinasi Pariwisata Vol. 13 No. 1 (2025), Tabel 3 dan bagian Disruption",
+      "url": "https://ejournal4.unud.ac.id/index.php/destinasi/en/article/download/1200/943",
+      "supports": "Mencatat narasi Rumah Bekas Kuburan (2012) dan Anomaly (2022) serta klaim kesurupan kru; ini adalah pencatatan narasi dalam penelitian, bukan verifikasi independen kejadian paranormal."
+    },
+    {
+      "name": "detikHot, 3 Januari 2012 — Julia Perez Siap Gentayangan di Rumah Bekas Kuburan",
+      "url": "https://hot.detik.com/movie/d-1805599/julia-perez-siap-gentayangan-di-rumah-bekas-kuburan",
+      "supports": "Wawancara pra-rilis menyebut Julia Perez menjalani syuting selama tiga minggu di kawasan Bogor, Jawa Barat; menimbulkan perbedaan dengan atribusi lokasi di jurnal 2025."
+    },
+    {
+      "name": "detikHot, 8 Februari 2012 — Martina Tesela Si Cantik Penghuni Rumah Bekas Kuburan",
+      "url": "https://hot.detik.com/hot-profile/d-1837201/martina-tesela-si-cantik-penghuni-rumah-bekas-kuburan",
+      "supports": "Wawancara pemeran menyebut pengalaman mistis dan kru yang disebut kesurupan saat syuting di sebuah rumah di Ciawi, Bogor; tidak membuktikan kejadian paranormal dan tidak mengaitkannya dengan Taman Festival Bali."
+    },
+    {
+      "name": "NusaBali TV, 1 Maret 2022 — Film Anomaly Produksi Good Form Bali Syuting di Bali",
+      "url": "https://nbtv.nusabali.com/index.php/video/1134/film-anomaly-produksi-good-form-bali-syuting-di-bali-diharapkan-bisa-gaet-penonton-luar-negeri",
+      "supports": "Laporan proses produksi Anomaly dan lokasi syuting di Taman Festival Bali, Padanggalak."
+    },
+    {
+      "name": "ANTARA Bali, 24 Februari 2022 — Gambarkan sisi unik Bali, film Anomaly tayang perdana 25 Februari",
+      "url": "https://bali.antaranews.com/berita/270433/gambarkan-sisi-unik-bali-film-anomaly-tayang-perdana-25-februari",
+      "supports": "Mengonfirmasi produksi Anomaly dilakukan di Bali, produksi Good Form Bali, sutradara Brian L. Tan, dan konteks film."
+    },
+    {
+      "name": "Indonesian Film Center — Rumah Bekas Kuburan (2012)",
+      "url": "https://www.indonesianfilmcenter.com/filminfo/detail/656/Rumah-Bekas-Kuburan",
+      "supports": "Metadata film untuk judul, tahun rilis, sutradara Irwan Siregar, dan pemeran."
+    }
+  ],
+  "editorial_notes": [
+    "Pisahkan fakta produksi film, klaim kesurupan, dan interpretasi supernatural. Jangan menyatakan kesurupan sebagai fakta terverifikasi.",
+    "Jurnal Udayana 2025 mengaitkan Rumah Bekas Kuburan (2012) dengan Taman Festival dan klaim produksi dihentikan setelah kru kesurupan. Namun dua laporan detikHot tahun 2012 mengaitkan syuting film tersebut dengan Bogor/Ciawi. Tampilkan sebagai konflik sumber, jangan simpulkan film itu syuting di Taman Festival.",
+    "Anomaly (2022) memiliki pemberitaan yang mengonfirmasi syuting di Taman Festival Bali. Klaim kru perempuan asal Korea Selatan kerasukan dan berbicara bahasa Bali hanya ditemukan dalam narasi sekunder yang dikutip jurnal Udayana; belum ada konfirmasi independen yang ditemukan.",
+    "Jangan mengarang nama kru, dialog, rekaman kamera, kejadian di lokasi, atau identitas orang yang disebut mengalami kerasukan.",
+    "Jangan membuat footage palsu yang seolah merupakan rekaman asli kejadian. Semua visual AI wajib diberi label REKA ADEGAN • ILUSTRASI AI.",
+    "Gunakan cuplikan film, still produksi, atau dokumentasi lokasi hanya jika sumber, izin penggunaan, dan konteksnya jelas. Jangan mengunduh atau mengklaim footage berhak cipta sebagai milik channel.",
+    "Taman Festival Bali mengalami perubahan fisik pada 2026; reruntuhan lama hanya boleh ditampilkan sebagai rekonstruksi historis, bukan kondisi terkini.",
+    "Gunakan gaya Balinese Gothic Documentary • Etching + Charcoal + Dark Oil Painting, palet charcoal, volcanic grey, aged sepia, muted antique gold, restrained maroon, subtle moss green.",
+    "Pertahankan pipeline Shorts 9:16, renderer bersama Peta Sunyi, review-only, tanpa publikasi otomatis."
+  ],
+  "timeline": [
+    {
+      "date": "2012",
+      "title": "RUMAH BEKAS KUBURAN",
+      "detail": "Film dirilis; laporan detikHot menyebut syuting di Bogor/Ciawi.",
+      "status": "CATATAN MEDIA"
+    },
+    {
+      "date": "2022",
+      "title": "ANOMALY",
+      "detail": "Produksi di Bali; pemberitaan menyebut Taman Festival sebagai lokasi syuting.",
+      "status": "LOKASI TERLAPOR"
+    },
+    {
+      "date": "2025",
+      "title": "JURNAL UDAYANA",
+      "detail": "Dua kisah produksi dan klaim kesurupan dicatat sebagai narasi horor kawasan.",
+      "status": "SUMBER SEKUNDER"
+    }
+  ],
+  "evidence_board": [
+    {
+      "label": "RUMAH BEKAS KUBURAN (2012)",
+      "left": "Jurnal Udayana: dikaitkan dengan Taman Festival; kru disebut kesurupan dan produksi dihentikan.",
+      "right": "detikHot 2012: wawancara menyebut syuting di Bogor/Ciawi.",
+      "verdict": "KONFLIK SUMBER • LOKASI BELUM PASTI"
+    },
+    {
+      "label": "ANOMALY (2022)",
+      "left": "ANTARA/NusaBali: produksi di Bali; Taman Festival disebut sebagai lokasi syuting.",
+      "right": "Jurnal Udayana: mencatat klaim kru perempuan Korea kerasukan dan berbicara bahasa Bali.",
+      "verdict": "LOKASI TERLAPOR • KLAIM KERASUKAN BELUM TERVERIFIKASI"
+    }
+  ],
+  "scenes": [
+    {
+      "scene": 1,
+      "shot": "01A",
+      "title": "KAMERA BERHENTI, CERITA DIMULAI",
+      "kind": "ai",
+      "text": "Bayangkan sebuah kamera yang merekam proses produksi film di sebuah bangunan tua. Lampu menyala. Kru bersiap. Sutradara memberi aba-aba. Tetapi setelah proses syuting selesai, yang tertinggal justru sebuah cerita yang jauh lebih sulit dijelaskan. Di Taman Festival Bali, ada kisah tentang kru film yang konon mengalami kesurupan ketika bekerja. Bahkan, cerita itu dikaitkan dengan dua judul film yang berbeda, terpaut sepuluh tahun. Namun, apakah semuanya benar-benar terjadi di tempat yang sama? Dan apakah ada rekaman yang bisa membuktikannya? Kali ini, kita tidak hanya mengikuti kisahnya. Kita periksa jejak produksinya."
+    },
+    {
+      "scene": 2,
+      "shot": "MAP",
+      "title": "PADANG GALAK • DENPASAR, BALI",
+      "kind": "graphic",
+      "text": "Taman Festival Bali berada di kawasan Padang Galak, Denpasar. Peta ini menunjukkan lokasi yang diberitakan sebagai tempat syuting Anomaly pada 2022, bukan titik pasti setiap adegan atau insiden."
+    },
+    {
+      "scene": 3,
+      "shot": "03A",
+      "title": "FILM PERTAMA • TAHUN 2012",
+      "kind": "ai",
+      "text": "Kisah pertama membawa kita ke tahun 2012, saat film horor Rumah Bekas Kuburan dirilis. Film ini dibintangi Julia Perez dan disutradarai Irwan Siregar. Dalam penelitian Universitas Udayana yang terbit pada 2025, film ini disebut pernah diproduksi di Taman Festival Bali. Ceritanya, beberapa kru mengalami kesurupan massal hingga produksi dihentikan. Tetapi saat kami menelusuri pemberitaan yang terbit pada tahun film itu dibuat, muncul catatan berbeda. Wawancara Julia Perez di detikHot menyebut proses syuting berlangsung selama tiga minggu di kawasan Bogor."
+    },
+    {
+      "scene": 4,
+      "shot": "TIMELINE",
+      "title": "DUA FILM • TIGA TITIK WAKTU",
+      "kind": "graphic",
+      "text": "Kita susun urutan sumbernya. Tahun 2012, Rumah Bekas Kuburan dan pemberitaan lokasi Bogor. Tahun 2022, Anomaly dan laporan syuting di Taman Festival. Tahun 2025, penelitian Universitas Udayana merangkum kisah-kisah horor tersebut. Urutan ini membantu memisahkan waktu produksi film dari waktu ketika cerita itu dicatat."
+    },
+    {
+      "scene": 5,
+      "shot": "05A",
+      "title": "JEJAK YANG BERBEDA",
+      "kind": "ai",
+      "text": "Pemberitaan detikHot lainnya pada Februari 2012 memuat wawancara Martina Tesela, salah satu pemeran Rumah Bekas Kuburan. Ia menceritakan pengalaman mistis saat syuting di sebuah rumah di Ciawi, Bogor. Dalam wawancara itu, ia juga menyebut beberapa kru mengalami kesurupan hingga dipulangkan. Jadi, ada dua laporan sezaman yang mengarahkan lokasi produksi film ini ke Bogor, bukan Bali. Ini tidak otomatis membuktikan seluruh cerita dalam jurnal keliru. Tetapi perbedaan tersebut cukup penting untuk membuat kita berhati-hati. Untuk saat ini, klaim bahwa Rumah Bekas Kuburan diproduksi di Taman Festival belum dapat dipastikan."
+    },
+    {
+      "scene": 6,
+      "shot": "06A",
+      "title": "FILM KEDUA • ANOMALY 2022",
+      "kind": "ai",
+      "text": "Sepuluh tahun kemudian, muncul judul lain: Anomaly. Film aksi fiksi ilmiah produksi Good Form Bali ini disutradarai Brian L. Tan. Berbeda dengan kisah film sebelumnya, lokasi syuting Anomaly di Taman Festival Bali memiliki jejak pemberitaan yang lebih jelas. NusaBali TV pada Maret 2022 melaporkan proses syuting di kawasan Padanggalak. ANTARA juga memberitakan produksi film tersebut berlangsung di Bali dan dijadwalkan tayang perdana pada 25 Februari 2022. Jadi, hubungan Anomaly dengan Taman Festival bukan sekadar cerita yang muncul belakangan. Ada laporan media yang mendukung lokasi produksinya."
+    },
+    {
+      "scene": 7,
+      "shot": "EVIDENCE",
+      "title": "MANA YANG TERCATAT, MANA YANG KLAIM?",
+      "kind": "graphic",
+      "text": "Perhatikan perbandingan dua film ini. Rumah Bekas Kuburan memiliki catatan lokasi yang berbeda antara jurnal 2025 dan pemberitaan 2012. Sementara Anomaly memiliki laporan syuting di Taman Festival, tetapi cerita kru yang kerasukan masih berasal dari sumber sekunder. Lokasi produksi dan kejadian paranormal adalah dua hal yang berbeda."
+    },
+    {
+      "scene": 8,
+      "shot": "08A",
+      "title": "CERITA KRU PEREMPUAN",
+      "kind": "ai",
+      "text": "Di dalam penelitian Universitas Udayana tahun 2025, terdapat kisah yang lebih spesifik. Seorang kru perempuan asal Korea Selatan disebut mengalami kerasukan ketika proses syuting Anomaly. Ia dikisahkan berbicara menggunakan bahasa Bali, meskipun disebut tidak menguasai bahasa tersebut sebelumnya. Cerita ini memang menarik perhatian. Namun, sejauh sumber yang berhasil kami telusuri, belum ditemukan konfirmasi independen dari kru, rumah produksi, atau laporan media sezaman yang membuktikan kejadian tersebut. Karena itu, kita harus menempatkannya sebagai klaim yang dicatat dalam penelitian, bukan sebagai fakta yang sudah terverifikasi."
+    },
+    {
+      "scene": 9,
+      "shot": "09A",
+      "title": "JIKA KAMERA BENAR-BENAR MEREKAM",
+      "kind": "ai",
+      "text": "Lalu, bagaimana jika kamera memang merekam sesuatu yang tidak biasa? Untuk menjawabnya, kita membutuhkan lebih dari sekadar cerita. Kita perlu mengetahui siapa yang merekam, kapan rekaman dibuat, di bagian lokasi mana kamera berada, dan apakah file aslinya masih tersedia. Kita juga perlu memeriksa apakah suara atau gambar yang dianggap janggal memiliki penjelasan teknis. Sampai sekarang, kita belum menemukan rekaman asli yang dapat memastikan cerita kesurupan dalam dua produksi tersebut. Maka, kita tidak akan membuat ulang adegan seolah-olah itu adalah footage asli."
+    },
+    {
+      "scene": 10,
+      "shot": "10A",
+      "title": "MENGUJI CERITA, BUKAN MENAMBAHNYA",
+      "kind": "ai",
+      "text": "Ada perbedaan besar antara sebuah film yang benar-benar mengambil gambar di lokasi tertentu, pengalaman kru yang diceritakan setelah produksi, dan klaim bahwa sebuah kejadian disebabkan oleh hal supernatural. Ketiganya tidak boleh dicampur menjadi satu. Dalam kasus Anomaly, lokasi syutingnya memiliki dukungan pemberitaan. Cerita kerasukan kru masih membutuhkan sumber tambahan. Sedangkan Rumah Bekas Kuburan justru menyisakan pertanyaan tentang lokasi produksinya. Mungkin suatu hari akan ada dokumentasi lain yang menjelaskan semuanya. Tetapi sampai saat itu tiba, bagian yang belum terbukti harus tetap kita tandai sebagai belum terbukti."
+    },
+    {
+      "scene": 11,
+      "shot": "11A",
+      "title": "JEJAK YANG BELUM SELESAI",
+      "kind": "ai",
+      "text": "Dua film. Dua periode produksi. Dan cerita yang terus menempel pada nama Taman Festival Bali. Sebagian jejaknya bisa kita telusuri melalui berita dan catatan penelitian. Sebagian lainnya masih berupa kisah yang belum memiliki bukti independen. Yang paling penting bukan seberapa menyeramkan ceritanya, melainkan seberapa jauh kita bisa memeriksa asal-usulnya. Sebab kamera bisa merekam gambar, tetapi sebuah cerita tetap membutuhkan bukti untuk dipercaya. Dan di Taman Festival, mungkin masih ada kisah lain yang menunggu untuk diperiksa."
+    },
+    {
+      "scene": 12,
+      "shot": "END",
+      "title": "JEJAK DI BALIK LAYAR",
+      "kind": "graphic",
+      "text": "Di episode berikutnya, kita kembali menelusuri cerita lain yang berkembang di sekitar Taman Festival Bali. Setiap kisah akan diuji melalui sumber, jejak, dan batas bukti yang tersedia."
+    }
+  ],
+  "automation": {
+    "build_mode": "automatic_on_push",
+    "workflow": "build-peta-sunyi-taman-festival-bali-ep05.yml",
+    "review_required": true,
+    "youtube_publish": false
+  },
+  "map": {
+    "query": "Taman Festival Bali, Padang Galak, Denpasar, Bali, Indonesia",
+    "title": "TAMAN FESTIVAL BALI",
+    "subtitle": "PADANG GALAK • DENPASAR",
+    "pin_label": "LOKASI SYUTING ANOMALY",
+    "footer": "PETA LOKASI • PADANG GALAK, BALI",
+    "coordinates": {
+      "lat": -8.6508,
+      "lon": 115.2635
+    }
+  }
+}

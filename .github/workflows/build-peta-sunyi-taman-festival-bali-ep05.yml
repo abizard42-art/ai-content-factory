@@ -1,0 +1,146 @@
+name: Build Peta Sunyi Taman Festival Bali EP05 automatically
+
+on:
+  push:
+    paths:
+      - "episodes/peta-sunyi/taman-festival-bali-ep05.json"
+      - "assets/peta-sunyi/taman-festival-bali-ep05/asset-manifest.json"
+      - "scripts/peta-sunyi/make_peta_sunyi_graphics.py"
+      - "scripts/peta-sunyi/render_episode.py"
+      - "scripts/peta-sunyi/humanize_narration.py"
+      - ".github/workflows/build-peta-sunyi-taman-festival-bali-ep05.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: peta-sunyi-taman-festival-bali-ep05-build
+  cancel-in-progress: false
+
+jobs:
+  build-taman-festival-bali-ep05:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate EP05 config, footage plan and visual manifest
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          config = json.loads(Path("episodes/peta-sunyi/taman-festival-bali-ep05.json").read_text(encoding="utf-8"))
+          manifest = json.loads(Path("assets/peta-sunyi/taman-festival-bali-ep05/asset-manifest.json").read_text(encoding="utf-8"))
+          assert config.get("episode_id") == "taman-festival-bali-ep05"
+          scenes = config.get("scenes", [])
+          ai = [s.get("shot") for s in scenes if s.get("kind") == "ai"]
+          assets = [a.get("id") for a in manifest.get("assets", [])]
+          assert len(scenes) == 12, f"Expected 12 scenes, got {len(scenes)}"
+          assert len(ai) == 8 and len(set(ai)) == 8, "Expected 8 unique AI visual shots"
+          assert set(ai) == set(assets), f"AI shot mismatch: {ai} vs {assets}"
+          assert [s.get("shot") for s in scenes if s.get("kind") == "graphic"] == ["MAP", "TIMELINE", "EVIDENCE", "END"]
+          assert len(manifest.get("footage_plan", [])) >= 8
+          assert len(config.get("sources", [])) >= 4
+          print("EP05_VALIDATION_OK=12 scenes; 8 visual assets; 2 evidence graphics; footage plan")
+          PY
+
+      - name: Generate eight EP05 visuals with Cloudflare FLUX and save to Supabase
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+        run: |
+          set -euo pipefail
+          for name in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID SUPABASE_URL SUPABASE_SECRET_KEY; do
+            [ -n "${!name:-}" ] || { echo "ERROR: GitHub Secret $name belum diisi."; exit 1; }
+          done
+          manifest="assets/peta-sunyi/taman-festival-bali-ep05/asset-manifest.json"
+          mkdir -p output/peta-sunyi work/assets
+          mapfile -t shot_ids < <(jq -r '.assets[].id' "$manifest")
+          for shot_id in "${shot_ids[@]}"; do
+            prompt="$(jq -r --arg id "$shot_id" '.assets[] | select(.id == $id) | .prompt' "$manifest")"
+            image_file="peta-sunyi-$shot_id.jpg"
+            object_path="peta-sunyi/taman-festival-bali-ep05/$image_file"
+            status="$(curl --silent --show-error --output "output/peta-sunyi/$image_file" --write-out "%{http_code}"               "${SUPABASE_URL}/storage/v1/object/visual-assets/$object_path"               -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}" || true)"
+            if [ "$status" = "200" ] && [ -s "output/peta-sunyi/$image_file" ]; then
+              echo "SUPABASE_ASSET_REUSED=$object_path"
+            else
+              request="$(jq -n --arg prompt "$prompt" '{prompt:$prompt,steps:4}')"
+              status=""
+              for attempt in 1 2 3 4; do
+                status="$(curl --silent --show-error --output "output/peta-sunyi/response-$shot_id.json" --write-out "%{http_code}"                   "https://api.cloudflare.com/client/v4/accounts/${CLOUDFLARE_ACCOUNT_ID}/ai/run/@cf/black-forest-labs/flux-1-schnell"                   -X POST -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" -H "Content-Type: application/json" -d "$request" || true)"
+                [ "$status" = "200" ] && break
+                if grep -qE '"code"[[:space:]]*:[[:space:]]*4006|used up your daily free allocation' "output/peta-sunyi/response-$shot_id.json"; then
+                  echo "ERROR: Cloudflare daily free allocation exhausted."; exit 1
+                fi
+                [ "$attempt" -lt 4 ] && sleep $((attempt * 10))
+              done
+              [ "$status" = "200" ] || { echo "ERROR: FLUX failed for $shot_id (HTTP $status)"; exit 1; }
+              jq -r '.result.image // .image // empty' "output/peta-sunyi/response-$shot_id.json" | base64 --decode > "output/peta-sunyi/$image_file"
+              test -s "output/peta-sunyi/$image_file"
+              upload="$(curl --silent --show-error --output "/tmp/upload-$shot_id.json" --write-out "%{http_code}" -X POST                 "${SUPABASE_URL}/storage/v1/object/visual-assets/$object_path"                 -H "apikey: ${SUPABASE_SECRET_KEY}" -H "Authorization: Bearer ${SUPABASE_SECRET_KEY}"                 -H "Content-Type: image/jpeg" -H "x-upsert: true" --data-binary @"output/peta-sunyi/$image_file")"
+              [[ "$upload" = "200" || "$upload" = "201" ]] || { cat "/tmp/upload-$shot_id.json"; exit 1; }
+              echo "SUPABASE_ASSET_OK=$object_path"
+            fi
+            cp "output/peta-sunyi/$image_file" "work/assets/$image_file"
+          done
+
+      - name: Install video rendering dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-dejavu-core
+          python -m pip install --upgrade pip
+          python -m pip install pillow edge-tts
+
+      - name: Create source-aware timeline and evidence diagrams
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/peta-sunyi/make_peta_sunyi_graphics.py
+          python scripts/peta-sunyi/make_peta_sunyi_graphics.py episodes/peta-sunyi/taman-festival-bali-ep05.json work/assets
+          test -s work/assets/peta-sunyi-TIMELINE.jpg
+          test -s work/assets/peta-sunyi-EVIDENCE.jpg
+
+      - name: Humanize EP05 narration with pinned Humanizer
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          set -euo pipefail
+          [ -n "${GEMINI_API_KEY:-}" ] || { echo "ERROR: GEMINI_API_KEY missing"; exit 1; }
+          python -m py_compile scripts/peta-sunyi/humanize_narration.py
+          mkdir -p work
+          log="work/taman-festival-bali-ep05-humanizer.log"
+          if python scripts/peta-sunyi/humanize_narration.py --input episodes/peta-sunyi/taman-festival-bali-ep05.json --output work/taman-festival-bali-ep05-humanized.json 2>&1 | tee "$log"; then
+            echo "HUMANIZER_PATH=gemini_success"
+          else
+            if grep -q "Gemini Humanizer HTTP 503" "$log" || grep -Eq "TimeoutError:|The read operation timed out|timed out" "$log"; then
+              cp episodes/peta-sunyi/taman-festival-bali-ep05.json work/taman-festival-bali-ep05-humanized.json
+              echo "WARN: Provider unavailable; original narration retained for human review."
+            else
+              echo "ERROR: Humanizer failed for a reason other than provider outage."; exit 1
+            fi
+          fi
+
+      - name: Render EP05 using shared Peta Sunyi Shorts renderer
+        env:
+          EPISODE_CONFIG: work/taman-festival-bali-ep05-humanized.json
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/peta-sunyi/render_episode.py
+          python scripts/peta-sunyi/render_episode.py
+          test -s output/taman-festival-bali-ep05-review.mp4
+          echo "REVIEW_ONLY=true; NO YOUTUBE PUBLISHING"
+
+      - name: Upload EP05 review artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: peta-sunyi-taman-festival-bali-ep05-review
+          path: |
+            output/taman-festival-bali-ep05-review.mp4
+            output/peta-sunyi/
+          if-no-files-found: error
+          retention-days: 7
